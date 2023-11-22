@@ -1,34 +1,17 @@
 package com.azatdev.dailytasks.domain.usecases;
 
-import static org.mockito.BDDMockito.*;
-
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
+import static org.mockito.BDDMockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
-import org.mockito.Mockito.*;
 
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.Task;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
-
-@FunctionalInterface
-interface AdjustDateToStartOfBacklog {
-    LocalDate calculateAdjustedDate(LocalDate date, Backlog.Duration duration);
-}
-
-interface BacklogRepositoryGet {
-
-    UUID getBacklogId(LocalDate startDate, Backlog.Duration duration);
-}
-
-interface TasksRepositoryList {
-
-    Task[] list(UUID backlogId);
-}
 
 class Result<Value, Error> {
 
@@ -69,6 +52,28 @@ class Result<Value, Error> {
     }
 }
 
+@FunctionalInterface
+interface AdjustDateToStartOfBacklog {
+    LocalDate calculateAdjustedDate(LocalDate date, Backlog.Duration duration);
+}
+
+interface BacklogRepositoryGet {
+
+    enum Error {
+        INTERNAL_ERROR
+    }
+
+    Result<Optional<UUID>, Error> getBacklogId(LocalDate startDate, Backlog.Duration duration);
+}
+
+interface TasksRepositoryList {
+
+    enum Error {
+        INTERNAL_ERROR
+    }
+
+    Result<Task[], Error> list(UUID backlogId);
+}
 
 interface ListTasksInBacklogUseCase {
 
@@ -140,6 +145,41 @@ public class ListTasksInBacklogUseCaseTests {
     void executeEmptyDbShouldReturnEmptyListTest() {
         
         // Given
+        final var backlogDuration = Backlog.Duration.DAY;
+        final var backlogStartDate = LocalDate.now();
+        final Task[] expectedTasks = {};
+        final LocalDate adjustedBacklogStartDate = backlogStartDate;
+
+        final var sut = createSUT();
+
+        given(sut.adjustBacklogTime.calculateAdjustedDate(backlogStartDate, backlogDuration))
+            .willReturn(adjustedBacklogStartDate);
+
+        given(sut.backlogRepository.getBacklogId(backlogStartDate, backlogDuration))
+            .willReturn(Result.success(Optional.empty()));
+    
+
+        // When
+        var result = sut.listTasksInBacklogUseCase.execute(backlogStartDate, backlogDuration);
+
+        // Then
+        then(sut.backlogRepository)
+            .should(times(1))
+            .getBacklogId(adjustedBacklogStartDate, backlogDuration);
+        
+        then(sut.tasksRepository)
+            .should(never())
+            .list(any());
+
+        assertThat(result.isSuccess()).isTrue();
+        assertThat(result.getValue()).isEqualTo(expectedTasks);
+    }
+
+
+    @Test
+    void executeEmptyBacklogShouldReturnEmptyListTest() {
+        
+        // Given
         UUID backlogId = UUID.randomUUID();
 
         final var backlogDuration = Backlog.Duration.DAY;
@@ -153,10 +193,10 @@ public class ListTasksInBacklogUseCaseTests {
             .willReturn(adjustedBacklogStartDate);
 
         given(sut.backlogRepository.getBacklogId(backlogStartDate, backlogDuration))
-            .willReturn(backlogId);
+            .willReturn(Result.success(Optional.of(backlogId)));
     
         given(sut.tasksRepository.list(backlogId))
-            .willReturn(expectedTasks);
+            .willReturn(Result.success(expectedTasks));
 
 
         // When
