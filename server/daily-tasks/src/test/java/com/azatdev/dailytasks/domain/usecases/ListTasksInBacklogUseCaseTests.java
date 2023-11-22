@@ -13,23 +13,23 @@ import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.Task;
 
 
-class Result<Value, Error> {
+class Result<Value, Failure> {
 
     private final Value value;
-    private final Error error;
+    private final Failure error;
     private final boolean isSuccess;
 
-    private Result(Value value, Error error, boolean isSuccess) {
+    private Result(Value value, Failure error, boolean isSuccess) {
         this.value = value;
         this.error = error;
         this.isSuccess = isSuccess;
     }
 
-    public static <Value, Error> Result<Value, Error> success(Value value) {
+    public static <Value, Failure> Result<Value, Failure> success(Value value) {
         return new Result<>(value, null, true);
     }
 
-    public static <Value, Error> Result<Value, Error> failure(Error error) {
+    public static <Value, Failure> Result<Value, Failure> failure(Failure error) {
         return new Result<>(null, error, false);
     }
 
@@ -44,7 +44,7 @@ class Result<Value, Error> {
         return value;
     }
 
-    public Error getError() throws IllegalStateException {
+    public Failure getError() throws IllegalStateException {
         if (isSuccess) {
             throw new IllegalStateException("Result does not contain an error");
         }
@@ -102,12 +102,26 @@ class ListTasksInBacklogUseCaseImpl implements ListTasksInBacklogUseCase {
     
         @Override
         public Result<Task[], Error> execute(LocalDate forDate, Backlog.Duration duration) {
-            return Result.failure(Error.INTERNAL_ERROR);
-            // var startDate = adjustDateToStart.calculateAdjustedDate(forDate, duration);
-            // var backlogId = backlogRepository.getBacklogId(startDate, duration);
-            // var tasks = tasksRepository.list(backlogId);
+            var backlogStartDate = adjustDateToStart.calculateAdjustedDate(forDate, duration);
+            var getBacklogIdResult = backlogRepository.getBacklogId(backlogStartDate, duration);
 
-            // return Result.success(tasks);
+            if (!getBacklogIdResult.isSuccess()) {
+                return Result.success(new Task[]{});
+            }
+
+            final var optionalBacklogId = getBacklogIdResult.getValue();
+
+            if (optionalBacklogId.isEmpty()) {
+                return Result.success(new Task[]{});
+            }
+
+            var listTasksResult = tasksRepository.list(optionalBacklogId.get());
+
+            if (listTasksResult.isSuccess()) {
+                return Result.success(listTasksResult.getValue());
+            }
+
+            return Result.failure(Error.INTERNAL_ERROR);
         }
 }
 
