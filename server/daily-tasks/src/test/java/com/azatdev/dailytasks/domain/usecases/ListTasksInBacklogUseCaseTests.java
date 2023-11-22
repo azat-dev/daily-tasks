@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
+import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryGet;
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.Task;
 import com.azatdev.dailytasks.utils.Result;
@@ -19,14 +20,6 @@ interface AdjustDateToStartOfBacklog {
     LocalDate calculateAdjustedDate(LocalDate date, Backlog.Duration duration);
 }
 
-interface BacklogRepositoryGet {
-
-    enum Error {
-        INTERNAL_ERROR
-    }
-
-    Result<Optional<UUID>, Error> getBacklogId(LocalDate startDate, Backlog.Duration duration);
-}
 
 interface TasksRepositoryList {
 
