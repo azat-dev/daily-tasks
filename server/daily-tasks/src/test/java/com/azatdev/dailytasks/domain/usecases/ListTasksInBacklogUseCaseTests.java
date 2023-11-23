@@ -25,15 +25,6 @@ interface AdjustDateToStartOfBacklog {
     LocalDate calculateAdjustedDate(LocalDate date, Backlog.Duration duration);
 }
 
-interface ListTasksInBacklogUseCase {
-
-    enum Error {
-        INTERNAL_ERROR
-    }
-
-    Result<Task[], Error> execute(LocalDate date, Backlog.Duration duration);
-}
-
 class ListTasksInBacklogUseCaseImpl implements ListTasksInBacklogUseCase {
     
         private final BacklogRepositoryGet backlogRepository;

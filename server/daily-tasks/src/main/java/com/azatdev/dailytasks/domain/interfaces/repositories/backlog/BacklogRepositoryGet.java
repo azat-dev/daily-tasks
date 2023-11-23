@@ -9,9 +9,9 @@ import com.azatdev.dailytasks.utils.Result;
 
 public interface BacklogRepositoryGet {
 
-    enum Error {
+    public enum Error {
         INTERNAL_ERROR
     }
 
-    Result<Optional<UUID>, Error> getBacklogId(LocalDate startDate, Backlog.Duration duration);
+    public Result<Optional<UUID>, Error> getBacklogId(LocalDate startDate, Backlog.Duration duration);
 }
