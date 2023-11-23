@@ -4,12 +4,17 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryGet;
+import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryList;
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.Task;
 import com.azatdev.dailytasks.utils.Result;
@@ -18,16 +23,6 @@ import com.azatdev.dailytasks.utils.Result;
 @FunctionalInterface
 interface AdjustDateToStartOfBacklog {
     LocalDate calculateAdjustedDate(LocalDate date, Backlog.Duration duration);
-}
-
-
-interface TasksRepositoryList {
-
-    enum Error {
-        INTERNAL_ERROR
-    }
-
-    Result<Task[], Error> list(UUID backlogId);
 }
 
 interface ListTasksInBacklogUseCase {
