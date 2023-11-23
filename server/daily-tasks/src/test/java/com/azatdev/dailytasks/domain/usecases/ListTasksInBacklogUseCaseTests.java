@@ -17,54 +17,8 @@ import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepo
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryList;
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.Task;
+import com.azatdev.dailytasks.domain.usecases.utils.AdjustDateToStartOfBacklog;
 import com.azatdev.dailytasks.utils.Result;
-
-
-@FunctionalInterface
-interface AdjustDateToStartOfBacklog {
-    LocalDate calculateAdjustedDate(LocalDate date, Backlog.Duration duration);
-}
-
-class ListTasksInBacklogUseCaseImpl implements ListTasksInBacklogUseCase {
-    
-        private final BacklogRepositoryGet backlogRepository;
-        private final TasksRepositoryList tasksRepository;
-        private final AdjustDateToStartOfBacklog adjustDateToStart;
-    
-        public ListTasksInBacklogUseCaseImpl(
-            BacklogRepositoryGet backlogRepository,
-            TasksRepositoryList tasksRepository,
-            AdjustDateToStartOfBacklog adjustBacklogTime
-        ) {
-            this.backlogRepository = backlogRepository;
-            this.tasksRepository = tasksRepository;
-            this.adjustDateToStart = adjustBacklogTime;
-        }
-    
-        @Override
-        public Result<Task[], Error> execute(LocalDate forDate, Backlog.Duration duration) {
-            var backlogStartDate = adjustDateToStart.calculateAdjustedDate(forDate, duration);
-            var getBacklogIdResult = backlogRepository.getBacklogId(backlogStartDate, duration);
-
-            if (!getBacklogIdResult.isSuccess()) {
-                return Result.success(new Task[]{});
-            }
-
-            final var optionalBacklogId = getBacklogIdResult.getValue();
-
-            if (optionalBacklogId.isEmpty()) {
-                return Result.success(new Task[]{});
-            }
-
-            var listTasksResult = tasksRepository.list(optionalBacklogId.get());
-
-            if (listTasksResult.isSuccess()) {
-                return Result.success(listTasksResult.getValue());
-            }
-
-            return Result.failure(Error.INTERNAL_ERROR);
-        }
-}
 
 public class ListTasksInBacklogUseCaseTests {
     
@@ -107,7 +61,7 @@ public class ListTasksInBacklogUseCaseTests {
 
         final var sut = createSUT();
 
-        given(sut.adjustBacklogTime.calculateAdjustedDate(backlogStartDate, backlogDuration))
+        given(sut.adjustBacklogTime.calculate(backlogStartDate, backlogDuration))
             .willReturn(adjustedBacklogStartDate);
 
         given(sut.backlogRepository.getBacklogId(backlogStartDate, backlogDuration))
@@ -144,7 +98,7 @@ public class ListTasksInBacklogUseCaseTests {
 
         final var sut = createSUT();
 
-        given(sut.adjustBacklogTime.calculateAdjustedDate(backlogStartDate, backlogDuration))
+        given(sut.adjustBacklogTime.calculate(backlogStartDate, backlogDuration))
             .willReturn(adjustedBacklogStartDate);
 
         given(sut.backlogRepository.getBacklogId(backlogStartDate, backlogDuration))
@@ -152,7 +106,6 @@ public class ListTasksInBacklogUseCaseTests {
     
         given(sut.tasksRepository.list(backlogId))
             .willReturn(Result.success(expectedTasks));
-
 
         // When
         var result = sut.listTasksInBacklogUseCase.execute(backlogStartDate, backlogDuration);
