@@ -2,15 +2,11 @@ package com.azatdev.dailytasks.domain.usecases.utils;
 
 import java.time.LocalDate;
 
-import org.springframework.cglib.core.Local;
-
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.azatdev.dailytasks.domain.models.Backlog;
-import com.azatdev.dailytasks.domain.usecases.utils.AdjustDateToStartOfBacklog;
-
 
 class AdjustDateToStartDateInBacklogTests {
 
