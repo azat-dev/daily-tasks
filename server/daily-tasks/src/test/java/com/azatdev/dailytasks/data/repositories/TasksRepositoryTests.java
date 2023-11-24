@@ -1,15 +1,15 @@
 package com.azatdev.dailytasks.data.repositories;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.Optional;
-
-import javax.swing.text.html.Option;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import jakarta.persistence.Column;
@@ -62,6 +62,20 @@ class TaskData {
     @Column(nullable = false)
     private String description;
 
+    // Constructors
+
+    public TaskData(
+        Long backlogId,
+        Integer orderInBacklog,
+        String title,
+        String description
+    ) {
+        this.backlogId = backlogId;
+        this.orderInBacklog = orderInBacklog;
+        this.title = title;
+        this.description = description;
+    }
+
 
     @PrePersist
     void prePersist() {
@@ -77,7 +91,7 @@ class TaskData {
 
 interface JPATasksRepository extends JpaRepository<TaskData, Long> {
 
-    TaskData findByBacklogIdOrderByOrderInBacklogAsc(Long backlogId);
+    Iterable<TaskData> findAllByBacklogIdOrderByOrderInBacklogAsc(Long backlogId);
 }
 
 class TasksRepositoryImpl implements TasksRepositoryList {
@@ -103,36 +117,51 @@ class TasksRepositoryImpl implements TasksRepositoryList {
 @ExtendWith(MockitoExtension.class)
 public class TasksRepositoryTests {
 
+    // Fields
+
+    @Autowired
+    TestEntityManager entityManager;
+
     @Mock
     JPATasksRepository jpaTasksRepository;
-
 
     @InjectMocks
     TasksRepositoryImpl tasksRepository;
     
+    // Helpers
 
     private Long anyBacklogId() {
         return 111L;
     }
 
-    void listEmptyDbShouldReturnEmptyListTest() {
+    // Tests
+
+    @Test
+    void listTasksReturnsShouldReturnTasksFromRepositoryTest() {
         
         // Given
         final var backlogId = anyBacklogId();
-        final Task[] expectedTasks = {};
+        final String[] expectedTaskTitles = { "1", "2", "3" };
 
-        given(jpaTasksRepository.findByBacklogIdOrderByOrderInBacklogAsc(backlogId))
-            .willReturn(new TaskData(){});
+        given(jpaTasksRepository.findAllByBacklogIdOrderByOrderInBacklogAsc(backlogId))
+            .willReturn(null);
 
         // When
         var result = tasksRepository.list(backlogId);
 
         // Then
         assertThat(result.isSuccess()).isTrue();
-        assertThat(result.getValue()).isEqualTo(expectedTasks);
+
+        var receivedTasks = result.getValue();
+        var receivedTaskTitles = Arrays.stream(receivedTasks)
+            .map(task -> task.title()).toArray(String[]::new);
+
+        assertThat(receivedTaskTitles).isEqualTo(expectedTaskTitles);
 
         then(jpaTasksRepository)
             .should(times(1))
-            .findByBacklogIdOrderByOrderInBacklogAsc(backlogId);
+            .findAllByBacklogIdOrderByOrderInBacklogAsc(backlogId);
+
+        assertThat(1).isEqualTo(5);
     }
 }

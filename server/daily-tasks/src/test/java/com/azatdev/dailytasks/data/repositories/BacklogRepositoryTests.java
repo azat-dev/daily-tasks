@@ -21,7 +21,7 @@ import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPABacklogReposi
 import com.azatdev.dailytasks.domain.models.Backlog;
 
 @ExtendWith(MockitoExtension.class)
-class BacklogRepositoryImplTests {
+class BacklogRepositoryTests {
 
     @Mock
     JPABacklogRepository jpaBacklogRepository;
