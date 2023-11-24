@@ -7,21 +7,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
+import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPABacklogRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryGet;
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.utils.Result;
-
-interface JPABacklogRepository extends JpaRepository<BacklogData, Long> {
-
-    BacklogData findByStartDateAndDuration(LocalDate startDate, BacklogData.Duration duration);
-}
 
 class BacklogRepositoryImpl implements BacklogRepositoryGet {
 
