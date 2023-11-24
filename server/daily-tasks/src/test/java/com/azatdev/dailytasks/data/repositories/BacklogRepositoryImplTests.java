@@ -1,6 +1,5 @@
 package com.azatdev.dailytasks.data.repositories;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.mock;
 
@@ -11,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -63,6 +64,7 @@ class BacklogData {
 
 interface JPABacklogRepository extends JpaRepository<BacklogData, Long> {
 
+    BacklogData findByStartDateAndDuration(LocalDate startDate, BacklogData.Duration duration);
 }
 
 class BacklogRepositoryImpl implements BacklogRepositoryGet {
@@ -74,7 +76,12 @@ class BacklogRepositoryImpl implements BacklogRepositoryGet {
     }
 
     @Override
-    public Result<Optional<UUID>, BacklogRepositoryGet.Error> getBacklogId(LocalDate startDate, Backlog.Duration duration) {
+    public Result<Optional<UUID>, BacklogRepositoryGet.Error> getBacklogId(
+        LocalDate startDate, 
+        Backlog.Duration duration
+    ) {
+
+        jpaBacklogRepository.findByStartDateAndDuration(startDate, BacklogData.Duration.DAY);
         return Result.success(Optional.empty());
     }
 }
@@ -106,12 +113,14 @@ class BacklogRepositoryImplTests {
         final var duration = Backlog.Duration.DAY;
         final var expected = Optional.empty();
 
+
         final var sut = createSUT();
 
         // When
         var result = sut.backlogRepository.getBacklogId(startDate, duration);
 
         // Then
-        assertEquals(expected, result);
+        assertThat(result.isSuccess()).isTrue();
+        assertThat(result.getValue()).isEqualTo(expected);
     }
 }
