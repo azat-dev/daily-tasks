@@ -2,7 +2,6 @@ package com.azatdev.dailytasks.domain.usecases;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
@@ -89,7 +88,7 @@ public class ListTasksInBacklogUseCaseTests {
     void executeEmptyBacklogShouldReturnEmptyListTest() {
         
         // Given
-        UUID backlogId = UUID.randomUUID();
+        var backlogId = anyBacklogId();
 
         final var backlogDuration = Backlog.Duration.DAY;
         final var backlogStartDate = LocalDate.now();
@@ -121,5 +120,9 @@ public class ListTasksInBacklogUseCaseTests {
 
         assertThat(result.isSuccess()).isTrue();
         assertThat(result.getValue()).isEqualTo(expectedTasks);
+    }
+
+    private Long anyBacklogId() {
+        return 111L;
     }
 }

@@ -1,38 +1,33 @@
 package com.azatdev.dailytasks.data.repositories;
 
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.mock;
-
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import static org.mockito.ArgumentMatchers.any;
+
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.azatdev.dailytasks.data.repositories.persistence.backlog.BacklogRepositoryImpl;
+import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPABacklogRepository;
-import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryGet;
 import com.azatdev.dailytasks.domain.models.Backlog;
 
+@ExtendWith(MockitoExtension.class)
 class BacklogRepositoryImplTests {
-    private record SUT(
-        BacklogRepositoryGet backlogRepository,
-        JPABacklogRepository jpaBacklogRepository
-    ) {
 
-    }
+    @Mock
+    JPABacklogRepository jpaBacklogRepository;
 
-    private SUT createSUT() {
-
-        JPABacklogRepository jpaBacklogRepository = mock(JPABacklogRepository.class);
-
-        return new SUT(
-            new BacklogRepositoryImpl(jpaBacklogRepository),
-            jpaBacklogRepository
-        );
-    }
+    @InjectMocks
+    BacklogRepositoryImpl backlogRepository;
 
     @Test
     void getBacklogIdEmptyDbShouldReturnEmptyOptionalTest() {
@@ -40,16 +35,20 @@ class BacklogRepositoryImplTests {
         // Given
         final var startDate = LocalDate.now();
         final var duration = Backlog.Duration.DAY;
-        final var expected = Optional.empty();
+        final BacklogData expectedBacklogData = null;
 
-
-        final var sut = createSUT();
+        given(jpaBacklogRepository.findByStartDateAndDuration(any(LocalDate.class), any(BacklogData.Duration.class)))
+            .willReturn(expectedBacklogData);
 
         // When
-        var result = sut.backlogRepository.getBacklogId(startDate, duration);
+        var result = backlogRepository.getBacklogId(startDate, duration);
 
         // Then
         assertThat(result.isSuccess()).isTrue();
-        assertThat(result.getValue()).isEqualTo(expected);
+        assertThat(result.getValue()).isEmpty();
+
+        then(jpaBacklogRepository)
+            .should(times(1))
+            .findByStartDateAndDuration(startDate, BacklogData.Duration.DAY);
     }
 }

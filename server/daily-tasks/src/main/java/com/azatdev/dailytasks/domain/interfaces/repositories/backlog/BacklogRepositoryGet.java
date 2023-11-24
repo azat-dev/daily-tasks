@@ -2,7 +2,6 @@ package com.azatdev.dailytasks.domain.interfaces.repositories.backlog;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.UUID;
 
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.utils.Result;
@@ -13,5 +12,5 @@ public interface BacklogRepositoryGet {
         INTERNAL_ERROR
     }
 
-    public Result<Optional<UUID>, Error> getBacklogId(LocalDate startDate, Backlog.Duration duration);
+    public Result<Optional<Long>, Error> getBacklogId(LocalDate startDate, Backlog.Duration duration);
 }
