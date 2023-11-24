@@ -18,11 +18,15 @@ import jakarta.persistence.UniqueConstraint;
 })
 public class BacklogData {
 
+    // Types
+
     public enum Duration {
         DAY,
         WEEK
     }
 
+    // Properties
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,6 +37,15 @@ public class BacklogData {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Duration duration;
+
+    // Constructors
+
+    public BacklogData(LocalDate startDate, Duration duration) {
+        this.startDate = startDate;
+        this.duration = duration;
+    }
+
+    // Getters
 
     public Duration getDuration() {
         return duration;
