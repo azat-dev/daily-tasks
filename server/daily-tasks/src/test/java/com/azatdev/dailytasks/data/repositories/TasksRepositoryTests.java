@@ -14,7 +14,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -22,6 +27,7 @@ import jakarta.persistence.Table;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.BDDMockito.*;
+import static org.mockito.Mockito.times;
 
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryList;
 import com.azatdev.dailytasks.domain.models.Task;
@@ -39,12 +45,20 @@ class TaskData {
         COMPLETED
     }
 
+    public enum Priority {
+        LOW,
+        MEDIUM,
+        HIGH
+    }
+
     // Fields
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "backlog_id")
+    @ManyToOne
+    @Column(name = "backlog_id", nullable = false)
     private Long backlogId;
 
     @Column(name = "order_in_backlog")
@@ -62,17 +76,29 @@ class TaskData {
     @Column(nullable = false)
     private String description;
 
+    @Enumerated(EnumType.ORDINAL)
+    @Column(nullable = true)
+    private Priority priority;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(nullable = false)
+    private Status status;
+
     // Constructors
 
     public TaskData(
         Long backlogId,
         Integer orderInBacklog,
         String title,
-        String description
+        String description,
+        Status status,
+        Priority priority
     ) {
         this.backlogId = backlogId;
         this.orderInBacklog = orderInBacklog;
         this.title = title;
+        this.status = status;
+        this.priority = priority;
         this.description = description;
     }
 

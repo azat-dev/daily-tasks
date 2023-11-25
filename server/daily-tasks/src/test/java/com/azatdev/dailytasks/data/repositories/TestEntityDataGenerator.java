@@ -30,7 +30,9 @@ public class TestEntityDataGenerator {
             backlogId, 
             orderInBacklog,
             title,
-            faker.lorem().paragraph()
+            faker.lorem().paragraph(),
+            TaskData.Status.NOT_STARTED,
+            null
         );
     }
 }
