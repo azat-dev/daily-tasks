@@ -1,74 +1,64 @@
 package com.azatdev.dailytasks.data.repositories.persistence.jpa;
 
-import java.time.LocalDate;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
+import java.time.LocalDate;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
-
+@ExtendWith(SpringExtension.class)
 @DataJpaTest
 class JPABacklogRepositoryTests {
 
-    @Autowired
-    private JPABacklogRepository jpaBacklogRepository;
+  @Autowired private JPABacklogRepository jpaBacklogRepository;
 
-    @Autowired
-    TestEntityManager entityManager;
+  @Autowired TestEntityManager entityManager;
 
-    private LocalDate anyDate() {
-        return LocalDate.of(2021, 1, 1);
-    }
+  private LocalDate anyDate() {
+    return LocalDate.of(2021, 1, 1);
+  }
 
-    private BacklogData.Duration anyDuration() {
-        return BacklogData.Duration.DAY;
-    }
-    
-    void findByStartDateAndDurationEmptyDbShouldReturnNull() {
-     
-        // Given
-        final var startDate = this.anyDate();
-        final var duration = this.anyDuration();
+  private BacklogData.Duration anyDuration() {
+    return BacklogData.Duration.DAY;
+  }
 
-        // Empty DB
+  void findByStartDateAndDurationEmptyDbShouldReturnNull() {
 
-        // When
-        var result = jpaBacklogRepository.findByStartDateAndDuration(
-            startDate, 
-            duration
-        );
+    // Given
+    final var startDate = this.anyDate();
+    final var duration = this.anyDuration();
 
-        // Then
-        assertThat(result).isNull();
-    }
+    // Empty DB
 
-    void findByStartDateAndDurationEmptyDbShouldReturnCorrectRecord() {
-     
-        // Given
-        final var startDate = this.anyDate();
-        final var duration = this.anyDuration();
+    // When
+    var result = jpaBacklogRepository.findByStartDateAndDuration(startDate, duration);
 
-        BacklogData expectedBacklog = entityManager.persistFlushFind(
-            new BacklogData(startDate, duration)
-        );
-        BacklogData backlogWithWrongDate = entityManager.persistFlushFind(
-            new BacklogData(startDate.plusDays(1), duration)
-        );
-        BacklogData backlogWithWrongDuration = entityManager.persistFlushFind(
-            new BacklogData(startDate, BacklogData.Duration.WEEK)
-        );
+    // Then
+    assertThat(result).isNull();
+  }
 
-        // When
-        var result = jpaBacklogRepository.findByStartDateAndDuration(
-            startDate, 
-            duration
-        );
+  void findByStartDateAndDurationEmptyDbShouldReturnCorrectRecord() {
 
-        // Then
-        assertThat(result).isEqualTo(expectedBacklog);
-        assertThat(result).isIn(backlogWithWrongDate, backlogWithWrongDuration);
-    }
+    // Given
+    final var startDate = this.anyDate();
+    final var duration = this.anyDuration();
+
+    BacklogData expectedBacklog =
+        entityManager.persistFlushFind(new BacklogData(startDate, duration));
+    BacklogData backlogWithWrongDate =
+        entityManager.persistFlushFind(new BacklogData(startDate.plusDays(1), duration));
+    BacklogData backlogWithWrongDuration =
+        entityManager.persistFlushFind(new BacklogData(startDate, BacklogData.Duration.WEEK));
+
+    // When
+    var result = jpaBacklogRepository.findByStartDateAndDuration(startDate, duration);
+
+    // Then
+    assertThat(result).isEqualTo(expectedBacklog);
+    assertThat(result).isIn(backlogWithWrongDate, backlogWithWrongDuration);
+  }
 }
