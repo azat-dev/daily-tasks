@@ -5,61 +5,17 @@ import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-import com.azatdev.dailytasks.data.repositories.data.MapTaskDataToDomain;
 import com.azatdev.dailytasks.data.repositories.data.MapTaskDataToDomainImpl;
 import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
+import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPATasksRepository;
+import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryImpl;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryList;
-import com.azatdev.dailytasks.domain.models.Task;
-import com.azatdev.dailytasks.utils.Result;
-
-interface JPATasksRepository extends JpaRepository<TaskData, Long> {
-
-    Iterable<TaskData> findAllByBacklogIdOrderByOrderInBacklogAsc(Long backlogId);
-}
-
-@Repository
-class TasksRepositoryImpl implements TasksRepositoryList {
-
-    // Fields
-
-    private final JPATasksRepository jpaTasksRepository;
-    private final MapTaskDataToDomain mapTaskDataToDomain;
-
-    // Constructors
-
-    public TasksRepositoryImpl(
-        JPATasksRepository jpaTasksRepository,
-        MapTaskDataToDomain mapTaskDataToDomain
-    ) {
-        this.jpaTasksRepository = jpaTasksRepository;
-        this.mapTaskDataToDomain = mapTaskDataToDomain;
-    }
-
-    // Methods
-
-    @Override
-    public Result<List<Task>, Error> list(Long backlogId) {
-
-        final Iterable<TaskData> items = jpaTasksRepository.findAllByBacklogIdOrderByOrderInBacklogAsc(backlogId);
-
-        final List<Task> tasks = new ArrayList<>();
-
-        for (TaskData item : items) {
-            tasks.add(mapTaskDataToDomain.map(item));
-        }
-
-        return Result.success(tasks);
-    }
-}
 
 @ExtendWith(MockitoExtension.class)
 public class TasksRepositoryTests {
