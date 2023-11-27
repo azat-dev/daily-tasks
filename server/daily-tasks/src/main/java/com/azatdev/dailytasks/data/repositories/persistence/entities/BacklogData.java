@@ -38,7 +38,8 @@ public class BacklogData {
 
     // Constructors
 
-    private BacklogData() { }
+    private BacklogData() {
+    }
 
     public BacklogData(
         LocalDate startDate,
