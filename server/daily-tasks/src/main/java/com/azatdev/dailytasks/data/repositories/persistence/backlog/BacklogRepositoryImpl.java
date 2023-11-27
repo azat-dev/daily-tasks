@@ -9,11 +9,10 @@ import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepo
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.utils.Result;
 
-
 public class BacklogRepositoryImpl implements BacklogRepositoryGet {
-    
+
     private final JPABacklogRepository jpaBacklogRepository;
-    
+
     public BacklogRepositoryImpl(JPABacklogRepository jpaBacklogRepository) {
         this.jpaBacklogRepository = jpaBacklogRepository;
     }
@@ -21,23 +20,23 @@ public class BacklogRepositoryImpl implements BacklogRepositoryGet {
     private BacklogData.Duration mapDuration(Backlog.Duration duration) {
 
         switch (duration) {
-            case DAY:
-                return BacklogData.Duration.DAY;
-            case WEEK:
-                return BacklogData.Duration.WEEK;
-            default:
-                throw new IllegalArgumentException("Unknown duration");
+        case DAY:
+            return BacklogData.Duration.DAY;
+        case WEEK:
+            return BacklogData.Duration.WEEK;
+        default:
+            throw new IllegalArgumentException("Unknown duration");
         }
     }
 
     @Override
     public Result<Optional<Long>, BacklogRepositoryGet.Error> getBacklogId(
-        LocalDate startDate, 
+        LocalDate startDate,
         Backlog.Duration duration
     ) {
-        
+
         var backlogData = jpaBacklogRepository.findByStartDateAndDuration(
-            startDate, 
+            startDate,
             this.mapDuration(duration)
         );
 

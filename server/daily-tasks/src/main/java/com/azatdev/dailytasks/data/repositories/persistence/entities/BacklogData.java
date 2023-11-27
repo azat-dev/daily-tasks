@@ -13,9 +13,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "backlogs", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"start_date", "duration"})
-})
+@Table(name = "backlogs", uniqueConstraints = { @UniqueConstraint(columnNames = { "start_date", "duration" }) })
 public class BacklogData {
 
     // Types
@@ -26,21 +24,24 @@ public class BacklogData {
     }
 
     // Properties
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Duration duration;
 
     // Constructors
 
-    public BacklogData(LocalDate startDate, Duration duration) {
+    public BacklogData(
+        LocalDate startDate,
+        Duration duration
+    ) {
         this.startDate = startDate;
         this.duration = duration;
     }

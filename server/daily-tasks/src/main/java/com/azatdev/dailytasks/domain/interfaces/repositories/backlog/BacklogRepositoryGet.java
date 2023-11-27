@@ -12,5 +12,8 @@ public interface BacklogRepositoryGet {
         INTERNAL_ERROR
     }
 
-    public Result<Optional<Long>, Error> getBacklogId(LocalDate startDate, Backlog.Duration duration);
+    public Result<Optional<Long>, Error> getBacklogId(
+        LocalDate startDate,
+        Backlog.Duration duration
+    );
 }

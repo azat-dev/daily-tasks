@@ -1,6 +1,7 @@
 package com.azatdev.dailytasks.domain.usecases;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.Task;
@@ -12,5 +13,8 @@ public interface ListTasksInBacklogUseCase {
         INTERNAL_ERROR
     }
 
-    public Result<Task[], Error> execute(LocalDate date, Backlog.Duration duration);
+    public Result<List<Task>, Error> execute(
+        LocalDate date,
+        Backlog.Duration duration
+    );
 }

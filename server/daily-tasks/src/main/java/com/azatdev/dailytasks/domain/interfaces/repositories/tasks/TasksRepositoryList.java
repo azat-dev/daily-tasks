@@ -1,5 +1,7 @@
 package com.azatdev.dailytasks.domain.interfaces.repositories.tasks;
 
+import java.util.List;
+
 import com.azatdev.dailytasks.domain.models.Task;
 import com.azatdev.dailytasks.utils.Result;
 
@@ -9,5 +11,5 @@ public interface TasksRepositoryList {
         INTERNAL_ERROR
     }
 
-    public Result<Task[], Error> list(Long backlogId);
+    public Result<List<Task>, Error> list(Long backlogId);
 }

@@ -8,5 +8,8 @@ import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData
 
 public interface JPABacklogRepository extends JpaRepository<BacklogData, Long> {
 
-    BacklogData findByStartDateAndDuration(LocalDate startDate, BacklogData.Duration duration);
+    BacklogData findByStartDateAndDuration(
+        LocalDate startDate,
+        BacklogData.Duration duration
+    );
 }

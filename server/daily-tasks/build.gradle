@@ -1,5 +1,6 @@
 plugins {
 	id 'java'
+	id 'com.diffplug.spotless' version '6.22.0'
 	id 'org.springframework.boot' version '3.1.5'
 	id 'io.spring.dependency-management' version '1.1.3'
 }
@@ -31,4 +32,19 @@ tasks.named('bootBuildImage') {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+spotless {
+  java {
+    target 'src/*/java/**/*.java'
+    
+	removeUnusedImports()
+	importOrderFile('spotless.importorder')
+
+    // Cleanthat will refactor your code, but it may break your style: apply it before your formatter
+    // cleanthat()          // has its own section below
+
+    eclipse().configFile('spotless.eclipseformat.xml')
+    formatAnnotations()
+  }
 }
