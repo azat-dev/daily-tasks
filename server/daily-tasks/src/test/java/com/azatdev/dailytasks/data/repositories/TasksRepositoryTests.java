@@ -2,8 +2,6 @@ package com.azatdev.dailytasks.data.repositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 
 import java.util.List;
 
