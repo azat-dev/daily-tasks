@@ -21,7 +21,8 @@ interface CreateTaskInBacklogUseCase {
 
     Result<Task, Error> execute(
         LocalDate date,
-        Backlog.Duration backlogDuration
+        Backlog.Duration backlogDuration,
+        NewTaskData newTaskData
     );
 }
 
@@ -80,7 +81,8 @@ class CreateTaskInBacklogUseCaseImpl implements CreateTaskInBacklogUseCase {
     @Override
     public Result<Task, Error> execute(
         LocalDate date,
-        Backlog.Duration backlogDuration
+        Backlog.Duration backlogDuration,
+        NewTaskData newTaskData
     ) {
 
         final var backlogIdResult = createBacklogIfDoesntExistUseCase.execute(
@@ -94,7 +96,16 @@ class CreateTaskInBacklogUseCaseImpl implements CreateTaskInBacklogUseCase {
 
         final var backlogId = backlogIdResult.getValue();
 
-        return null;
+        final var creationResult = tasksRepository.createTask(
+            backlogId,
+            newTaskData
+        );
+
+        if (!creationResult.isSuccess()) {
+            return Result.failure(Error.INTERNAL_ERROR);
+        }
+
+        return Result.success(creationResult.getValue());
     }
 }
 
@@ -158,7 +169,8 @@ class CreateTaskInBacklogUseCaseImplTests {
         // When
         final var result = sut.useCase.execute(
             backlogStartDate,
-            backlogDuration
+            backlogDuration,
+            newTaskData
         );
 
         // Then
