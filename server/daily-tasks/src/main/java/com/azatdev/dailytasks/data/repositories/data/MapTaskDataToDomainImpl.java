@@ -1,13 +1,10 @@
 package com.azatdev.dailytasks.data.repositories.data;
 
-import org.springframework.stereotype.Component;
-
 import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
 import com.azatdev.dailytasks.domain.models.Task;
 
 import jakarta.annotation.Nonnull;
 
-@Component
 public class MapTaskDataToDomainImpl implements MapTaskDataToDomain {
 
     // Constructors

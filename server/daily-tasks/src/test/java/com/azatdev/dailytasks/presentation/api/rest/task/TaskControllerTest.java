@@ -1,7 +1,9 @@
 package com.azatdev.dailytasks.presentation.api.rest.task;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
+import static org.mockito.Mockito.times;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,8 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 import com.jayway.jsonpath.JsonPath;
 
@@ -21,19 +21,10 @@ import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.Task;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
+import com.azatdev.dailytasks.presentation.api.rest.entities.utils.MapTaskToResponse;
 import com.azatdev.dailytasks.utils.Result;
 
-record TaskResponse(Long id) {
-}
-
-@FunctionalInterface
-interface MapTaskToResponse {
-
-    TaskResponse map(Task task);
-}
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class TaskControllerTest {
 
     @Autowired
@@ -71,7 +62,7 @@ class TaskControllerTest {
 
         // When
         var response = restTemplate.getForEntity(
-            "/tasks/2023-11-11/week",
+            "/tasks/backlog/WEEK/for/2023-11-11",
             String.class
         );
 
