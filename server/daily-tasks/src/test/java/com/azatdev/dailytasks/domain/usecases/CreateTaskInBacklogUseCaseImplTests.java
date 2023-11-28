@@ -8,20 +8,12 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryCreate;
+import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transaction;
+import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.TransactionFactory;
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.models.Task;
 import com.azatdev.dailytasks.utils.Result;
-
-@FunctionalInterface
-interface TransactionFactory {
-    Transaction make();
-}
-
-interface Transaction {
-    void begin();
-    void commit();
-}
 
 class CreateTaskInBacklogUseCaseImplTests {
 
@@ -40,6 +32,8 @@ class CreateTaskInBacklogUseCaseImplTests {
 
         final var transaction = mock(Transaction.class);
 
+        given(transactionFactory.make()).willReturn(transaction);
+
         final var createBacklogIfDoesntExistUseCase = mock(CreateBacklogForDateIfDoesntExistUseCase.class);
 
         final var tasksRepository = mock(TasksRepositoryCreate.class);
@@ -47,7 +41,8 @@ class CreateTaskInBacklogUseCaseImplTests {
         return new SUT(
             new CreateTaskInBacklogUseCaseImpl(
                 createBacklogIfDoesntExistUseCase,
-                tasksRepository
+                tasksRepository,
+                transactionFactory
             ),
             createBacklogIfDoesntExistUseCase,
             tasksRepository,
@@ -100,12 +95,12 @@ class CreateTaskInBacklogUseCaseImplTests {
 
         // Then
         then(sut.transactionFactory).should(times(1))
-            .createTransaction();
+            .make();
 
         then(sut.transaction).should(times(1))
             .begin();
 
-            then(sut.createBacklogIfDoesntExist).should(times(1))
+        then(sut.createBacklogIfDoesntExist).should(times(1))
             .execute(
                 backlogStartDate,
                 backlogDuration,

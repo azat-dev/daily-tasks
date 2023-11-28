@@ -1,5 +1,6 @@
 package com.azatdev.dailytasks.domain.interfaces.repositories.tasks;
 
+import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transaction;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.models.Task;
 import com.azatdev.dailytasks.utils.Result;
@@ -13,6 +14,7 @@ public interface TasksRepositoryCreate {
 
     public Result<Task, Error> createTask(
         Long backlogId,
-        NewTaskData newTaskData
+        NewTaskData newTaskData,
+        Transaction transaction
     );
 }

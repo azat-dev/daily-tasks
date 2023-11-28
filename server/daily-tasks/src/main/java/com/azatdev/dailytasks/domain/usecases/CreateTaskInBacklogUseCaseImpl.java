@@ -3,6 +3,7 @@ package com.azatdev.dailytasks.domain.usecases;
 import java.time.LocalDate;
 
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryCreate;
+import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.TransactionFactory;
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.models.Task;
@@ -12,13 +13,16 @@ public class CreateTaskInBacklogUseCaseImpl implements CreateTaskInBacklogUseCas
 
     private final CreateBacklogForDateIfDoesntExistUseCase createBacklogIfDoesntExistUseCase;
     private final TasksRepositoryCreate tasksRepository;
+    private final TransactionFactory transactionFactory;
 
     public CreateTaskInBacklogUseCaseImpl(
         CreateBacklogForDateIfDoesntExistUseCase createBacklogIfDoesntExistUseCase,
-        TasksRepositoryCreate tasksRepository
+        TasksRepositoryCreate tasksRepository,
+        TransactionFactory transactionFactory
     ) {
         this.createBacklogIfDoesntExistUseCase = createBacklogIfDoesntExistUseCase;
         this.tasksRepository = tasksRepository;
+        this.transactionFactory = transactionFactory;
     }
 
     @Override
@@ -28,26 +32,39 @@ public class CreateTaskInBacklogUseCaseImpl implements CreateTaskInBacklogUseCas
         NewTaskData newTaskData
     ) {
 
-        final var backlogIdResult = createBacklogIfDoesntExistUseCase.execute(
-            date,
-            backlogDuration
-        );
+        final var transaction = transactionFactory.make();
 
-        if (!backlogIdResult.isSuccess()) {
+        try {
+            transaction.begin();
+
+            final var backlogIdResult = createBacklogIfDoesntExistUseCase.execute(
+                date,
+                backlogDuration,
+                transaction
+            );
+
+            if (!backlogIdResult.isSuccess()) {
+                return Result.failure(Error.INTERNAL_ERROR);
+            }
+
+            final var backlogId = backlogIdResult.getValue();
+
+            final var creationResult = tasksRepository.createTask(
+                backlogId,
+                newTaskData,
+                transaction
+            );
+
+            if (!creationResult.isSuccess()) {
+                return Result.failure(Error.INTERNAL_ERROR);
+            }
+
+            transaction.commit();
+            return Result.success(creationResult.getValue());
+
+        } catch (Exception e) {
+
             return Result.failure(Error.INTERNAL_ERROR);
         }
-
-        final var backlogId = backlogIdResult.getValue();
-
-        final var creationResult = tasksRepository.createTask(
-            backlogId,
-            newTaskData
-        );
-
-        if (!creationResult.isSuccess()) {
-            return Result.failure(Error.INTERNAL_ERROR);
-        }
-
-        return Result.success(creationResult.getValue());
     }
 }
