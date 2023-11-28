@@ -117,7 +117,59 @@ class CreateTaskInBacklogUseCaseImplTests {
         then(sut.transaction).should(times(1))
             .commit();
 
+        then(sut.transaction).should(never())
+            .rollback();
+
         assertThat(result).isNotNull();
         assertThat(result.getValue()).isEqualTo(expectedTask);
+    }
+
+    @Test
+    void executeShouldRollbackTransactionOnFailTest() {
+
+        // Given
+        final var backlogDuration = Backlog.Duration.DAY;
+        final var backlogStartDate = LocalDate.now();
+
+        final var backlogId = 1L;
+
+        final var newTaskData = new NewTaskData(
+            "title",
+            Task.Priority.HIGH,
+            "description"
+        );
+
+        final var sut = createSUT();
+
+        given(
+            sut.tasksRepository.createTask(
+                backlogId,
+                newTaskData,
+                sut.transaction
+            )
+        ).willReturn(Result.failure(TasksRepositoryCreate.Error.INTERNAL_ERROR));
+
+        // When
+        final var result = sut.useCase.execute(
+            backlogStartDate,
+            backlogDuration,
+            newTaskData
+        );
+
+        // Then
+
+        then(sut.transactionFactory).should(times(1))
+            .make();
+
+        then(sut.transaction).should(times(1))
+            .begin();
+
+        then(sut.transaction).should(never())
+            .commit();
+
+        then(sut.transaction).should(times(1))
+            .rollback();
+
+        assertThat(result.getError()).isEqualTo(CreateTaskInBacklogUseCase.Error.INTERNAL_ERROR);
     }
 }
