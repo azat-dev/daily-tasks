@@ -13,16 +13,33 @@ import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.models.Task;
 import com.azatdev.dailytasks.utils.Result;
 
+@FunctionalInterface
+interface TransactionFactory {
+    Transaction make();
+}
+
+interface Transaction {
+    void begin();
+    void commit();
+}
+
 class CreateTaskInBacklogUseCaseImplTests {
 
     private record SUT(
         CreateTaskInBacklogUseCase useCase,
         CreateBacklogForDateIfDoesntExistUseCase createBacklogIfDoesntExist,
-        TasksRepositoryCreate tasksRepository
+        TasksRepositoryCreate tasksRepository,
+        TransactionFactory transactionFactory,
+        Transaction transaction
     ) {
     }
 
     private SUT createSUT() {
+
+        final var transactionFactory = mock(TransactionFactory.class);
+
+        final var transaction = mock(Transaction.class);
+
         final var createBacklogIfDoesntExistUseCase = mock(CreateBacklogForDateIfDoesntExistUseCase.class);
 
         final var tasksRepository = mock(TasksRepositoryCreate.class);
@@ -33,7 +50,9 @@ class CreateTaskInBacklogUseCaseImplTests {
                 tasksRepository
             ),
             createBacklogIfDoesntExistUseCase,
-            tasksRepository
+            tasksRepository,
+            transactionFactory,
+            transaction
         );
     }
 
@@ -59,14 +78,16 @@ class CreateTaskInBacklogUseCaseImplTests {
         given(
             sut.createBacklogIfDoesntExist.execute(
                 backlogStartDate,
-                backlogDuration
+                backlogDuration,
+                sut.transaction
             )
         ).willReturn(Result.success(backlogId));
 
         given(
             sut.tasksRepository.createTask(
                 backlogId,
-                newTaskData
+                newTaskData,
+                sut.transaction
             )
         ).willReturn(Result.success(expectedTask));
 
@@ -78,17 +99,28 @@ class CreateTaskInBacklogUseCaseImplTests {
         );
 
         // Then
-        then(sut.createBacklogIfDoesntExist).should(times(1))
+        then(sut.transactionFactory).should(times(1))
+            .createTransaction();
+
+        then(sut.transaction).should(times(1))
+            .begin();
+
+            then(sut.createBacklogIfDoesntExist).should(times(1))
             .execute(
                 backlogStartDate,
-                backlogDuration
+                backlogDuration,
+                sut.transaction
             );
 
         then(sut.tasksRepository).should(times(1))
             .createTask(
                 backlogId,
-                newTaskData
+                newTaskData,
+                sut.transaction
             );
+
+        then(sut.transaction).should(times(1))
+            .commit();
 
         assertThat(result).isNotNull();
         assertThat(result.getValue()).isEqualTo(expectedTask);
