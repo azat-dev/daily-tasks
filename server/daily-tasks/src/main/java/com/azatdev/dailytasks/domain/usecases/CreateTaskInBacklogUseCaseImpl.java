@@ -44,6 +44,7 @@ public class CreateTaskInBacklogUseCaseImpl implements CreateTaskInBacklogUseCas
             );
 
             if (!backlogIdResult.isSuccess()) {
+                transaction.rollback();
                 return Result.failure(Error.INTERNAL_ERROR);
             }
 
@@ -56,6 +57,7 @@ public class CreateTaskInBacklogUseCaseImpl implements CreateTaskInBacklogUseCas
             );
 
             if (!creationResult.isSuccess()) {
+                transaction.rollback();
                 return Result.failure(Error.INTERNAL_ERROR);
             }
 
@@ -64,6 +66,7 @@ public class CreateTaskInBacklogUseCaseImpl implements CreateTaskInBacklogUseCas
 
         } catch (Exception e) {
 
+            transaction.rollback();
             return Result.failure(Error.INTERNAL_ERROR);
         }
     }

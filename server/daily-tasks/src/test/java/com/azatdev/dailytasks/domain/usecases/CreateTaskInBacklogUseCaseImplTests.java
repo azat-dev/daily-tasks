@@ -157,7 +157,6 @@ class CreateTaskInBacklogUseCaseImplTests {
         );
 
         // Then
-
         then(sut.transactionFactory).should(times(1))
             .make();
 
