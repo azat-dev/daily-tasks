@@ -3,7 +3,6 @@ package com.azatdev.dailytasks.presentation.api.rest.task;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.times;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,10 +17,8 @@ import org.springframework.http.HttpStatus;
 import com.jayway.jsonpath.JsonPath;
 
 import com.azatdev.dailytasks.domain.models.Backlog;
-import com.azatdev.dailytasks.domain.models.Task;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
-import com.azatdev.dailytasks.presentation.api.rest.entities.utils.MapTaskToResponse;
 import com.azatdev.dailytasks.utils.Result;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -32,9 +29,6 @@ class TaskControllerTest {
 
     @MockBean
     private ListTasksInBacklogUseCase listTasksInBacklogUseCase;
-
-    @MockBean
-    private MapTaskToResponse mapTaskToResponse;
 
     @Test
     void findAllTasksInBacklogShouldReturnTasksTest() {
@@ -55,8 +49,8 @@ class TaskControllerTest {
 
         given(
             listTasksInBacklogUseCase.execute(
-                startDate,
-                backlogDuration
+                any(LocalDate.class),
+                any(Backlog.Duration.class)
             )
         ).willReturn(Result.success(tasks));
 
@@ -75,10 +69,8 @@ class TaskControllerTest {
                 backlogDuration
             );
 
-        then(mapTaskToResponse).should(times(tasks.size()))
-            .map(any(Task.class));
-
-        final var context = JsonPath.parse(response.getBody());
+        final var responseBody = response.getBody();
+        final var context = JsonPath.parse(responseBody);
 
         context.read(
             "$.length()",
@@ -86,7 +78,11 @@ class TaskControllerTest {
         )
             .equals(tasks.size());
 
-        // context.read("$.id", Long.class)
-        // .equals(tasks.get(0).id());
+        final var expectedTaskIds = tasks.stream()
+            .map(task -> task.id())
+            .toList();
+
+        context.read("$.[*].id")
+            .equals(expectedTaskIds);
     }
 }
