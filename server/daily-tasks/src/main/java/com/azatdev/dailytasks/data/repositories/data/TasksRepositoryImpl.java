@@ -1,11 +1,11 @@
-package com.azatdev.dailytasks.domain.interfaces.repositories.tasks;
+package com.azatdev.dailytasks.data.repositories.data;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.azatdev.dailytasks.data.repositories.data.MapTaskDataToDomain;
 import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPATasksRepository;
+import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryList;
 import com.azatdev.dailytasks.domain.models.Task;
 import com.azatdev.dailytasks.utils.Result;
 

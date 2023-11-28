@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryGet;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryList;
 import com.azatdev.dailytasks.domain.models.Backlog;

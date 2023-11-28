@@ -10,9 +10,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.azatdev.dailytasks.data.repositories.data.MapTaskDataToDomainImpl;
+import com.azatdev.dailytasks.data.repositories.data.TasksRepositoryImpl;
 import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPATasksRepository;
-import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryImpl;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryList;
 
 @ExtendWith(MockitoExtension.class)

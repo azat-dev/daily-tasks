@@ -7,107 +7,11 @@ import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
 
+import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryCreate;
 import com.azatdev.dailytasks.domain.models.Backlog;
+import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.models.Task;
 import com.azatdev.dailytasks.utils.Result;
-
-import jakarta.annotation.Nonnull;
-
-interface CreateTaskInBacklogUseCase {
-
-    enum Error {
-        INTERNAL_ERROR
-    }
-
-    Result<Task, Error> execute(
-        LocalDate date,
-        Backlog.Duration backlogDuration,
-        NewTaskData newTaskData
-    );
-}
-
-record NewTaskData(
-    @Nonnull String title,
-    Task.Priority priority,
-    @Nonnull String description
-) {
-}
-
-interface TasksRepositoryCreate {
-
-    enum Error {
-        INTERNAL_ERROR,
-        BACKLOG_NOT_FOUND
-    }
-
-    Result<Task, Error> createTask(
-        Long backlogId,
-        NewTaskData newTaskData
-    );
-}
-
-interface CreateBacklogForDateIfDoesntExistUseCase {
-
-    enum Error {
-        INTERNAL_ERROR
-    }
-
-    /**
-     * Adds backlog for given date and duration if it does not exist.
-     * 
-     * @param date
-     * @param backlogDuration
-     * @return Backlog Id
-     */
-    Result<Long, Error> execute(
-        LocalDate date,
-        Backlog.Duration backlogDuration
-    );
-}
-
-class CreateTaskInBacklogUseCaseImpl implements CreateTaskInBacklogUseCase {
-
-    private final CreateBacklogForDateIfDoesntExistUseCase createBacklogIfDoesntExistUseCase;
-    private final TasksRepositoryCreate tasksRepository;
-
-    public CreateTaskInBacklogUseCaseImpl(
-        CreateBacklogForDateIfDoesntExistUseCase createBacklogIfDoesntExistUseCase,
-        TasksRepositoryCreate tasksRepository
-    ) {
-        this.createBacklogIfDoesntExistUseCase = createBacklogIfDoesntExistUseCase;
-        this.tasksRepository = tasksRepository;
-    }
-
-    @Override
-    public Result<Task, Error> execute(
-        LocalDate date,
-        Backlog.Duration backlogDuration,
-        NewTaskData newTaskData
-    ) {
-
-        final var backlogIdResult = createBacklogIfDoesntExistUseCase.execute(
-            date,
-            backlogDuration
-        );
-
-        if (!backlogIdResult.isSuccess()) {
-            return Result.failure(Error.INTERNAL_ERROR);
-        }
-
-        final var backlogId = backlogIdResult.getValue();
-
-        final var creationResult = tasksRepository.createTask(
-            backlogId,
-            newTaskData
-        );
-
-        if (!creationResult.isSuccess()) {
-            return Result.failure(Error.INTERNAL_ERROR);
-        }
-
-        return Result.success(creationResult.getValue());
-    }
-}
 
 class CreateTaskInBacklogUseCaseImplTests {
 
