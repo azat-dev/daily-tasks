@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
@@ -20,27 +19,39 @@ import jakarta.annotation.Nonnull;
 
 class TransactionImpl implements Transaction {
 
-    private final TransactionManager transactionManager;
+    private final PlatformTransactionManager transactionManager;
 
-    public TransactionImpl(@Nonnull TransactionManager transactionManager) {
+    private TransactionStatus currentTransactionStatus;
+
+    public TransactionImpl(@Nonnull PlatformTransactionManager transactionManager) {
         this.transactionManager = transactionManager;
     }
 
     @Override
     public void begin() {
-
+        final var definition = new DefaultTransactionDefinition();
+        this.currentTransactionStatus = this.transactionManager.getTransaction(definition);
     }
 
     @Override
     public void commit() {
-        // TODO Auto-generated method stub
+
+        if (this.currentTransactionStatus == null) {
+            throw new IllegalStateException("Transaction not started");
+        }
+
+        this.transactionManager.commit(this.currentTransactionStatus);
 
     }
 
     @Override
     public void rollback() {
-        // TODO Auto-generated method stub
 
+        if (this.currentTransactionStatus == null) {
+            throw new IllegalStateException("Transaction not started");
+        }
+
+        this.transactionManager.rollback(this.currentTransactionStatus);
     }
 }
 
@@ -94,6 +105,12 @@ class TransactionImplTests {
     @Test
     void beginShouldStartTransactionTest() {
 
+        // Given
+        given(transactionManager.getTransaction(any())).willReturn(mock(TransactionStatus.class));
+
+        // When
+        transaction.begin();
+
         // Then
         then(transactionManager).should(times(1))
             .getTransaction(isA(DefaultTransactionDefinition.class));
@@ -105,7 +122,6 @@ class TransactionImplTests {
         transaction.begin();
 
         final var transactionStatus = mock(TransactionStatus.class);
-
         given(transactionManager.getTransaction(any())).willReturn(transactionStatus);
 
         // When
@@ -119,6 +135,8 @@ class TransactionImplTests {
     @Test
     void rollbackAfterBeginShouldRollbackTransactionTest() {
         // Given
+        given(transactionManager.getTransaction(any())).willReturn(mock(TransactionStatus.class));
+
         transaction.begin();
 
         // When
