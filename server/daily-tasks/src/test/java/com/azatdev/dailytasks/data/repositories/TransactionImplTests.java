@@ -119,10 +119,11 @@ class TransactionImplTests {
     @Test
     void commitAfterBeginShouldCommitTransactionTest() {
         // Given
-        transaction.begin();
 
         final var transactionStatus = mock(TransactionStatus.class);
         given(transactionManager.getTransaction(any())).willReturn(transactionStatus);
+
+        transaction.begin();
 
         // When
         transaction.commit();
