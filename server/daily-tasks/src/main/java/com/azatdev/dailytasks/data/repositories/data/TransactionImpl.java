@@ -8,7 +8,7 @@ import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transac
 
 import jakarta.annotation.Nonnull;
 
-class TransactionImpl implements Transaction {
+public class TransactionImpl implements Transaction {
 
     private final PlatformTransactionManager transactionManager;
 
