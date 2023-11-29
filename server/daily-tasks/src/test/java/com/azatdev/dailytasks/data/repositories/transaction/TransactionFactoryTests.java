@@ -18,8 +18,7 @@ class TransactionImplFactory implements TransactionFactory {
 
     @Override
     public Transaction make() {
-        return null;
-        // return new TransactionImpl(transactionManager);
+        return new TransactionImpl(transactionManager);
     }
 }
 
