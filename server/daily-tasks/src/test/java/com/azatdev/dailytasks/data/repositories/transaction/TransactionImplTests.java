@@ -1,4 +1,4 @@
-package com.azatdev.dailytasks.data.repositories;
+package com.azatdev.dailytasks.data.repositories.transaction;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.*;
