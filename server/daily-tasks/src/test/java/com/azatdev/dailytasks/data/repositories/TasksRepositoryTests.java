@@ -120,7 +120,8 @@ class TasksRepositoryTests {
 
         given(sut.jpaTasksRepository.saveAndFlush(any(TaskData.class))).willReturn(savedTaskData);
 
-        given(sut.jpaTasksRepository.findOrderInBacklogByBacklogIdDesc(backlogId)).willReturn(lastOrderInBacklog);
+        given(sut.jpaTasksRepository.findOrderInBacklogByBacklogIdOrderByOrderInBacklogDesc(backlogId))
+            .willReturn(lastOrderInBacklog);
 
         // When
         final var creationResult = sut.tasksRepository.createTask(
@@ -140,6 +141,9 @@ class TasksRepositoryTests {
         );
 
         assertThat(expectedTaskData).isEqualTo(expectedTaskData);
+
+        then(sut.jpaTasksRepository).should(times(1))
+            .findOrderInBacklogByBacklogIdOrderByOrderInBacklogDesc(backlogId);
 
         then(sut.jpaTasksRepository).should(times(1))
             .saveAndFlush(eq(expectedTaskData));

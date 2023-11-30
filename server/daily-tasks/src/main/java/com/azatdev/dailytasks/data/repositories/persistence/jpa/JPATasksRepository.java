@@ -8,5 +8,5 @@ public interface JPATasksRepository extends JpaRepository<TaskData, Long> {
 
     public Iterable<TaskData> findAllByBacklogIdOrderByOrderInBacklogAsc(Long backlogId);
 
-    public Integer findOrderInBacklogByBacklogIdDesc(Long backlogId);
+    public Integer findOrderInBacklogByBacklogIdOrderByOrderInBacklogDesc(Long backlogId);
 }

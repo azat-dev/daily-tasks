@@ -64,16 +64,21 @@ public class TasksRepositoryImpl implements TasksRepositoryList, TasksRepository
         Transaction transaction
     ) {
 
-        final var taskData = new TaskData(
-            backlogId,
-            -1,
-            newTaskData.title(),
-            newTaskData.description(),
-            TaskData.Status.NOT_STARTED,
-            map(newTaskData.priority())
-        );
-
         try {
+
+            final var lastOrderInBacklog = jpaTasksRepository
+                .findOrderInBacklogByBacklogIdOrderByOrderInBacklogDesc(backlogId);
+
+            final int orderInBacklog = lastOrderInBacklog == null ? 0 : (lastOrderInBacklog + 1);
+
+            final var taskData = new TaskData(
+                backlogId,
+                orderInBacklog,
+                newTaskData.title(),
+                newTaskData.description(),
+                TaskData.Status.NOT_STARTED,
+                map(newTaskData.priority())
+            );
 
             final var savedTaskData = jpaTasksRepository.saveAndFlush(taskData);
 
@@ -87,6 +92,5 @@ public class TasksRepositoryImpl implements TasksRepositoryList, TasksRepository
 
             return Result.failure(TasksRepositoryCreate.Error.INTERNAL_ERROR);
         }
-
     }
 }
