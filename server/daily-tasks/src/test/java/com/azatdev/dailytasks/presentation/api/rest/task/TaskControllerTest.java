@@ -22,13 +22,8 @@ import com.azatdev.dailytasks.domain.models.Task;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
+import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
 import com.azatdev.dailytasks.utils.Result;
-
-record CreateTaskInBacklogRequest(
-    String title,
-    String description
-) {
-}
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TaskControllerTest {
