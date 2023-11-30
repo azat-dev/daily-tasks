@@ -99,7 +99,8 @@ class TasksRepositoryTests {
 
         // Given
         final long backlogId = anyBacklogId();
-        final int orderInBacklog = 1;
+        final int lastOrderInBacklog = 111;
+        final int expectedOrderInBacklog = lastOrderInBacklog + 1;
         final var newTaskData = new NewTaskData(
             "title",
             Task.Priority.LOW,
@@ -108,7 +109,7 @@ class TasksRepositoryTests {
 
         final var savedTaskData = new TaskData(
             backlogId,
-            orderInBacklog,
+            expectedOrderInBacklog,
             newTaskData.title(),
             newTaskData.description(),
             TaskData.Status.NOT_STARTED,
@@ -119,10 +120,11 @@ class TasksRepositoryTests {
 
         given(sut.jpaTasksRepository.saveAndFlush(any(TaskData.class))).willReturn(savedTaskData);
 
+        given(sut.jpaTasksRepository.findOrderInBacklogByBacklogIdDesc(backlogId)).willReturn(lastOrderInBacklog);
+
         // When
         final var creationResult = sut.tasksRepository.createTask(
             backlogId,
-            orderInBacklog,
             newTaskData,
             null
         );
@@ -130,7 +132,7 @@ class TasksRepositoryTests {
         // Then
         final var expectedTaskData = new TaskData(
             backlogId,
-            orderInBacklog,
+            expectedOrderInBacklog,
             newTaskData.title(),
             newTaskData.description(),
             TaskData.Status.NOT_STARTED,

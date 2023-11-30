@@ -60,14 +60,13 @@ public class TasksRepositoryImpl implements TasksRepositoryList, TasksRepository
     @Override
     public Result<Task, TasksRepositoryCreate.Error> createTask(
         long backlogId,
-        int orderInBacklog,
         NewTaskData newTaskData,
         Transaction transaction
     ) {
 
         final var taskData = new TaskData(
             backlogId,
-            orderInBacklog,
+            -1,
             newTaskData.title(),
             newTaskData.description(),
             TaskData.Status.NOT_STARTED,

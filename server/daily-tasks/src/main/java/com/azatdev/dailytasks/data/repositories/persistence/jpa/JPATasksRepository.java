@@ -7,4 +7,6 @@ import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
 public interface JPATasksRepository extends JpaRepository<TaskData, Long> {
 
     public Iterable<TaskData> findAllByBacklogIdOrderByOrderInBacklogAsc(Long backlogId);
+
+    public Integer findOrderInBacklogByBacklogIdDesc(Long backlogId);
 }

@@ -59,8 +59,6 @@ class CreateTaskInBacklogUseCaseImplTests {
         final var backlogStartDate = LocalDate.now();
 
         final long backlogId = 1L;
-        // TODO: Get next order
-        final int backlogOrder = 0;
 
         final var newTaskData = new NewTaskData(
             "title",
@@ -83,7 +81,6 @@ class CreateTaskInBacklogUseCaseImplTests {
         given(
             sut.tasksRepository.createTask(
                 backlogId,
-                backlogOrder,
                 newTaskData,
                 sut.transaction
             )
@@ -113,7 +110,6 @@ class CreateTaskInBacklogUseCaseImplTests {
         then(sut.tasksRepository).should(times(1))
             .createTask(
                 backlogId,
-                backlogOrder,
                 newTaskData,
                 sut.transaction
             );
@@ -134,7 +130,6 @@ class CreateTaskInBacklogUseCaseImplTests {
         // Given
         final var backlogDuration = Backlog.Duration.DAY;
         final var backlogStartDate = LocalDate.now();
-        final var orderInBacklog = 0;
 
         final var backlogId = 1L;
 
@@ -149,7 +144,6 @@ class CreateTaskInBacklogUseCaseImplTests {
         given(
             sut.tasksRepository.createTask(
                 backlogId,
-                orderInBacklog,
                 newTaskData,
                 sut.transaction
             )

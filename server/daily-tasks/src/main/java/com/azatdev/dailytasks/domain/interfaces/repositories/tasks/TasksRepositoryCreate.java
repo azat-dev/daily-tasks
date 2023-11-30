@@ -14,7 +14,6 @@ public interface TasksRepositoryCreate {
 
     public Result<Task, Error> createTask(
         long backlogId,
-        int orderInBacklog,
         NewTaskData newTaskData,
         Transaction transaction
     );
