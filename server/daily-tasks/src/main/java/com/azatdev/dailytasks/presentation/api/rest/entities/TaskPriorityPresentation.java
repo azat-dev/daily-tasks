@@ -1,6 +1,6 @@
 package com.azatdev.dailytasks.presentation.api.rest.entities;
 
-public enum TaskPriorityResponse {
+public enum TaskPriorityPresentation {
     LOW,
     MEDIUM,
     HIGH

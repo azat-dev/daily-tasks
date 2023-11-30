@@ -3,30 +3,30 @@ package com.azatdev.dailytasks.presentation.api.rest.entities.utils;
 import org.springframework.stereotype.Component;
 
 import com.azatdev.dailytasks.domain.models.Task;
-import com.azatdev.dailytasks.presentation.api.rest.entities.TaskPriorityResponse;
+import com.azatdev.dailytasks.presentation.api.rest.entities.TaskPriorityPresentation;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskResponse;
-import com.azatdev.dailytasks.presentation.api.rest.entities.TaskStatusResponse;
+import com.azatdev.dailytasks.presentation.api.rest.entities.TaskStatusPresentation;
 
 @Component
 public class MapTaskToResponseImpl implements MapTaskToResponse {
 
-    private TaskStatusResponse mapStatus(Task.Status status) {
+    private TaskStatusPresentation mapStatus(Task.Status status) {
         return switch (status) {
-        case COMPLETED -> TaskStatusResponse.COMPLETED;
-        case IN_PROGRESS -> TaskStatusResponse.IN_PROGRESS;
-        case NOT_STARTED -> TaskStatusResponse.NOT_STARTED;
+        case COMPLETED -> TaskStatusPresentation.COMPLETED;
+        case IN_PROGRESS -> TaskStatusPresentation.IN_PROGRESS;
+        case NOT_STARTED -> TaskStatusPresentation.NOT_STARTED;
         };
     }
 
-    private TaskPriorityResponse mapPriority(Task.Priority priority) {
+    private TaskPriorityPresentation mapPriority(Task.Priority priority) {
         if (priority == null) {
             return null;
         }
 
         return switch (priority) {
-        case HIGH -> TaskPriorityResponse.HIGH;
-        case LOW -> TaskPriorityResponse.LOW;
-        case MEDIUM -> TaskPriorityResponse.MEDIUM;
+        case HIGH -> TaskPriorityPresentation.HIGH;
+        case LOW -> TaskPriorityPresentation.LOW;
+        case MEDIUM -> TaskPriorityPresentation.MEDIUM;
         };
     }
 
