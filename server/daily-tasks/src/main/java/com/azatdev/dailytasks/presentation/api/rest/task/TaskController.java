@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.Backlog.Duration;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
-import com.azatdev.dailytasks.domain.models.Task;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
@@ -65,7 +64,8 @@ public class TaskController implements TaskResource {
 
         final var newTaskData = new NewTaskData(
             request.title(),
-            Task.Priority.MEDIUM,
+            request.priority()
+                .toDomain(),
             request.description()
         );
 
