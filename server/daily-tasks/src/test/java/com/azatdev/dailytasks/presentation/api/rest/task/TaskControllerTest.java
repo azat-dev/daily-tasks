@@ -23,6 +23,7 @@ import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
+import com.azatdev.dailytasks.presentation.api.rest.entities.TaskPriorityPresentation;
 import com.azatdev.dailytasks.utils.Result;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -111,6 +112,7 @@ class TaskControllerTest {
 
         final var newTaskData = new CreateTaskInBacklogRequest(
             "New task title",
+            TaskPriorityPresentation.HIGH,
             "Description"
         );
 
@@ -136,7 +138,7 @@ class TaskControllerTest {
 
         var expectedNewTaskData = new NewTaskData(
             newTaskData.title(),
-            Task.Priority.MEDIUM,
+            Task.Priority.HIGH,
             newTaskData.description()
         );
 
