@@ -78,4 +78,39 @@ class JPATasksRepositoryTests {
         // Then
         assertThat(foundTasks).containsExactly(tasksBacklog1);
     }
+
+    @Test
+    void findFirstOrderInBacklogByBacklogIdOrderByOrderInBacklogDesc_ShouldReturnNullIfNoTasksTest() {
+
+        // Given
+        final var backlogId = 1L;
+
+        // Empty DB
+
+        // When
+        var result = jpaTasksRepository.findFirstOrderInBacklogByBacklogIdOrderByOrderInBacklogDesc(backlogId);
+
+        // Then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void findFirstOrderInBacklogByBacklogIdOrderByOrderInBacklogDesc_ShouldReturnLastOrderTest() {
+
+        // Given
+        final var backlogId = 1L;
+        final int lastOrder = 10;
+        entityManager.persistAndFlush(
+            TestEntityDataGenerator.anyTaskData(
+                backlogId,
+                lastOrder
+            )
+        );
+
+        // When
+        var result = jpaTasksRepository.findFirstOrderInBacklogByBacklogIdOrderByOrderInBacklogDesc(backlogId);
+
+        // Then
+        assertThat(result).isNotEmpty();
+    }
 }

@@ -67,9 +67,14 @@ public class TasksRepositoryImpl implements TasksRepositoryList, TasksRepository
         try {
 
             final var lastOrderInBacklog = jpaTasksRepository
-                .findOrderInBacklogByBacklogIdOrderByOrderInBacklogDesc(backlogId);
+                .findFirstOrderInBacklogByBacklogIdOrderByOrderInBacklogDesc(backlogId);
 
-            final int orderInBacklog = lastOrderInBacklog == null ? 0 : (lastOrderInBacklog + 1);
+            int orderInBacklog = 0;
+
+            if (lastOrderInBacklog.isPresent()) {
+                orderInBacklog = lastOrderInBacklog.get()
+                    .getOrderInBacklog() + 1;
+            }
 
             final var taskData = new TaskData(
                 backlogId,

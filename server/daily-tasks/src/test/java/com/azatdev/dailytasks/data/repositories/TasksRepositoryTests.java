@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -120,8 +121,11 @@ class TasksRepositoryTests {
 
         given(sut.jpaTasksRepository.saveAndFlush(any(TaskData.class))).willReturn(savedTaskData);
 
-        given(sut.jpaTasksRepository.findOrderInBacklogByBacklogIdOrderByOrderInBacklogDesc(backlogId))
-            .willReturn(lastOrderInBacklog);
+        final var orderInBacklogProjection = mock(JPATasksRepository.OrderInBacklogProjection.class);
+        given(orderInBacklogProjection.getOrderInBacklog()).willReturn(lastOrderInBacklog);
+
+        given(sut.jpaTasksRepository.findFirstOrderInBacklogByBacklogIdOrderByOrderInBacklogDesc(backlogId))
+            .willReturn(Optional.of(orderInBacklogProjection));
 
         // When
         final var creationResult = sut.tasksRepository.createTask(
@@ -143,7 +147,7 @@ class TasksRepositoryTests {
         assertThat(expectedTaskData).isEqualTo(expectedTaskData);
 
         then(sut.jpaTasksRepository).should(times(1))
-            .findOrderInBacklogByBacklogIdOrderByOrderInBacklogDesc(backlogId);
+            .findFirstOrderInBacklogByBacklogIdOrderByOrderInBacklogDesc(backlogId);
 
         then(sut.jpaTasksRepository).should(times(1))
             .saveAndFlush(eq(expectedTaskData));
