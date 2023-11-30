@@ -50,8 +50,11 @@ public class CreateTaskInBacklogUseCaseImpl implements CreateTaskInBacklogUseCas
 
             final var backlogId = backlogIdResult.getValue();
 
+            int backlogOrder = -1;
+
             final var creationResult = tasksRepository.createTask(
                 backlogId,
+                backlogOrder,
                 newTaskData,
                 transaction
             );

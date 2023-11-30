@@ -13,8 +13,8 @@ public interface TasksRepositoryCreate {
     }
 
     public Result<Task, Error> createTask(
-        Long backlogId,
-        Integer backlogOrder,
+        long backlogId,
+        int orderInBacklog,
         NewTaskData newTaskData,
         Transaction transaction
     );

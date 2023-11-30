@@ -45,13 +45,49 @@ public class TasksRepositoryImpl implements TasksRepositoryList, TasksRepository
         return Result.success(tasks);
     }
 
+    private static TaskData.Priority map(Task.Priority priority) {
+        if (priority == null) {
+            return null;
+        }
+
+        return switch (priority) {
+        case LOW -> TaskData.Priority.LOW;
+        case MEDIUM -> TaskData.Priority.MEDIUM;
+        case HIGH -> TaskData.Priority.HIGH;
+        };
+    }
+
     @Override
     public Result<Task, TasksRepositoryCreate.Error> createTask(
-        Long backlogId,
-        Integer orderInBacklog,
+        long backlogId,
+        int orderInBacklog,
         NewTaskData newTaskData,
         Transaction transaction
     ) {
-        return null;
+
+        final var taskData = new TaskData(
+            backlogId,
+            orderInBacklog,
+            newTaskData.title(),
+            newTaskData.description(),
+            TaskData.Status.NOT_STARTED,
+            map(newTaskData.priority())
+        );
+
+        try {
+
+            final var savedTaskData = jpaTasksRepository.saveAndFlush(taskData);
+
+            if (savedTaskData == null) {
+                return Result.failure(TasksRepositoryCreate.Error.INTERNAL_ERROR);
+            }
+
+            return Result.success(mapTaskDataToDomain.map(savedTaskData));
+
+        } catch (Exception e) {
+
+            return Result.failure(TasksRepositoryCreate.Error.INTERNAL_ERROR);
+        }
+
     }
 }

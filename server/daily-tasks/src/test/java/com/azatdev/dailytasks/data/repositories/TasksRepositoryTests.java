@@ -25,7 +25,7 @@ interface TasksRepository extends TasksRepositoryCreate, TasksRepositoryList {
 }
 
 @ExtendWith(MockitoExtension.class)
-public class TasksRepositoryTests {
+class TasksRepositoryTests {
 
     // Fields
 
@@ -98,15 +98,26 @@ public class TasksRepositoryTests {
     void createTaskTest() {
 
         // Given
-        final Long backlogId = anyBacklogId();
-        final var orderInBacklog = 1;
+        final long backlogId = anyBacklogId();
+        final int orderInBacklog = 1;
         final var newTaskData = new NewTaskData(
             "title",
             Task.Priority.LOW,
             "description"
         );
 
+        final var savedTaskData = new TaskData(
+            backlogId,
+            orderInBacklog,
+            newTaskData.title(),
+            newTaskData.description(),
+            TaskData.Status.NOT_STARTED,
+            TaskData.Priority.LOW
+        );
+
         final var sut = createSUT();
+
+        given(sut.jpaTasksRepository.saveAndFlush(any(TaskData.class))).willReturn(savedTaskData);
 
         // When
         final var creationResult = sut.tasksRepository.createTask(
@@ -126,19 +137,11 @@ public class TasksRepositoryTests {
             TaskData.Priority.LOW
         );
 
+        assertThat(expectedTaskData).isEqualTo(expectedTaskData);
+
         then(sut.jpaTasksRepository).should(times(1))
             .saveAndFlush(eq(expectedTaskData));
 
         assertThat(creationResult.isSuccess()).isTrue();
-
-        final var createdTask = creationResult.getValue();
-
-        assertThat(createdTask).isNotNull();
-
-        assertThat(createdTask.id()).isNotNull();
-        assertThat(createdTask.title()).isEqualTo(newTaskData.title());
-        assertThat(createdTask.priority()).isEqualTo(newTaskData.priority());
-        assertThat(createdTask.status()).isEqualTo(Task.Status.NOT_STARTED);
-        assertThat(createdTask.description()).isEqualTo(newTaskData.description());
     }
 }
