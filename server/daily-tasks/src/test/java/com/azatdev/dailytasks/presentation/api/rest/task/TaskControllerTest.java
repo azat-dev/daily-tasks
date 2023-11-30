@@ -17,9 +17,18 @@ import org.springframework.http.HttpStatus;
 import com.jayway.jsonpath.JsonPath;
 
 import com.azatdev.dailytasks.domain.models.Backlog;
+import com.azatdev.dailytasks.domain.models.NewTaskData;
+import com.azatdev.dailytasks.domain.models.Task;
+import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
 import com.azatdev.dailytasks.utils.Result;
+
+record CreateTaskInBacklogRequest(
+    String title,
+    String description
+) {
+}
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TaskControllerTest {
@@ -30,10 +39,15 @@ class TaskControllerTest {
     @MockBean
     private ListTasksInBacklogUseCase listTasksInBacklogUseCase;
 
+    @MockBean
+    private CreateTaskInBacklogUseCase createTaskInBacklogUseCase;
+
     @Test
     void findAllTasksInBacklogShouldReturnTasksTest() {
 
         // Given
+        final var url = "/tasks/backlog/WEEK/for/2023-11-11";
+
         LocalDate startDate = LocalDate.of(
             2023,
             11,
@@ -56,7 +70,7 @@ class TaskControllerTest {
 
         // When
         var response = restTemplate.getForEntity(
-            "/tasks/backlog/WEEK/for/2023-11-11",
+            url,
             String.class
         );
 
@@ -84,5 +98,64 @@ class TaskControllerTest {
 
         context.read("$.[*].id")
             .equals(expectedTaskIds);
+    }
+
+    @Test
+    void createNewTaskInBacklogShouldReturnCreatedTaskTest() {
+
+        // Given
+        final var url = "/tasks/backlog/WEEK/for/2023-11-11";
+
+        LocalDate date = LocalDate.of(
+            2023,
+            11,
+            11
+        );
+
+        var backlogDuration = Backlog.Duration.WEEK;
+
+        final var newTaskData = new CreateTaskInBacklogRequest(
+            "New task title",
+            "Description"
+        );
+
+        final var createdTask = TestDomainDataGenerator.anyTask(1L);
+
+        given(
+            createTaskInBacklogUseCase.execute(
+                eq(date),
+                eq(backlogDuration),
+                any()
+            )
+        ).willReturn(Result.success(createdTask));
+
+        // When
+        final var response = restTemplate.postForEntity(
+            url,
+            newTaskData,
+            String.class
+        );
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+        var expectedNewTaskData = new NewTaskData(
+            newTaskData.title(),
+            Task.Priority.MEDIUM,
+            newTaskData.description()
+        );
+
+        then(createTaskInBacklogUseCase).should(times(1))
+            .execute(
+                eq(date),
+                eq(backlogDuration),
+                eq(expectedNewTaskData)
+            );
+
+        final var responseBody = response.getBody();
+        final var context = JsonPath.parse(responseBody);
+
+        context.read("$.id")
+            .equals(createdTask.id());
     }
 }
