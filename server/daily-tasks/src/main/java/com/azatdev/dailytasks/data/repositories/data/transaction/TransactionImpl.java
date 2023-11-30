@@ -1,4 +1,4 @@
-package com.azatdev.dailytasks.data.repositories.data;
+package com.azatdev.dailytasks.data.repositories.data.transaction;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;

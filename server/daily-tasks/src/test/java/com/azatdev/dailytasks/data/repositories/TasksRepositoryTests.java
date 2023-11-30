@@ -1,7 +1,10 @@
 package com.azatdev.dailytasks.data.repositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 import java.util.List;
 
@@ -13,7 +16,13 @@ import com.azatdev.dailytasks.data.repositories.data.MapTaskDataToDomainImpl;
 import com.azatdev.dailytasks.data.repositories.data.TasksRepositoryImpl;
 import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPATasksRepository;
+import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryCreate;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryList;
+import com.azatdev.dailytasks.domain.models.NewTaskData;
+import com.azatdev.dailytasks.domain.models.Task;
+
+interface TasksRepository extends TasksRepositoryCreate, TasksRepositoryList {
+}
 
 @ExtendWith(MockitoExtension.class)
 public class TasksRepositoryTests {
@@ -21,10 +30,9 @@ public class TasksRepositoryTests {
     // Fields
 
     private record SUT(
-        TasksRepositoryList tasksRepository,
+        TasksRepositoryImpl tasksRepository,
         JPATasksRepository jpaTasksRepository
     ) {
-
     };
 
     // Helpers
@@ -84,5 +92,53 @@ public class TasksRepositoryTests {
 
         then(sut.jpaTasksRepository).should(times(1))
             .findAllByBacklogIdOrderByOrderInBacklogAsc(backlogId);
+    }
+
+    @Test
+    void createTaskTest() {
+
+        // Given
+        final Long backlogId = anyBacklogId();
+        final var orderInBacklog = 1;
+        final var newTaskData = new NewTaskData(
+            "title",
+            Task.Priority.LOW,
+            "description"
+        );
+
+        final var sut = createSUT();
+
+        // When
+        final var creationResult = sut.tasksRepository.createTask(
+            backlogId,
+            orderInBacklog,
+            newTaskData,
+            null
+        );
+
+        // Then
+        final var expectedTaskData = new TaskData(
+            backlogId,
+            orderInBacklog,
+            newTaskData.title(),
+            newTaskData.description(),
+            TaskData.Status.NOT_STARTED,
+            TaskData.Priority.LOW
+        );
+
+        then(sut.jpaTasksRepository).should(times(1))
+            .saveAndFlush(eq(expectedTaskData));
+
+        assertThat(creationResult.isSuccess()).isTrue();
+
+        final var createdTask = creationResult.getValue();
+
+        assertThat(createdTask).isNotNull();
+
+        assertThat(createdTask.id()).isNotNull();
+        assertThat(createdTask.title()).isEqualTo(newTaskData.title());
+        assertThat(createdTask.priority()).isEqualTo(newTaskData.priority());
+        assertThat(createdTask.status()).isEqualTo(Task.Status.NOT_STARTED);
+        assertThat(createdTask.description()).isEqualTo(newTaskData.description());
     }
 }

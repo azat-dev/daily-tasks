@@ -1,26 +1,11 @@
 package com.azatdev.dailytasks.data.repositories.transaction;
 
 import static org.mockito.BDDMockito.*;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.azatdev.dailytasks.data.repositories.data.TransactionImpl;
-import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transaction;
-import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.TransactionFactory;
-
-class TransactionImplFactory implements TransactionFactory {
-
-    private final PlatformTransactionManager transactionManager;
-
-    public TransactionImplFactory(PlatformTransactionManager transactionManager) {
-        this.transactionManager = transactionManager;
-    }
-
-    @Override
-    public Transaction make() {
-        return new TransactionImpl(transactionManager);
-    }
-}
+import com.azatdev.dailytasks.data.repositories.data.transaction.TransactionImplFactory;
 
 class TransactionFactoryTests {
 

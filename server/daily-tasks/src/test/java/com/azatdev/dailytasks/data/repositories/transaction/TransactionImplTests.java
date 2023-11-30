@@ -13,7 +13,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import com.azatdev.dailytasks.data.repositories.data.TransactionImpl;
+import com.azatdev.dailytasks.data.repositories.data.transaction.TransactionImpl;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transaction;
 
 class TransactionImplTests {
