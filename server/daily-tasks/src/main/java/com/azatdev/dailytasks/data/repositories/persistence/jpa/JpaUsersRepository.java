@@ -10,4 +10,6 @@ import com.azatdev.dailytasks.data.repositories.data.user.UserData;
 public interface JpaUsersRepository extends JpaRepository<UserData, UUID> {
 
     public Optional<UserData> findByUsername(String username);
+
+    public Optional<UserData> findById(UUID id);
 }

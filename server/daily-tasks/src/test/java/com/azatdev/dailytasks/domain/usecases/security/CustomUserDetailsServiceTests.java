@@ -14,7 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepositoryFindByUserName;
+import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepository;
 import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
 import com.azatdev.dailytasks.utils.Result;
 
@@ -22,12 +22,12 @@ class CustomUserDetailsServiceTests {
 
     private record SUT(
         UserDetailsService userDetailsService,
-        UsersRepositoryFindByUserName usersRepository
+        UsersRepository usersRepository
     ) {
     }
 
     private SUT createSUT() {
-        UsersRepositoryFindByUserName usersRepository = mock(UsersRepositoryFindByUserName.class);
+        UsersRepository usersRepository = mock(UsersRepository.class);
         UserDetailsService userDetailsService = new CustomUserDetailsService(usersRepository);
 
         return new SUT(
