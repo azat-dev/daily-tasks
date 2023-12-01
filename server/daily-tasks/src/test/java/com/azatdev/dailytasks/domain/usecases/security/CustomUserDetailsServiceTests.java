@@ -45,17 +45,17 @@ class CustomUserDetailsServiceTests {
         SUT sut = createSUT();
         given(sut.usersRepository.findByUsername(wrongUserName)).willReturn(Result.success(Optional.empty()));
 
-        // Then
-
-        then(sut.usersRepository).should(times(1))
-            .findByUsername(wrongUserName);
-
+        // When
         assertThrows(
             UsernameNotFoundException.class,
             () -> {
                 sut.userDetailsService.loadUserByUsername(wrongUserName);
             }
         );
+        
+        // Then
+        then(sut.usersRepository).should(times(1))
+            .findByUsername(wrongUserName);
     }
 
     @Test
