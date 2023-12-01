@@ -1,4 +1,4 @@
-package com.azatdev.dailytasks.presentation.security.services;
+package com.azatdev.dailytasks.presentation.security.services.jwt;
 
 import java.util.UUID;
 
