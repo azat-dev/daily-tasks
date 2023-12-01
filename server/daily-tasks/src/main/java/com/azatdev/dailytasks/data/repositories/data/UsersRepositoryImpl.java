@@ -3,6 +3,7 @@ package com.azatdev.dailytasks.data.repositories.data;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.azatdev.dailytasks.data.repositories.data.user.UserData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepository;
 import com.azatdev.dailytasks.domain.models.AppUser;
@@ -16,6 +17,14 @@ public class UsersRepositoryImpl implements UsersRepository {
         this.jpaUsersRepository = jpaUsersRepository;
     }
 
+    private AppUser mapUserDataToAppUser(UserData userData) {
+        return new AppUser(
+            userData.id(),
+            userData.username(),
+            userData.password()
+        );
+    }
+
     @Override
     public Result<Optional<AppUser>, UsersRepository.Error> findByUsername(String username) {
         final var foundUserDataResult = jpaUsersRepository.findByUsername(username);
@@ -25,19 +34,18 @@ public class UsersRepositoryImpl implements UsersRepository {
         }
 
         final var foundUserData = foundUserDataResult.get();
-
-        final var user = new AppUser(
-            foundUserData.id(),
-            foundUserData.username(),
-            foundUserData.password()
-        );
-
-        return Result.success(Optional.of(user));
+        return Result.success(Optional.of(mapUserDataToAppUser(foundUserData)));
     }
 
     @Override
-    public Result<Optional<AppUser>, Error> findById(UUID id) {
-        // TODO Auto-generated method stub
-        return null;
+    public Result<Optional<AppUser>, Error> findById(UUID userId) {
+        final var foundUserDataResult = jpaUsersRepository.findById(userId);
+
+        if (foundUserDataResult.isEmpty()) {
+            return Result.success(Optional.empty());
+        }
+
+        final var foundUserData = foundUserDataResult.get();
+        return Result.success(Optional.of(mapUserDataToAppUser(foundUserData)));
     }
 }
