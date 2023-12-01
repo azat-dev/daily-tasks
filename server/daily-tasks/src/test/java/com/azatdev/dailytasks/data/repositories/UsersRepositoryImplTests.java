@@ -29,7 +29,21 @@ class UsersRepositoryImpl implements UsersRepositoryFindByUserName {
 
     @Override
     public Result<Optional<AppUser>, UsersRepositoryFindByUserName.Error> findByUsername(String username) {
-        return null;
+        final var foundUserDataResult = jpaUsersRepository.findByUsername(username);
+
+        if (foundUserDataResult.isEmpty()) {
+            return Result.success(Optional.empty());
+        }
+
+        final var foundUserData = foundUserDataResult.get();
+
+        final var user = new AppUser(
+            foundUserData.id(),
+            foundUserData.username(),
+            foundUserData.password()
+        );
+
+        return Result.success(Optional.of(user));
     }
 }
 
@@ -76,10 +90,10 @@ class UsersRepositoryImplTests {
 
         // Given
         final String userName = "userName";
-        final var user = TestEntityDataGenerator.anyUserDataWithUserName(userName);
+        final var userData = TestEntityDataGenerator.anyUserDataWithUserName(userName);
 
         SUT sut = createSUT();
-        given(sut.jpaUsersRepository.findByUsername(userName)).willReturn(Optional.of(user));
+        given(sut.jpaUsersRepository.findByUsername(userName)).willReturn(Optional.of(userData));
 
         // When
         final var result = sut.usersRepository.findByUsername(userName);
@@ -90,9 +104,16 @@ class UsersRepositoryImplTests {
 
         assertThat(result.isSuccess()).isTrue();
         assertThat(result.getValue()).isPresent();
+
+        final var expectedUser = new AppUser(
+            userData.id(),
+            userData.username(),
+            userData.password()
+        );
+
         assertThat(
             result.getValue()
                 .get()
-        ).isEqualTo(user);
+        ).isEqualTo(expectedUser);
     }
 }
