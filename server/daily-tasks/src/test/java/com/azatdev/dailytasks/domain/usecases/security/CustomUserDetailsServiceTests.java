@@ -7,28 +7,27 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepository;
 import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
+import com.azatdev.dailytasks.presentation.security.services.CustomUserDetailsService;
 import com.azatdev.dailytasks.utils.Result;
 
 class CustomUserDetailsServiceTests {
 
     private record SUT(
-        UserDetailsService userDetailsService,
+        CustomUserDetailsService userDetailsService,
         UsersRepository usersRepository
     ) {
     }
 
     private SUT createSUT() {
         UsersRepository usersRepository = mock(UsersRepository.class);
-        UserDetailsService userDetailsService = new CustomUserDetailsService(usersRepository);
+        CustomUserDetailsService userDetailsService = new CustomUserDetailsService(usersRepository);
 
         return new SUT(
             userDetailsService,
@@ -79,10 +78,57 @@ class CustomUserDetailsServiceTests {
 
         assertThat(result).isNotNull();
 
-        UserDetails expectedUserDetails = User.withUsername(userName)
-            .password(user.password())
-            .build();
+        assertThat(result.getId()).isEqualTo(user.id());
+        assertThat(result.getUsername()).isEqualTo(userName);
+        assertThat(result.getPassword()).isEqualTo(user.password());
+    }
 
-        assertThat(result).isEqualTo(expectedUserDetails);
+    @Test
+    void loadUserByIdNotExistingUserMustThrowAnExceptionTest() {
+
+        // Given
+        final var wrongUserId = UUID.randomUUID();
+
+        SUT sut = createSUT();
+        given(sut.usersRepository.findById(wrongUserId)).willReturn(Result.success(Optional.empty()));
+
+        // When
+        assertThrows(
+            UsernameNotFoundException.class,
+            () -> {
+                sut.userDetailsService.loadUserById(wrongUserId);
+            }
+        );
+
+        // Then
+        then(sut.usersRepository).should(times(1))
+            .findById(wrongUserId);
+    }
+
+    @Test
+    void loadUserByIdExistingUserMustReturnUserDetailsTest() {
+
+        // Given
+
+        final var userName = "userName";
+        final var user = TestDomainDataGenerator.anyAppUserWithUserName(userName);
+        final var userId = user.id();
+
+        SUT sut = createSUT();
+
+        given(sut.usersRepository.findById(userId)).willReturn(Result.success(Optional.of(user)));
+
+        // When
+        final var result = sut.userDetailsService.loadUserById(userId);
+
+        // Then
+        then(sut.usersRepository).should(times(1))
+            .findById(userId);
+
+        assertThat(result).isNotNull();
+
+        assertThat(result.getId()).isEqualTo(user.id());
+        assertThat(result.getUsername()).isEqualTo(userName);
+        assertThat(result.getPassword()).isEqualTo(user.password());
     }
 }

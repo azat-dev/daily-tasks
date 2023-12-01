@@ -1,11 +1,12 @@
-package com.azatdev.dailytasks.domain.usecases.security;
+package com.azatdev.dailytasks.presentation.security.services;
 
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import java.util.UUID;
+
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepository;
+import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -16,7 +17,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserPrincipal loadUserByUsername(String username) throws UsernameNotFoundException {
 
         final var result = usersRepository.findByUsername(username);
 
@@ -27,8 +28,20 @@ public class CustomUserDetailsService implements UserDetailsService {
         final var appUser = result.getValue()
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        return User.withUsername(username)
-            .password(appUser.password())
-            .build();
+        return UserPrincipal.from(appUser);
+    }
+
+    public UserPrincipal loadUserById(UUID userId) throws UsernameNotFoundException {
+
+        final var result = usersRepository.findById(userId);
+
+        if (!result.isSuccess()) {
+            throw new IllegalStateException("Internal error occurred");
+        }
+
+        final var appUser = result.getValue()
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        return UserPrincipal.from(appUser);
     }
 }
