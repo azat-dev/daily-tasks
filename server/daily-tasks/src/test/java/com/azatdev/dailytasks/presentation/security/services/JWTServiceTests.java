@@ -7,6 +7,17 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.Date;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.Keys;
+
 class JWTServiceImpl implements JWTService {
 
 
@@ -23,8 +34,16 @@ class JWTServiceImpl implements JWTService {
 
     @Override
     public String generateToken(UUID userId) {
-        // TODO Auto-generated method stub
-        return null;
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
+        final var key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+
+        return Jwts.builder()
+                .subject(userId.toString())
+                .issuedAt(new Date())
+                .expiration(expiryDate)
+                .signWith(key, Jwts.SIG.HS512)
+                .compact();
     }
 
     @Override
@@ -43,7 +62,7 @@ class JWTServiceImpl implements JWTService {
 
 class JWTServiceTests {
 
-    private final JWTService sut = new JWTServiceImpl("secret", 10000);
+    private final JWTService sut = new JWTServiceImpl("secretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecret", 10000);
 
     @Test
     void generateTokenMustReturnTokenTest() {

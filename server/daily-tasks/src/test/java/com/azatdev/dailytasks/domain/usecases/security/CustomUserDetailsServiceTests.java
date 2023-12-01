@@ -109,7 +109,6 @@ class CustomUserDetailsServiceTests {
     void loadUserByIdExistingUserMustReturnUserDetailsTest() {
 
         // Given
-
         final var userName = "userName";
         final var user = TestDomainDataGenerator.anyAppUserWithUserName(userName);
         final var userId = user.id();
