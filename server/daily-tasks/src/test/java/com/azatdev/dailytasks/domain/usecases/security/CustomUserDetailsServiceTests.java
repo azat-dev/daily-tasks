@@ -1,27 +1,33 @@
 package com.azatdev.dailytasks.domain.usecases.security;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepository;
+import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepositoryFindByUserName;
+import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
 import com.azatdev.dailytasks.utils.Result;
 
 class CustomUserDetailsServiceTests {
 
     private record SUT(
         UserDetailsService userDetailsService,
-        UsersRepository usersRepository
+        UsersRepositoryFindByUserName usersRepository
     ) {
     }
 
     private SUT createSUT() {
-        UsersRepository usersRepository = mock(UsersRepository.class);
+        UsersRepositoryFindByUserName usersRepository = mock(UsersRepositoryFindByUserName.class);
         UserDetailsService userDetailsService = new CustomUserDetailsService(usersRepository);
 
         return new SUT(
@@ -50,5 +56,33 @@ class CustomUserDetailsServiceTests {
                 sut.userDetailsService.loadUserByUsername(wrongUserName);
             }
         );
+    }
+
+    @Test
+    void loadUserByUsernameExistingUserMustReturnUserDetailsTest() {
+
+        // Given
+        final String userName = "userName";
+
+        final var user = TestDomainDataGenerator.anyAppUserWithUserName(userName);
+
+        SUT sut = createSUT();
+
+        given(sut.usersRepository.findByUsername(userName)).willReturn(Result.success(Optional.of(user)));
+
+        // When
+        final var result = sut.userDetailsService.loadUserByUsername(userName);
+
+        // Then
+        then(sut.usersRepository).should(times(1))
+            .findByUsername(userName);
+
+        assertThat(result).isNotNull();
+
+        UserDetails expectedUserDetails = User.withUsername(userName)
+            .password(user.password())
+            .build();
+
+        assertThat(result).isEqualTo(expectedUserDetails);
     }
 }

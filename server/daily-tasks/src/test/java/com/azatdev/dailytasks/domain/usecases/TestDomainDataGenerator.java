@@ -1,7 +1,10 @@
 package com.azatdev.dailytasks.domain.usecases;
 
+import java.util.UUID;
+
 import com.github.javafaker.Faker;
 
+import com.azatdev.dailytasks.domain.models.AppUser;
 import com.azatdev.dailytasks.domain.models.Task;
 
 public class TestDomainDataGenerator {
@@ -21,6 +24,14 @@ public class TestDomainDataGenerator {
             Task.Priority.MEDIUM,
             faker.lorem()
                 .paragraph()
+        );
+    }
+
+    public static AppUser anyAppUserWithUserName(String username) {
+        return new AppUser(
+            UUID.randomUUID(),
+            username,
+            "password"
         );
     }
 }

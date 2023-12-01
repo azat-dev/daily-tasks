@@ -4,13 +4,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepository;
+import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepositoryFindByUserName;
 
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UsersRepository usersRepository;
+    private final UsersRepositoryFindByUserName usersRepository;
 
-    public CustomUserDetailsService(UsersRepository usersRepository) {
+    public CustomUserDetailsService(UsersRepositoryFindByUserName usersRepository) {
         this.usersRepository = usersRepository;
     }
 
