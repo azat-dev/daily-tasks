@@ -52,7 +52,7 @@ class CustomUserDetailsServiceTests {
                 sut.userDetailsService.loadUserByUsername(wrongUserName);
             }
         );
-        
+
         // Then
         then(sut.usersRepository).should(times(1))
             .findByUsername(wrongUserName);

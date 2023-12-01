@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         final var result = usersRepository.findByUsername(username);
-        
+
         if (!result.isSuccess()) {
             throw new IllegalStateException("Internal error occurred");
         }
