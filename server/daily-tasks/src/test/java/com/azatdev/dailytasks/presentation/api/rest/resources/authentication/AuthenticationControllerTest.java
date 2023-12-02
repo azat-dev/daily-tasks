@@ -32,7 +32,6 @@ import com.azatdev.dailytasks.presentation.security.services.jwt.JWTService;
 
 @WebMvcTest(AuthenticationController.class)
 @Import(WebSecurityConfig.class)
-// @AutoConfigureMockMvc(addFilters = false)
 class AuthenticationControllerTest {
 
     @MockBean
@@ -63,7 +62,8 @@ class AuthenticationControllerTest {
         final var response = performAuthenticateRequest(authenticationRequest);
 
         // Then
-        response.andExpect(status().isUnauthorized());
+        response.andExpect(status().isUnauthorized())
+            .andExpect(unauthenticated());
     }
 
     @Test
@@ -89,7 +89,8 @@ class AuthenticationControllerTest {
         final var response = performAuthenticateRequest(authenticationRequest);
 
         // Then
-        response.andExpect(status().isUnauthorized());
+        response.andExpect(status().isUnauthorized())
+            .andExpect(unauthenticated());
     }
 
     @Test
@@ -108,7 +109,8 @@ class AuthenticationControllerTest {
         final var response = performAuthenticateRequest(authenticationRequest);
 
         // Then
-        response.andExpect(status().isBadRequest());
+        response.andExpect(status().isBadRequest())
+            .andExpect(unauthenticated());
     }
 
     @Test

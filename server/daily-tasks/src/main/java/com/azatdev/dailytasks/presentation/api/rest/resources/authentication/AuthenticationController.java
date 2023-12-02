@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +28,8 @@ public class AuthenticationController implements AuthenticationResource {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    private SecurityContextRepository securityContextRepository = new RequestAttributeSecurityContextRepository();
+    @Autowired
+    private SecurityContextRepository securityContextRepository;
 
     @Override
     public ResponseEntity<AuthenticationResponse> authenticate(
