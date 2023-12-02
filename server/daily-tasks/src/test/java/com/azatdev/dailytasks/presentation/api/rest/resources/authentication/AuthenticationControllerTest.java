@@ -1,9 +1,10 @@
 package com.azatdev.dailytasks.presentation.api.rest.resources.authentication;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -13,12 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,7 +27,6 @@ import com.azatdev.dailytasks.presentation.config.WebSecurityConfig;
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 import com.azatdev.dailytasks.presentation.security.services.CustomUserDetailsService;
 import com.azatdev.dailytasks.presentation.security.services.jwt.JWTService;
-
 
 @WebMvcTest(AuthenticationController.class)
 @Import(WebSecurityConfig.class)
@@ -61,7 +60,7 @@ class AuthenticationControllerTest {
         final var response = performAuthenticateRequest(authenticationRequest);
 
         // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        response.andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -76,13 +75,18 @@ class AuthenticationControllerTest {
             wrongPassword
         );
 
-        given(passwordEncoder.matches(anyString(), anyString())).willReturn(false);
+        given(
+            passwordEncoder.matches(
+                anyString(),
+                anyString()
+            )
+        ).willReturn(false);
 
         // When
         final var response = performAuthenticateRequest(authenticationRequest);
 
         // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        response.andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -101,7 +105,7 @@ class AuthenticationControllerTest {
         final var response = performAuthenticateRequest(authenticationRequest);
 
         // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        response.andExpect(status().isBadRequest());
     }
 
     @Test
@@ -118,6 +122,11 @@ class AuthenticationControllerTest {
         final var username = user.getUsername();
         final var password = user.getPassword();
 
+        final var expectedAccessToken = "accessToken";
+        final var expectedRefreshToken = "refreshToken";
+
+        given(tokenProvider.generateToken(user.getId())).willReturn(expectedAccessToken);
+
         given(
             passwordEncoder.matches(
                 (CharSequence) password,
@@ -130,12 +139,17 @@ class AuthenticationControllerTest {
 
         // Then
         then(passwordEncoder).should(times(1))
-            .matches(password, password);
+            .matches(
+                password,
+                password
+            );
 
         then(customUserDetailsService).should(times(1))
             .loadUserByUsername(username);
 
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        response.andExpect(status().isOk())
+            .andExpect(jsonPath("$.access").value(expectedAccessToken))
+            .andExpect(jsonPath("$.refresh").value(expectedRefreshToken));
     }
 
     // Helpers
@@ -157,7 +171,7 @@ class AuthenticationControllerTest {
         return userPrincipal;
     }
 
-    private MockHttpServletResponse performPostRequest(
+    private ResultActions performPostRequest(
         String url,
         Object request
     ) throws Exception {
@@ -167,12 +181,10 @@ class AuthenticationControllerTest {
         return mockMvc.perform(
             post(url).contentType(MediaType.APPLICATION_JSON)
                 .content(payload)
-        )
-            .andReturn()
-            .getResponse();
+        );
     }
 
-    private MockHttpServletResponse performAuthenticateRequest(AuthenticationRequest request) throws Exception {
+    private ResultActions performAuthenticateRequest(AuthenticationRequest request) throws Exception {
         final String url = "/api/auth/token";
         return performPostRequest(
             url,

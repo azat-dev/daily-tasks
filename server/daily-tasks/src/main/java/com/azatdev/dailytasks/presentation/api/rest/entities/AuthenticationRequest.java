@@ -2,8 +2,6 @@ package com.azatdev.dailytasks.presentation.api.rest.entities;
 
 import org.hibernate.validator.constraints.Length;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 public record AuthenticationRequest(
