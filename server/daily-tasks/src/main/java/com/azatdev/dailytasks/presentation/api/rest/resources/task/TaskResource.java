@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +16,10 @@ import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskResponse;
 
+import jakarta.validation.Valid;
+
 @RestController
+@Validated
 @RequestMapping("/tasks")
 public interface TaskResource {
 
@@ -29,6 +33,6 @@ public interface TaskResource {
     public ResponseEntity<TaskResponse> createTaskInBacklog(
         @PathVariable Backlog.Duration backlogDuration,
         @PathVariable LocalDate date,
-        @RequestBody CreateTaskInBacklogRequest request
+        @Valid @RequestBody CreateTaskInBacklogRequest request
     );
 }
