@@ -57,6 +57,6 @@ class AuthenticationControllerTest {
             .getResponse();
 
         // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 }
