@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.AuthenticationRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.AuthenticationResponse;
+import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.TokenVerificationRequest;
 
 import jakarta.validation.Valid;
 
@@ -20,5 +21,10 @@ public interface AuthenticationResource {
     @PostMapping("/token")
     ResponseEntity<AuthenticationResponse> authenticate(
         @Valid @RequestBody AuthenticationRequest authenticationRequest
+    );
+
+    @PostMapping("/token/verify")
+    ResponseEntity<Void> verifyToken(
+        @Valid @RequestBody TokenVerificationRequest tokenVerificationRequest
     );
 }

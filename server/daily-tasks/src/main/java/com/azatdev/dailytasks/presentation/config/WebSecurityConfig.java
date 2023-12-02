@@ -44,7 +44,7 @@ public class WebSecurityConfig {
                     HttpMethod.POST,
                     "/api/auth/token",
                     "/api/auth/token/refresh",
-                    "/api/auth/token/validate"
+                    "/api/auth/token/verify"
                 )
                     .permitAll()
                     .requestMatchers("/api/**")

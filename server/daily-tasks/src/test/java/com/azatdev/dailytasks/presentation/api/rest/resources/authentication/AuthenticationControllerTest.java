@@ -194,7 +194,7 @@ class AuthenticationControllerTest {
     }
 
     @Test
-    void verifyToken_givenValidToken_thenReturnError() throws Exception {
+    void verifyToken_givenValidToken_thenReturnSuccessStatusCode() throws Exception {
 
         // Given
         final var validToken = "validToken";
@@ -209,7 +209,7 @@ class AuthenticationControllerTest {
         final var response = performVerifyTokenRequest(request);
 
         // Then
-        response.andExpect(status().isUnauthorized());
+        response.andExpect(status().isOk());
 
         then(tokenProvider).should(times(1))
             .verifyToken(validToken);

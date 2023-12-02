@@ -10,8 +10,11 @@ import org.springframework.stereotype.Component;
 
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.AuthenticationRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.AuthenticationResponse;
+import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.TokenVerificationRequest;
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 import com.azatdev.dailytasks.presentation.security.services.jwt.JWTService;
+
+import jakarta.validation.Valid;
 
 @Component
 public class AuthenticationController implements AuthenticationResource {
@@ -60,6 +63,19 @@ public class AuthenticationController implements AuthenticationResource {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value())
                 .build();
         }
+    }
 
+    @Override
+    public ResponseEntity<Void> verifyToken(@Valid TokenVerificationRequest tokenVerificationRequest) {
+
+        final var isValid = tokenProvider.verifyToken(tokenVerificationRequest.token());
+
+        if (isValid) {
+            return ResponseEntity.ok()
+                .build();
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value())
+            .build();
     }
 }
