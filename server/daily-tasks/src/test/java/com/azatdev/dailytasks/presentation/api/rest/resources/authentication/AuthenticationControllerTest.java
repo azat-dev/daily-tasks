@@ -28,20 +28,8 @@ import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 import com.azatdev.dailytasks.presentation.security.services.CustomUserDetailsService;
 import com.azatdev.dailytasks.presentation.security.services.jwt.JWTService;
 
-// @Configuration
-// class WebSecurityConfigTest {
-
-//     @Primary
-//     @Bean
-//     CustomUserDetailsService customUserDetailsService() {
-//         final var value = mock(CustomUserDetailsService.class);
-//         return value;
-//     };
-
-// }
 
 @WebMvcTest(AuthenticationController.class)
-// @Import({ WebSecurityConfigTest.class, WebSecurityConfig.class })
 @Import(WebSecurityConfig.class)
 class AuthenticationControllerTest {
 
@@ -88,6 +76,8 @@ class AuthenticationControllerTest {
             wrongPassword
         );
 
+        given(passwordEncoder.matches(anyString(), anyString())).willReturn(false);
+
         // When
         final var response = performAuthenticateRequest(authenticationRequest);
 
@@ -125,10 +115,13 @@ class AuthenticationControllerTest {
             user.getPassword()
         );
 
+        final var username = user.getUsername();
+        final var password = user.getPassword();
+
         given(
             passwordEncoder.matches(
-                user.getUsername(),
-                user.getPassword()
+                (CharSequence) password,
+                password
             )
         ).willReturn(true);
 
@@ -136,8 +129,11 @@ class AuthenticationControllerTest {
         final var response = performAuthenticateRequest(authenticationRequest);
 
         // Then
+        then(passwordEncoder).should(times(1))
+            .matches(password, password);
+
         then(customUserDetailsService).should(times(1))
-            .loadUserByUsername(user.getUsername());
+            .loadUserByUsername(username);
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
