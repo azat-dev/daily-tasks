@@ -61,7 +61,7 @@ class AuthenticationControllerTest {
     private final String url = "/api/auth/token";
 
     @Test
-    void authenticationFailedTest() throws Exception {
+    void authenticate_givenUserNotExists_thenReturnError() throws Exception {
         // Given
         final var authenticationRequest = new AuthenticationRequest(
             "username",
@@ -83,7 +83,7 @@ class AuthenticationControllerTest {
     }
 
     @Test
-    void authenticationSuccessTest() throws Exception {
+    void authenticate_givenCredentialsValid_thenReturnTokens() throws Exception {
         // Given
         final var userId = UUID.randomUUID();
         final var username = "username";
