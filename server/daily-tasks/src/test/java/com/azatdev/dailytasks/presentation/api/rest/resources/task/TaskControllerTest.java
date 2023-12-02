@@ -1,4 +1,4 @@
-package com.azatdev.dailytasks.presentation.api.rest.task;
+package com.azatdev.dailytasks.presentation.api.rest.resources.task;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;

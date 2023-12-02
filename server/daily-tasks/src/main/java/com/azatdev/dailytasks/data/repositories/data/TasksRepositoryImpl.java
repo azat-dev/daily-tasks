@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPATasksRepository;
+import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryCreate;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryList;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transaction;
@@ -12,7 +13,7 @@ import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.models.Task;
 import com.azatdev.dailytasks.utils.Result;
 
-public class TasksRepositoryImpl implements TasksRepositoryList, TasksRepositoryCreate {
+public class TasksRepositoryImpl implements TasksRepository {
 
     // Fields
 

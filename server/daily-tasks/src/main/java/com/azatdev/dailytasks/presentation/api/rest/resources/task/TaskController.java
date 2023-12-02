@@ -1,4 +1,4 @@
-package com.azatdev.dailytasks.presentation.api.rest.task;
+package com.azatdev.dailytasks.presentation.api.rest.resources.task;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -5,9 +5,6 @@ import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -15,15 +12,14 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 
-@Component
-class JWTServiceImpl implements JWTService {
+public class JWTServiceImpl implements JWTService {
 
     private SecretKey secretKey;
     private int jwtExpirationInMs;
 
     public JWTServiceImpl(
-        @Value("${app.security.jwtSecret}") String jwtSecret,
-        @Value("${app.security.jwtExpirationInMs}") int jwtExpirationInMs
+        String jwtSecret,
+        int jwtExpirationInMs
     ) {
         this.secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
         this.jwtExpirationInMs = jwtExpirationInMs;

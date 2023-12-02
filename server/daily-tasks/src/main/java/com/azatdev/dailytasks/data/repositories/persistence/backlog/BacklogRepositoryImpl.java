@@ -5,11 +5,12 @@ import java.util.Optional;
 
 import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPABacklogRepository;
+import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryGet;
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.utils.Result;
 
-public class BacklogRepositoryImpl implements BacklogRepositoryGet {
+public class BacklogRepositoryImpl implements BacklogRepository {
 
     private final JPABacklogRepository jpaBacklogRepository;
 
