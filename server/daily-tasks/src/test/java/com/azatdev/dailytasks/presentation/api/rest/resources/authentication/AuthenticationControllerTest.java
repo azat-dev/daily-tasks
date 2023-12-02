@@ -21,8 +21,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.azatdev.dailytasks.presentation.api.rest.entities.AuthenticationRequest;
+import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.AuthenticationRequest;
+import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.TokenVerificationRequest;
 import com.azatdev.dailytasks.presentation.config.WebSecurityConfig;
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 import com.azatdev.dailytasks.presentation.security.services.CustomUserDetailsService;
@@ -152,6 +152,69 @@ class AuthenticationControllerTest {
             .andExpect(jsonPath("$.refresh").value(expectedRefreshToken));
     }
 
+    @Test
+    void verifyToken_givenEmptyToken_thenReturnError() throws Exception {
+
+        // Given
+        final var emptyToken = "";
+
+        given(tokenProvider.verifyToken(emptyToken)).willReturn(false);
+
+        TokenVerificationRequest request = new TokenVerificationRequest(
+            emptyToken
+        );
+
+        // When
+        final var response = performVerifyTokenRequest(request);
+
+        // Then
+        response.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void verifyToken_givenWrongToken_thenReturnError() throws Exception {
+
+        // Given
+        final var wrongToken = "wrongToken";
+
+        given(tokenProvider.verifyToken(wrongToken)).willReturn(false);
+
+        TokenVerificationRequest request = new TokenVerificationRequest(
+            wrongToken
+        );
+
+        // When
+        final var response = performVerifyTokenRequest(request);
+
+        // Then
+        response.andExpect(status().isUnauthorized());
+
+        then(tokenProvider).should(times(1))
+            .verifyToken(wrongToken);
+    }
+
+    @Test
+    void verifyToken_givenValidToken_thenReturnError() throws Exception {
+
+        // Given
+        final var validToken = "validToken";
+
+        given(tokenProvider.verifyToken(validToken)).willReturn(true);
+
+        TokenVerificationRequest request = new TokenVerificationRequest(
+            validToken
+        );
+
+        // When
+        final var response = performVerifyTokenRequest(request);
+
+        // Then
+        response.andExpect(status().isUnauthorized());
+
+        then(tokenProvider).should(times(1))
+            .verifyToken(validToken);
+    }
+
     // Helpers
 
     private UserPrincipal givenExistingPrincipal() {
@@ -186,6 +249,14 @@ class AuthenticationControllerTest {
 
     private ResultActions performAuthenticateRequest(AuthenticationRequest request) throws Exception {
         final String url = "/api/auth/token";
+        return performPostRequest(
+            url,
+            request
+        );
+    }
+
+    private ResultActions performVerifyTokenRequest(TokenVerificationRequest request) throws Exception {
+        final String url = "/api/auth/token/verify";
         return performPostRequest(
             url,
             request

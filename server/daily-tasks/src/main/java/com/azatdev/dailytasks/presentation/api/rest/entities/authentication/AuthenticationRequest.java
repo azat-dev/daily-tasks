@@ -1,4 +1,4 @@
-package com.azatdev.dailytasks.presentation.api.rest.entities;
+package com.azatdev.dailytasks.presentation.api.rest.entities.authentication;
 
 import org.hibernate.validator.constraints.Length;
 

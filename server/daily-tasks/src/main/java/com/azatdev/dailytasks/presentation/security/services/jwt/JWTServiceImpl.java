@@ -55,7 +55,7 @@ public class JWTServiceImpl implements JWTService {
     }
 
     @Override
-    public boolean validateToken(String authToken) {
+    public boolean verifyToken(String authToken) {
         try {
             Jwts.parser()
                 .verifyWith(secretKey)

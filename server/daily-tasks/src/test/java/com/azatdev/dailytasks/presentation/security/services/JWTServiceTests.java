@@ -37,7 +37,7 @@ class JWTServiceTests {
         final var wrongToken = "wrongToken";
 
         // When
-        final var isValid = sut.validateToken(wrongToken);
+        final var isValid = sut.verifyToken(wrongToken);
 
         // Then
         assertThat(isValid).isFalse();
@@ -50,7 +50,7 @@ class JWTServiceTests {
         final var token = sut.generateToken(UUID.randomUUID());
 
         // When
-        final var isValid = sut.validateToken(token);
+        final var isValid = sut.verifyToken(token);
 
         // Then
         assertThat(isValid).isTrue();
