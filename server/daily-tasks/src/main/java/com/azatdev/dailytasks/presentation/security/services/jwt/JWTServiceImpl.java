@@ -15,24 +15,46 @@ import io.jsonwebtoken.security.SignatureException;
 public class JWTServiceImpl implements JWTService {
 
     private SecretKey secretKey;
-    private int jwtExpirationInMs;
+    private long accessTokenExpirationInMs;
+    private long refreshTokenExpirationInMs;
+    private DateTimeProvider dateTimeProvider;
 
     public JWTServiceImpl(
         String jwtSecret,
-        int jwtExpirationInMs
+        long accessTokenExpirationInMs,
+        long refreshTokenExpirationInMs,
+        DateTimeProvider dateTimeProvider
     ) {
         this.secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-        this.jwtExpirationInMs = jwtExpirationInMs;
+        this.accessTokenExpirationInMs = accessTokenExpirationInMs;
+        this.refreshTokenExpirationInMs = refreshTokenExpirationInMs;
+        this.dateTimeProvider = dateTimeProvider;
     }
 
     @Override
-    public String generateToken(UUID userId) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
+    public String generateAccessToken(UUID userId) {
+        long now = dateTimeProvider.now();
+        Date expiryDate = new Date(now + accessTokenExpirationInMs);
 
         return Jwts.builder()
             .subject(userId.toString())
-            .issuedAt(now)
+            .issuedAt(new Date(now))
+            .expiration(expiryDate)
+            .signWith(
+                secretKey,
+                Jwts.SIG.HS512
+            )
+            .compact();
+    }
+
+    @Override
+    public String generateRefreshToken(UUID userId) {
+        long now = dateTimeProvider.now();
+        Date expiryDate = new Date(now + refreshTokenExpirationInMs);
+
+        return Jwts.builder()
+            .subject(userId.toString())
+            .issuedAt(new Date(now))
             .expiration(expiryDate)
             .signWith(
                 secretKey,
@@ -45,6 +67,7 @@ public class JWTServiceImpl implements JWTService {
     public UUID getUserIdFromToken(String token) {
 
         final var encodedUserId = Jwts.parser()
+            .clock(() -> new Date(dateTimeProvider.now()))
             .verifyWith(secretKey)
             .build()
             .parseSignedClaims(token)
@@ -58,6 +81,7 @@ public class JWTServiceImpl implements JWTService {
     public boolean verifyToken(String authToken) {
         try {
             Jwts.parser()
+                .clock(() -> new Date(dateTimeProvider.now()))
                 .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(authToken);

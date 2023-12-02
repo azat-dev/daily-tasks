@@ -130,7 +130,7 @@ class AuthenticationControllerTest {
         final var expectedAccessToken = "accessToken";
         final var expectedRefreshToken = "refreshToken";
 
-        given(tokenProvider.generateToken(user.getId())).willReturn(expectedAccessToken);
+        given(tokenProvider.generateAccessToken(user.getId())).willReturn(expectedAccessToken);
 
         given(
             passwordEncoder.matches(

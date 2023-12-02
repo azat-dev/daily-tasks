@@ -57,7 +57,7 @@ public class AuthenticationController implements AuthenticationResource {
             final var userId = userPrincipal.getId();
 
             final var authenticationResponse = new AuthenticationResponse(
-                tokenProvider.generateToken(userId),
+                tokenProvider.generateAccessToken(userId),
                 "Not implemented yet"
             );
 

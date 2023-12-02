@@ -1,5 +1,7 @@
 package com.azatdev.dailytasks.presentation.config;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,8 +20,11 @@ public class PresentationConfig {
     @Value("${app.security.jwt.secret}")
     String jwtSecret;
 
-    @Value("${app.security.jwt.expirationInMs}")
-    int jwtExpirationInMs;
+    @Value("${app.security.jwt.accessToken.expirationInMs}")
+    int jwtAccessTokenExpirationInMs;
+
+    @Value("${app.security.jwt.refreshToken.expirationInMs}")
+    int jwtRefreshTokenExpirationInMs;
 
     @Bean
     public UsersRepository usersRepository(JpaUsersRepository jpaUsersRepository) {
@@ -35,7 +40,9 @@ public class PresentationConfig {
     public JWTService jwtService() {
         return new JWTServiceImpl(
             jwtSecret,
-            jwtExpirationInMs
+            jwtAccessTokenExpirationInMs,
+            jwtRefreshTokenExpirationInMs,
+            () -> new Date().getTime()
         );
     }
 }
