@@ -5,13 +5,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 public record AuthenticationRequest(
-    @Min(3)
-    @NotBlank
-    String username,
+    @Min(3) @NotBlank String username,
 
-    @Min(6)
-    @Max(255)
-    @NotBlank
-    String password
+    @Min(6) @Max(255) @NotBlank String password
 ) {
 }

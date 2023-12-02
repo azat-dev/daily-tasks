@@ -2,6 +2,7 @@ package com.azatdev.dailytasks.presentation.api.rest.resources.authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.*;
+import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import java.util.Collections;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
@@ -58,33 +60,92 @@ class AuthenticationControllerTest {
     @MockBean
     CustomUserDetailsService customUserDetailsService;
 
-    private final String url = "/api/auth/token";
-
     @Test
     void authenticate_givenUserNotExists_thenReturnError() throws Exception {
+
         // Given
         final var authenticationRequest = new AuthenticationRequest(
             "username",
             "password"
         );
 
-        final var payload = objectMapper.writeValueAsString(authenticationRequest);
-
         // When
-        final var response = mockMvc.perform(
-            post(url).contentType(MediaType.APPLICATION_JSON)
-                .content(payload)
-        )
-            .andReturn()
-            .getResponse();
+        final var response = performAuthenticateRequest(authenticationRequest);
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
     @Test
-    void authenticate_givenCredentialsValid_thenReturnTokens() throws Exception {
+    void authenticate_givenExistingUserWrongPassword_thenReturnError() throws Exception {
+
         // Given
+        final var user = givenExistingPrincipal();
+        final var wrongPassword = user.getUsername() + "wrongPassword";
+
+        final var authenticationRequest = new AuthenticationRequest(
+            user.getUsername(),
+            wrongPassword
+        );
+
+        // When
+        final var response = performAuthenticateRequest(authenticationRequest);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    void authenticate_givenEmptyPassword_thenReturnError() throws Exception {
+
+        // Given
+        final var user = givenExistingPrincipal();
+        final var notValidPassword = "";
+
+        final var authenticationRequest = new AuthenticationRequest(
+            user.getUsername(),
+            notValidPassword
+        );
+
+        // When
+        final var response = performAuthenticateRequest(authenticationRequest);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void authenticate_givenCredentialsValid_thenReturnTokens() throws Exception {
+
+        // Given
+        final var user = givenExistingPrincipal();
+
+        final var authenticationRequest = new AuthenticationRequest(
+            user.getUsername(),
+            user.getPassword()
+        );
+
+        given(
+            passwordEncoder.matches(
+                user.getUsername(),
+                user.getPassword()
+            )
+        ).willReturn(true);
+
+        // When
+        final var response = performAuthenticateRequest(authenticationRequest);
+
+        // Then
+        then(customUserDetailsService).should(times(1))
+            .loadUserByUsername(user.getUsername());
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    // Helpers
+
+    private UserPrincipal givenExistingPrincipal() {
+
         final var userId = UUID.randomUUID();
         final var username = "username";
         final var password = "password";
@@ -96,34 +157,30 @@ class AuthenticationControllerTest {
             Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
         );
 
-        final var authenticationRequest = new AuthenticationRequest(
-            username,
-            password
-        );
-
-        final var payload = objectMapper.writeValueAsString(authenticationRequest);
-
-        given(
-            passwordEncoder.matches(
-                password,
-                password
-            )
-        ).willReturn(true);
-
         given(customUserDetailsService.loadUserByUsername(username)).willReturn(userPrincipal);
+        return userPrincipal;
+    }
 
-        // When
-        final var response = mockMvc.perform(
+    private MockHttpServletResponse performPostRequest(
+        String url,
+        Object request
+    ) throws Exception {
+
+        final var payload = objectMapper.writeValueAsString(request);
+
+        return mockMvc.perform(
             post(url).contentType(MediaType.APPLICATION_JSON)
                 .content(payload)
         )
             .andReturn()
             .getResponse();
+    }
 
-        // Then
-        then(customUserDetailsService).should(times(1))
-            .loadUserByUsername(username);
-
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    private MockHttpServletResponse performAuthenticateRequest(AuthenticationRequest request) throws Exception {
+        final String url = "/api/auth/token";
+        return performPostRequest(
+            url,
+            request
+        );
     }
 }
