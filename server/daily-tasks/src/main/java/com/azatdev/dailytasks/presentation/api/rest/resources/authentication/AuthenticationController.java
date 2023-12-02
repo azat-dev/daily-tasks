@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Component;
 
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.AuthenticationRequest;
@@ -14,6 +16,8 @@ import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.Toke
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 import com.azatdev.dailytasks.presentation.security.services.jwt.JWTService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 @Component
@@ -25,8 +29,14 @@ public class AuthenticationController implements AuthenticationResource {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    private SecurityContextRepository securityContextRepository = new RequestAttributeSecurityContextRepository();
+
     @Override
-    public ResponseEntity<AuthenticationResponse> authenticate(AuthenticationRequest authenticationRequest) {
+    public ResponseEntity<AuthenticationResponse> authenticate(
+        AuthenticationRequest authenticationRequest,
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) {
 
         final var username = authenticationRequest.username();
 
@@ -37,12 +47,6 @@ public class AuthenticationController implements AuthenticationResource {
 
         try {
             final var authentication = authenticationManager.authenticate(authenticationToken);
-
-            final var securityContext = SecurityContextHolder.createEmptyContext();
-            securityContext.setAuthentication(authentication);
-
-            SecurityContextHolder.setContext(securityContext);
-
             final var userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
             if (userPrincipal == null) {
@@ -55,6 +59,16 @@ public class AuthenticationController implements AuthenticationResource {
             final var authenticationResponse = new AuthenticationResponse(
                 tokenProvider.generateToken(userId),
                 "Not implemented yet"
+            );
+
+            final var context = SecurityContextHolder.createEmptyContext();
+
+            context.setAuthentication(authentication);
+
+            this.securityContextRepository.saveContext(
+                context,
+                request,
+                response
             );
 
             return ResponseEntity.ok(authenticationResponse);

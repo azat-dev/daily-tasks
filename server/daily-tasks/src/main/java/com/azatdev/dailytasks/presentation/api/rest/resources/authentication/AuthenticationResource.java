@@ -11,6 +11,8 @@ import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.Auth
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.AuthenticationResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.TokenVerificationRequest;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 @RestController
@@ -20,11 +22,11 @@ public interface AuthenticationResource {
 
     @PostMapping("/token")
     ResponseEntity<AuthenticationResponse> authenticate(
-        @Valid @RequestBody AuthenticationRequest authenticationRequest
+        @Valid @RequestBody AuthenticationRequest authenticationRequest,
+        HttpServletRequest request,
+        HttpServletResponse response
     );
 
     @PostMapping("/token/verify")
-    ResponseEntity<Void> verifyToken(
-        @Valid @RequestBody TokenVerificationRequest tokenVerificationRequest
-    );
+    ResponseEntity<Void> verifyToken(@Valid @RequestBody TokenVerificationRequest tokenVerificationRequest);
 }

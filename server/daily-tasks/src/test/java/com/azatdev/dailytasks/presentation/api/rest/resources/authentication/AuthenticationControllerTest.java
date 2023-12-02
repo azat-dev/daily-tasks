@@ -3,6 +3,7 @@ package com.azatdev.dailytasks.presentation.api.rest.resources.authentication;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.times;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.AuthenticationRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.TokenVerificationRequest;
 import com.azatdev.dailytasks.presentation.config.WebSecurityConfig;
@@ -30,6 +32,7 @@ import com.azatdev.dailytasks.presentation.security.services.jwt.JWTService;
 
 @WebMvcTest(AuthenticationController.class)
 @Import(WebSecurityConfig.class)
+// @AutoConfigureMockMvc(addFilters = false)
 class AuthenticationControllerTest {
 
     @MockBean
@@ -109,7 +112,7 @@ class AuthenticationControllerTest {
     }
 
     @Test
-    void authenticate_givenCredentialsValid_thenReturnTokens() throws Exception {
+    void authenticate_givenCredentialsValid_thenReturnTokensAndAuthenticateUser() throws Exception {
 
         // Given
         final var user = givenExistingPrincipal();
@@ -148,6 +151,7 @@ class AuthenticationControllerTest {
             .loadUserByUsername(username);
 
         response.andExpect(status().isOk())
+            .andExpect(authenticated())
             .andExpect(jsonPath("$.access").value(expectedAccessToken))
             .andExpect(jsonPath("$.refresh").value(expectedRefreshToken));
     }
@@ -160,9 +164,7 @@ class AuthenticationControllerTest {
 
         given(tokenProvider.verifyToken(emptyToken)).willReturn(false);
 
-        TokenVerificationRequest request = new TokenVerificationRequest(
-            emptyToken
-        );
+        TokenVerificationRequest request = new TokenVerificationRequest(emptyToken);
 
         // When
         final var response = performVerifyTokenRequest(request);
@@ -179,9 +181,7 @@ class AuthenticationControllerTest {
 
         given(tokenProvider.verifyToken(wrongToken)).willReturn(false);
 
-        TokenVerificationRequest request = new TokenVerificationRequest(
-            wrongToken
-        );
+        TokenVerificationRequest request = new TokenVerificationRequest(wrongToken);
 
         // When
         final var response = performVerifyTokenRequest(request);
@@ -201,9 +201,7 @@ class AuthenticationControllerTest {
 
         given(tokenProvider.verifyToken(validToken)).willReturn(true);
 
-        TokenVerificationRequest request = new TokenVerificationRequest(
-            validToken
-        );
+        TokenVerificationRequest request = new TokenVerificationRequest(validToken);
 
         // When
         final var response = performVerifyTokenRequest(request);
