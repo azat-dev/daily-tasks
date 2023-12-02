@@ -8,6 +8,7 @@ import com.azatdev.dailytasks.data.repositories.data.UsersRepositoryImpl;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepository;
 import com.azatdev.dailytasks.presentation.security.services.CustomUserDetailsService;
+import com.azatdev.dailytasks.presentation.security.services.CustomUserDetailsServiceImpl;
 import com.azatdev.dailytasks.presentation.security.services.jwt.JWTService;
 import com.azatdev.dailytasks.presentation.security.services.jwt.JWTServiceImpl;
 
@@ -16,6 +17,7 @@ public class PresentationConfig {
 
     @Value("${app.security.jwt.secret}")
     String jwtSecret;
+
     @Value("${app.security.jwt.expirationInMs}")
     int jwtExpirationInMs;
 
@@ -25,8 +27,8 @@ public class PresentationConfig {
     }
 
     @Bean
-    public CustomUserDetailsService customUserDetailsService(UsersRepository usersRepository) {
-        return new CustomUserDetailsService(usersRepository);
+    public CustomUserDetailsService userDetailsService(UsersRepository usersRepository) {
+        return new CustomUserDetailsServiceImpl(usersRepository);
     }
 
     @Bean

@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepository;
 import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
 import com.azatdev.dailytasks.presentation.security.services.CustomUserDetailsService;
+import com.azatdev.dailytasks.presentation.security.services.CustomUserDetailsServiceImpl;
+import com.azatdev.dailytasks.presentation.security.services.jwt.UserIdNotFoundException;
 import com.azatdev.dailytasks.utils.Result;
 
 class CustomUserDetailsServiceTests {
@@ -27,7 +29,7 @@ class CustomUserDetailsServiceTests {
 
     private SUT createSUT() {
         UsersRepository usersRepository = mock(UsersRepository.class);
-        CustomUserDetailsService userDetailsService = new CustomUserDetailsService(usersRepository);
+        CustomUserDetailsService userDetailsService = new CustomUserDetailsServiceImpl(usersRepository);
 
         return new SUT(
             userDetailsService,
@@ -94,7 +96,7 @@ class CustomUserDetailsServiceTests {
 
         // When
         assertThrows(
-            UsernameNotFoundException.class,
+            UserIdNotFoundException.class,
             () -> {
                 sut.userDetailsService.loadUserById(wrongUserId);
             }

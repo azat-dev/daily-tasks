@@ -2,19 +2,15 @@ package com.azatdev.dailytasks.presentation.api.rest.resources.authentication;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 
 import com.azatdev.dailytasks.presentation.api.rest.entities.AuthenticationRequest;
-import com.azatdev.dailytasks.presentation.security.services.CustomUserDetailsService;
+import com.azatdev.dailytasks.presentation.api.rest.entities.AuthenticationResponse;
+import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 import com.azatdev.dailytasks.presentation.security.services.jwt.JWTService;
 
 @Component
@@ -24,29 +20,46 @@ public class AuthenticationController implements AuthenticationResource {
     private JWTService tokenProvider;
 
     @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private AuthenticationManager authenticationManager;
 
     @Override
-    public ResponseEntity<AuthenticationRequest> authenticate(AuthenticationRequest authenticationRequest) {
-        
+    public ResponseEntity<AuthenticationResponse> authenticate(AuthenticationRequest authenticationRequest) {
+
         final var username = authenticationRequest.username();
 
-        final var authentication = new UsernamePasswordAuthenticationToken(
+        final var authenticationToken = new UsernamePasswordAuthenticationToken(
             username,
             authenticationRequest.password()
         );
 
-        final var user = customUserDetailsService.loadUserByUsername(username);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        try {
+            final var authentication = authenticationManager.authenticate(authenticationToken);
+
+            final var securityContext = SecurityContextHolder.createEmptyContext();
+            securityContext.setAuthentication(authentication);
+
+            SecurityContextHolder.setContext(securityContext);
+
+            final var userPrincipal = (UserPrincipal) authentication.getPrincipal();
+
+            if (userPrincipal == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value())
+                    .build();
+            }
+
+            final var userId = userPrincipal.getId();
+
+            final var authenticationResponse = new AuthenticationResponse(
+                tokenProvider.generateToken(userId),
+                "Not implemented yet"
+            );
+
+            return ResponseEntity.ok(authenticationResponse);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value())
                 .build();
         }
 
-        authentication.setDetails(user);
-
-        SecurityContextHolder.getContext()
-            .setAuthentication(authentication);
-
-        return null;
     }
 }

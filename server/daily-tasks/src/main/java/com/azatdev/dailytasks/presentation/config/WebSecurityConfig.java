@@ -1,11 +1,11 @@
 package com.azatdev.dailytasks.presentation.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,14 +21,11 @@ import com.azatdev.dailytasks.presentation.security.services.jwt.JWTService;
 @Configuration
 public class WebSecurityConfig {
 
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
-
-    @Autowired
-    private JWTService tokenProvider;
-
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+    public JwtAuthenticationFilter jwtAuthenticationFilter(
+        CustomUserDetailsService customUserDetailsService,
+        JWTService tokenProvider
+    ) {
         return new JwtAuthenticationFilter(
             tokenProvider,
             customUserDetailsService
@@ -36,9 +33,12 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.csrf(csrf -> csrf.disable())
-            .cors(corse -> corse.disable())
+    SecurityFilterChain filterChain(
+        HttpSecurity http,
+        JwtAuthenticationFilter jwtAuthenticationFilter
+    ) throws Exception {
+        return http.cors(corse -> corse.disable())
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(
                 requests -> requests.requestMatchers(
                     HttpMethod.POST,
@@ -51,7 +51,7 @@ public class WebSecurityConfig {
                     .authenticated()
             )
             .addFilterBefore(
-                jwtAuthenticationFilter(),
+                jwtAuthenticationFilter,
                 UsernamePasswordAuthenticationFilter.class
             )
             .build();
@@ -60,5 +60,17 @@ public class WebSecurityConfig {
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+        CustomUserDetailsService customUserDetailsService,
+        PasswordEncoder passwordEncoder
+    ) {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(customUserDetailsService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder);
+
+        return new ProviderManager(authenticationProvider);
     }
 }

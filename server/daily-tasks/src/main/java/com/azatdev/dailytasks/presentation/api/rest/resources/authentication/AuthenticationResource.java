@@ -7,11 +7,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.azatdev.dailytasks.presentation.api.rest.entities.AuthenticationRequest;
+import com.azatdev.dailytasks.presentation.api.rest.entities.AuthenticationResponse;
 
 @RestController
 @RequestMapping("/api/auth")
 public interface AuthenticationResource {
 
     @PostMapping("/token")
-    ResponseEntity<AuthenticationRequest> authenticate(@RequestBody AuthenticationRequest authenticationRequest);
+    ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authenticationRequest);
 }
