@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.AuthenticationRequest;
+import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.RefreshTokenRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.TokenVerificationRequest;
 import com.azatdev.dailytasks.presentation.config.WebSecurityConfig;
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
@@ -168,7 +169,7 @@ class AuthenticationControllerTest {
 
         given(tokenProvider.verifyToken(emptyToken)).willReturn(false);
 
-        TokenVerificationRequest request = new TokenVerificationRequest(emptyToken);
+        final var request = new TokenVerificationRequest(emptyToken);
 
         // When
         final var response = performVerifyTokenRequest(request);
@@ -185,7 +186,7 @@ class AuthenticationControllerTest {
 
         given(tokenProvider.verifyToken(wrongToken)).willReturn(false);
 
-        TokenVerificationRequest request = new TokenVerificationRequest(wrongToken);
+        final var request = new TokenVerificationRequest(wrongToken);
 
         // When
         final var response = performVerifyTokenRequest(request);
@@ -205,7 +206,7 @@ class AuthenticationControllerTest {
 
         given(tokenProvider.verifyToken(validToken)).willReturn(true);
 
-        TokenVerificationRequest request = new TokenVerificationRequest(validToken);
+        final var request = new TokenVerificationRequest(validToken);
 
         // When
         final var response = performVerifyTokenRequest(request);
@@ -215,6 +216,73 @@ class AuthenticationControllerTest {
 
         then(tokenProvider).should(times(1))
             .verifyToken(validToken);
+    }
+
+    @Test
+    void refreshToken_givenEmptyToken_thenReturnError() throws Exception {
+
+        // Given
+        final var emptyToken = "";
+
+        given(tokenProvider.verifyToken(emptyToken)).willReturn(true);
+
+        final var request = new RefreshTokenRequest(emptyToken);
+
+        // When
+        final var response = performRefreshTokenRequest(request);
+
+        // Then
+        response.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void refreshToken_givenWrongToken_thenReturnError() throws Exception {
+
+        // Given
+        final var wrongToken = "wrongToken";
+
+        given(tokenProvider.verifyToken(wrongToken)).willReturn(false);
+
+        final var request = new RefreshTokenRequest(wrongToken);
+
+        // When
+        final var response = performRefreshTokenRequest(request);
+
+        // Then
+        response.andExpect(status().isUnauthorized());
+    }
+
+    UUID anyUserId() {
+        return UUID.randomUUID();
+    }
+
+    @Test
+    void refreshToken_givenValidToken_thenReturnNewTokenPair() throws Exception {
+
+        // Given
+        final var wrongToken = "wrongToken";
+
+        final var newRefreshToken = "newRefreshToken";
+
+        final var newAccessToken = "newAccessToken";
+
+        final var userId = anyUserId();
+
+        given(tokenProvider.verifyToken(wrongToken)).willReturn(false);
+
+        given(tokenProvider.generateAccessToken(userId)).willReturn(newAccessToken);
+
+        given(tokenProvider.generateRefreshToken(userId)).willReturn(newRefreshToken);
+
+        final var request = new RefreshTokenRequest(wrongToken);
+
+        // When
+        final var response = performRefreshTokenRequest(request);
+
+        // Then
+        response.andExpect(status().isOk());
+        response.andExpect(jsonPath("$.access").value(newAccessToken));
+        response.andExpect(jsonPath("$.refresh").value(newRefreshToken));
     }
 
     // Helpers
@@ -259,6 +327,14 @@ class AuthenticationControllerTest {
 
     private ResultActions performVerifyTokenRequest(TokenVerificationRequest request) throws Exception {
         final String url = "/api/auth/token/verify";
+        return performPostRequest(
+            url,
+            request
+        );
+    }
+
+    private ResultActions performRefreshTokenRequest(RefreshTokenRequest request) throws Exception {
+        final String url = "/api/auth/token/refresh";
         return performPostRequest(
             url,
             request
