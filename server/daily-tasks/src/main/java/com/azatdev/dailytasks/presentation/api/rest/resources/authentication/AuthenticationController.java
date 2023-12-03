@@ -58,7 +58,7 @@ public class AuthenticationController implements AuthenticationResource {
 
             final var authenticationResponse = new AuthenticationResponse(
                 tokenProvider.generateAccessToken(userId),
-                "Not implemented yet"
+                tokenProvider.generateRefreshToken(userId)
             );
 
             final var context = SecurityContextHolder.createEmptyContext();
