@@ -132,6 +132,8 @@ class AuthenticationControllerTest {
 
         given(tokenProvider.generateAccessToken(user.getId())).willReturn(expectedAccessToken);
 
+        given(tokenProvider.generateRefreshToken(user.getId())).willReturn(expectedRefreshToken);
+
         given(
             passwordEncoder.matches(
                 (CharSequence) password,
