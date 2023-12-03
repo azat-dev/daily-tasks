@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.AuthenticationRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.AuthenticationResponse;
+import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.RefreshTokenRequest;
+import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.RefreshTokenResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.TokenVerificationRequest;
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 import com.azatdev.dailytasks.presentation.security.services.jwt.JWTService;
@@ -91,5 +93,34 @@ public class AuthenticationController implements AuthenticationResource {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value())
             .build();
+    }
+
+    @Override
+    public ResponseEntity<RefreshTokenResponse> refreshToken(@Valid RefreshTokenRequest refreshTokenRequest) {
+
+        final var token = refreshTokenRequest.refreshToken();
+        final var isValid = tokenProvider.verifyToken(token);
+
+        if (!isValid) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value())
+                .build();
+        }
+
+        final var userId = tokenProvider.getUserIdFromToken(token);
+
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value())
+                .build();
+        }
+
+        final var newAccessToken = tokenProvider.generateAccessToken(userId);
+        final var newRefreshToken = tokenProvider.generateRefreshToken(userId);
+
+        final var response = new RefreshTokenResponse(
+            newAccessToken,
+            newRefreshToken
+        );
+
+        return ResponseEntity.ok(response);
     }
 }

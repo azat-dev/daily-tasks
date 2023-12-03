@@ -260,7 +260,7 @@ class AuthenticationControllerTest {
     void refreshToken_givenValidToken_thenReturnNewTokenPair() throws Exception {
 
         // Given
-        final var wrongToken = "wrongToken";
+        final var validToken = "validToken";
 
         final var newRefreshToken = "newRefreshToken";
 
@@ -268,13 +268,15 @@ class AuthenticationControllerTest {
 
         final var userId = anyUserId();
 
-        given(tokenProvider.verifyToken(wrongToken)).willReturn(false);
+        given(tokenProvider.verifyToken(validToken)).willReturn(true);
+
+        given(tokenProvider.getUserIdFromToken(validToken)).willReturn(userId);
 
         given(tokenProvider.generateAccessToken(userId)).willReturn(newAccessToken);
 
         given(tokenProvider.generateRefreshToken(userId)).willReturn(newRefreshToken);
 
-        final var request = new RefreshTokenRequest(wrongToken);
+        final var request = new RefreshTokenRequest(validToken);
 
         // When
         final var response = performRefreshTokenRequest(request);
