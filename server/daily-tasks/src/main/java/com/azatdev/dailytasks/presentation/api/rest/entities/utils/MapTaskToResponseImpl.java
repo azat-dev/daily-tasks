@@ -1,13 +1,10 @@
 package com.azatdev.dailytasks.presentation.api.rest.entities.utils;
 
-import org.springframework.stereotype.Component;
-
 import com.azatdev.dailytasks.domain.models.Task;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskPriorityPresentation;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskStatusPresentation;
 
-@Component
 public class MapTaskToResponseImpl implements MapTaskToResponse {
 
     private TaskStatusPresentation mapStatus(Task.Status status) {

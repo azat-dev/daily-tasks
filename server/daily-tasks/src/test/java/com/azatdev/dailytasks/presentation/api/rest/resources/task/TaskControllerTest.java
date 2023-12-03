@@ -2,26 +2,27 @@ package com.azatdev.dailytasks.presentation.api.rest.resources.task;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
 import java.util.List;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
 
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
@@ -31,11 +32,12 @@ import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskPriorityPresentation;
-import com.azatdev.dailytasks.presentation.config.DomainConfig;
+import com.azatdev.dailytasks.presentation.config.PresentationConfig;
 import com.azatdev.dailytasks.utils.Result;
 
 @WebMvcTest(TaskController.class)
-@Import(DomainConfig.class)
+@AutoConfigureMockMvc(addFilters = false)
+@Import({ PresentationConfig.class })
 class TaskControllerTest {
 
     @Autowired
@@ -51,7 +53,7 @@ class TaskControllerTest {
     private CreateTaskInBacklogUseCase createTaskInBacklogUseCase;
 
     @Test
-    void findAllTasksInBacklogShouldReturnTasksTest() throws Exception {
+    void findAllTasksInBacklog_givenExistingTasks_thenReturnAllTasksInBacklog() throws Exception {
 
         // Given
         final var url = "/tasks/backlog/WEEK/for/2023-11-11";
@@ -77,90 +79,89 @@ class TaskControllerTest {
         ).willReturn(Result.success(tasks));
 
         // When
-        final var response = mockMvc.perform(get(url))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()").value(tasks.size()));
+        final var action = mockMvc.perform(get(url).contentType(MediaType.APPLICATION_JSON));
 
-        // then(listTasksInBacklogUseCase).should(times(1))
-        // .execute(
-        // startDate,
-        // backlogDuration
-        // );
+        // Then
 
-        // final var responseBody = response.getBody();
-        // final var context = JsonPath.parse(responseBody);
+        action.andExpect(status().isOk());
 
-        // context.read(
-        // "$.length()",
-        // Integer.class
-        // )
-        // .equals(tasks.size());
+        then(listTasksInBacklogUseCase).should(times(1))
+            .execute(
+                startDate,
+                backlogDuration
+            );
 
-        // final var expectedTaskIds = tasks.stream()
-        // .map(task -> task.id())
-        // .toList();
+        action.andExpect(jsonPath("$.length()").value(tasks.size()));
 
-        // context.read("$.[*].id")
-        // .equals(expectedTaskIds);
+        final var expectedTaskIds = tasks.stream()
+            .map(
+                task -> task.id()
+                    .intValue()
+            )
+            .toArray();
+
+        action.andExpect(jsonPath("$[*].id").isArray());
+        action.andExpect(
+            jsonPath(
+                "$[*].id"
+
+            ).value(Matchers.contains(expectedTaskIds))
+        );
+
     }
 
-    // @Test
-    // void createNewTaskInBacklogShouldReturnCreatedTaskTest() {
+    @Test
+    void createNewTaskInBacklog_givenValidTaskData_thenCreateTask() throws Exception {
 
-    //     // Given
-    //     final var url = "/tasks/backlog/WEEK/for/2023-11-11";
+        // Given
+        final var url = "/tasks/backlog/WEEK/for/2023-11-11";
 
-    //     LocalDate date = LocalDate.of(
-    //         2023,
-    //         11,
-    //         11
-    //     );
+        LocalDate date = LocalDate.of(
+            2023,
+            11,
+            11
+        );
 
-    //     var backlogDuration = Backlog.Duration.WEEK;
+        var backlogDuration = Backlog.Duration.WEEK;
 
-    //     final var newTaskData = new CreateTaskInBacklogRequest(
-    //         "New task title",
-    //         TaskPriorityPresentation.HIGH,
-    //         "Description"
-    //     );
+        final var newTaskData = new CreateTaskInBacklogRequest(
+            "New task title",
+            TaskPriorityPresentation.HIGH,
+            "Description"
+        );
 
-    //     final var createdTask = TestDomainDataGenerator.anyTask(1L);
+        final var createdTask = TestDomainDataGenerator.anyTask(1L);
 
-    //     given(
-    //         createTaskInBacklogUseCase.execute(
-    //             eq(date),
-    //             eq(backlogDuration),
-    //             any()
-    //         )
-    //     ).willReturn(Result.success(createdTask));
+        given(
+            createTaskInBacklogUseCase.execute(
+                eq(date),
+                eq(backlogDuration),
+                any()
+            )
+        ).willReturn(Result.success(createdTask));
 
-    //     // When
-    //     final var response = restTemplate.postForEntity(
-    //         url,
-    //         newTaskData,
-    //         String.class
-    //     );
+        // When
+        final var action = mockMvc.perform(
+            post(url).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newTaskData))
+        );
 
-    //     // Then
-    //     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        // Then
+        action.andExpect(status().isCreated());
 
-    //     var expectedNewTaskData = new NewTaskData(
-    //         newTaskData.title(),
-    //         Task.Priority.HIGH,
-    //         newTaskData.description()
-    //     );
+        var expectedNewTaskData = new NewTaskData(
+            newTaskData.title(),
+            Task.Priority.HIGH,
+            newTaskData.description()
+        );
 
-    //     then(createTaskInBacklogUseCase).should(times(1))
-    //         .execute(
-    //             eq(date),
-    //             eq(backlogDuration),
-    //             eq(expectedNewTaskData)
-    //         );
+        then(createTaskInBacklogUseCase).should(times(1))
+            .execute(
+                eq(date),
+                eq(backlogDuration),
+                eq(expectedNewTaskData)
+            );
 
-    //     final var responseBody = response.getBody();
-    //     final var context = JsonPath.parse(responseBody);
-
-    //     context.read("$.id")
-    //         .equals(createdTask.id());
-    // }
+        action.andExpect(jsonPath("$.id").value(createdTask.id()));
+    }
 }
