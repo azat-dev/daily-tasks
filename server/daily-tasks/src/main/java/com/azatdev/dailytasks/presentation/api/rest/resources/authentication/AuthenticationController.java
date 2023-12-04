@@ -128,13 +128,13 @@ public class AuthenticationController implements AuthenticationResource {
     @Override
     public ResponseEntity<Void> signUp(@Valid SignUpRequest signUpRequest) {
 
-        final var doesPasswordsMatch =  signUpRequest.password1() == signUpRequest.password2();
+        final var doesPasswordsMatch = signUpRequest.password1() == signUpRequest.password2();
 
         if (!doesPasswordsMatch) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST.value())
                 .build();
         }
-        
+
         // TODO Auto-generated method stub
         return null;
     }

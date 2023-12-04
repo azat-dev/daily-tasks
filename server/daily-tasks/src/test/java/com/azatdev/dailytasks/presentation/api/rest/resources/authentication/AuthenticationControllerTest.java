@@ -23,6 +23,8 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.azatdev.dailytasks.domain.models.AppUser;
+import com.azatdev.dailytasks.domain.usecases.SignUpAppUserUseCase;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.AuthenticationRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.RefreshTokenRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.SignUpRequest;
@@ -50,6 +52,9 @@ class AuthenticationControllerTest {
 
     @MockBean
     CustomUserDetailsService customUserDetailsService;
+
+    @MockBean
+    private SignUpAppUserUseCase signUpAppUserUseCase;
 
     @Test
     void authenticate_givenUserNotExists_thenReturnError() throws Exception {
@@ -307,6 +312,48 @@ class AuthenticationControllerTest {
 
         // Then
         response.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void singUp_givenValidCredentials_thenCreateANewUser() throws Exception {
+
+        // Given
+        final var userId = anyUserId();
+        final var username = "username";
+        final var password = "password";
+
+        final var request = new SignUpRequest(
+            username,
+            password,
+            password
+        );
+
+        given(passwordEncoder.encode((CharSequence) password)).willReturn(password);
+
+        final var user = new AppUser(
+            userId,
+            username,
+            password
+        );
+
+        given(
+            signUpAppUserUseCase.execute(
+                username,
+                password
+            )
+        ).willReturn(user);
+
+        // When
+        final var action = performSignUpRequest(request);
+
+        // Then
+        then(passwordEncoder).should(times(1))
+            .encode(password);
+
+        action.andExpect(status().isCreated())
+            .andExpect(authenticated());
+
+        action.andExpect(jsonPath("$.userInfo.username").value(username));
     }
 
     // Helpers

@@ -36,7 +36,6 @@ public interface AuthenticationResource {
     @PostMapping("/token/refresh")
     ResponseEntity<RefreshTokenResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest);
 
-
     @PostMapping("/sign-up")
     ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequest signUpRequest);
 }
