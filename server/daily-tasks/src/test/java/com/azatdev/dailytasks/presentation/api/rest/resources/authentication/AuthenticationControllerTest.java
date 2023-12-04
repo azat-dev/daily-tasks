@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.AuthenticationRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.RefreshTokenRequest;
+import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.SignUpRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.TokenVerificationRequest;
 import com.azatdev.dailytasks.presentation.config.presentation.security.WebSecurityConfig;
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
@@ -287,6 +288,27 @@ class AuthenticationControllerTest {
         response.andExpect(jsonPath("$.refresh").value(newRefreshToken));
     }
 
+    @Test
+    void singUp_givenNotMatchingPasswords_thenReturnError() throws Exception {
+
+        // Given
+        final var username = "username";
+        final var password1 = "password";
+        final var password2 = "password2";
+
+        final var request = new SignUpRequest(
+            username,
+            password1,
+            password2
+        );
+
+        // When
+        final var response = performSignUpRequest(request);
+
+        // Then
+        response.andExpect(status().isBadRequest());
+    }
+
     // Helpers
 
     private UserPrincipal givenExistingPrincipal() {
@@ -337,6 +359,14 @@ class AuthenticationControllerTest {
 
     private ResultActions performRefreshTokenRequest(RefreshTokenRequest request) throws Exception {
         final String url = "/api/auth/token/refresh";
+        return performPostRequest(
+            url,
+            request
+        );
+    }
+
+    private ResultActions performSignUpRequest(SignUpRequest request) throws Exception {
+        final String url = "/api/auth/sign-up";
         return performPostRequest(
             url,
             request
