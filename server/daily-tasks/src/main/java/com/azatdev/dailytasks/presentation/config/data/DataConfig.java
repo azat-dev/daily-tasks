@@ -1,4 +1,4 @@
-package com.azatdev.dailytasks.presentation.config;
+package com.azatdev.dailytasks.presentation.config.data;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

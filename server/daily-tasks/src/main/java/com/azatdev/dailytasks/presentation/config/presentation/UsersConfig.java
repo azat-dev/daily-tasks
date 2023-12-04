@@ -1,4 +1,4 @@
-package com.azatdev.dailytasks.presentation.config;
+package com.azatdev.dailytasks.presentation.config.presentation;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

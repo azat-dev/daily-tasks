@@ -32,7 +32,7 @@ import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskPriorityPresentation;
-import com.azatdev.dailytasks.presentation.config.PresentationConfig;
+import com.azatdev.dailytasks.presentation.config.presentation.PresentationConfig;
 import com.azatdev.dailytasks.utils.Result;
 
 @WebMvcTest(TaskController.class)
