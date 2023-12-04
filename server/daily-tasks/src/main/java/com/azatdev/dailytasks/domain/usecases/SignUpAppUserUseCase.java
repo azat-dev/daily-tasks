@@ -15,6 +15,9 @@ public interface SignUpAppUserUseCase {
     public class PasswordIsEmptyException extends UseCaseException {
     }
 
+    public class InternalErrorException extends UseCaseException {
+    }
+
     // Methods
 
     public AppUser execute(

@@ -6,15 +6,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Component;
 
+import com.azatdev.dailytasks.domain.usecases.SignUpAppUserUseCase;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.AuthenticationRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.AuthenticationResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.RefreshTokenRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.RefreshTokenResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.SignUpRequest;
+import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.SignUpResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.TokenVerificationRequest;
+import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.UserInfoResponse;
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 import com.azatdev.dailytasks.presentation.security.services.jwt.JWTService;
 
@@ -34,6 +38,47 @@ public class AuthenticationController implements AuthenticationResource {
     @Autowired
     private SecurityContextRepository securityContextRepository;
 
+    @Autowired
+    private SignUpAppUserUseCase signUpAppUserUseCase;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    private AuthenticationResponse authenticateUser(
+        String username,
+        String password,
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) throws Exception {
+
+        final var authenticationRequest = new UsernamePasswordAuthenticationToken(
+            username,
+            password
+        );
+
+        final var authentication = authenticationManager.authenticate(authenticationRequest);
+        final var userPrincipal = (UserPrincipal) authentication.getPrincipal();
+
+        final var userId = userPrincipal.getId();
+
+        final var authenticationResponse = new AuthenticationResponse(
+            tokenProvider.generateAccessToken(userId),
+            tokenProvider.generateRefreshToken(userId)
+        );
+
+        final var context = SecurityContextHolder.createEmptyContext();
+
+        context.setAuthentication(authentication);
+
+        this.securityContextRepository.saveContext(
+            context,
+            request,
+            response
+        );
+
+        return authenticationResponse;
+    }
+
     @Override
     public ResponseEntity<AuthenticationResponse> authenticate(
         AuthenticationRequest authenticationRequest,
@@ -41,38 +86,17 @@ public class AuthenticationController implements AuthenticationResource {
         HttpServletResponse response
     ) {
 
-        final var username = authenticationRequest.username();
-
-        final var authenticationToken = new UsernamePasswordAuthenticationToken(
-            username,
-            authenticationRequest.password()
-        );
-
         try {
-            final var authentication = authenticationManager.authenticate(authenticationToken);
-            final var userPrincipal = (UserPrincipal) authentication.getPrincipal();
-
-            if (userPrincipal == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value())
-                    .build();
-            }
-
-            final var userId = userPrincipal.getId();
-
-            final var authenticationResponse = new AuthenticationResponse(
-                tokenProvider.generateAccessToken(userId),
-                tokenProvider.generateRefreshToken(userId)
-            );
-
-            final var context = SecurityContextHolder.createEmptyContext();
-
-            context.setAuthentication(authentication);
-
-            this.securityContextRepository.saveContext(
-                context,
+            final var authenticationResponse = this.authenticateUser(
+                authenticationRequest.username(),
+                authenticationRequest.password(),
                 request,
                 response
             );
+            if (authenticationResponse == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value())
+                    .build();
+            }
 
             return ResponseEntity.ok(authenticationResponse);
 
@@ -126,16 +150,49 @@ public class AuthenticationController implements AuthenticationResource {
     }
 
     @Override
-    public ResponseEntity<Void> signUp(@Valid SignUpRequest signUpRequest) {
+    public ResponseEntity<SignUpResponse> signUp(
+        @Valid SignUpRequest signUpRequest,
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) {
 
-        final var doesPasswordsMatch = signUpRequest.password1() == signUpRequest.password2();
+        final var username = signUpRequest.username();
+        final var doesPasswordsMatch = signUpRequest.password1()
+            .equals(signUpRequest.password2());
 
         if (!doesPasswordsMatch) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST.value())
                 .build();
         }
 
-        // TODO Auto-generated method stub
-        return null;
+        final var password = signUpRequest.password1();
+
+        final var encodedPassword = passwordEncoder.encode(password);
+
+        try {
+            final var appUser = signUpAppUserUseCase.execute(
+                username,
+                encodedPassword
+            );
+
+            final var authenticationResponse = this.authenticateUser(
+                username,
+                password,
+                request,
+                response
+            );
+
+            final var signUpResponse = new SignUpResponse(
+                authenticationResponse,
+                UserInfoResponse.from(appUser)
+            );
+
+            return ResponseEntity.created(null)
+                .body(signUpResponse);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST.value())
+                .build();
+        }
     }
 }

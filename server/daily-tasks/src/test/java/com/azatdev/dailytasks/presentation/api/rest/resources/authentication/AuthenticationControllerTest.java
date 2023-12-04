@@ -1,6 +1,7 @@
 package com.azatdev.dailytasks.presentation.api.rest.resources.authentication;
 
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.times;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.*;
@@ -16,6 +17,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,7 +35,6 @@ import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.Sign
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.TokenVerificationRequest;
 import com.azatdev.dailytasks.presentation.config.presentation.security.WebSecurityConfig;
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
-import com.azatdev.dailytasks.presentation.security.services.CustomUserDetailsService;
 import com.azatdev.dailytasks.presentation.security.services.jwt.JWTService;
 
 @WebMvcTest(AuthenticationController.class)
@@ -51,7 +54,7 @@ class AuthenticationControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    CustomUserDetailsService customUserDetailsService;
+    private AuthenticationManager authenticationManager;
 
     @MockBean
     private SignUpAppUserUseCase signUpAppUserUseCase;
@@ -85,12 +88,7 @@ class AuthenticationControllerTest {
             wrongPassword
         );
 
-        given(
-            passwordEncoder.matches(
-                anyString(),
-                anyString()
-            )
-        ).willReturn(false);
+        given(authenticationManager.authenticate(any())).willThrow(new BadCredentialsException("Wrong password"));
 
         // When
         final var response = performAuthenticateRequest(authenticationRequest);
@@ -138,7 +136,6 @@ class AuthenticationControllerTest {
         final var expectedRefreshToken = "refreshToken";
 
         given(tokenProvider.generateAccessToken(user.getId())).willReturn(expectedAccessToken);
-
         given(tokenProvider.generateRefreshToken(user.getId())).willReturn(expectedRefreshToken);
 
         given(
@@ -152,14 +149,13 @@ class AuthenticationControllerTest {
         final var response = performAuthenticateRequest(authenticationRequest);
 
         // Then
-        then(passwordEncoder).should(times(1))
-            .matches(
-                password,
-                password
+        then(authenticationManager).should(times(1))
+            .authenticate(
+                new UsernamePasswordAuthenticationToken(
+                    username,
+                    password
+                )
             );
-
-        then(customUserDetailsService).should(times(1))
-            .loadUserByUsername(username);
 
         response.andExpect(status().isOk())
             .andExpect(authenticated())
@@ -328,7 +324,7 @@ class AuthenticationControllerTest {
             password
         );
 
-        given(passwordEncoder.encode((CharSequence) password)).willReturn(password);
+        given(passwordEncoder.encode(any())).willReturn(password);
 
         final var user = new AppUser(
             userId,
@@ -343,12 +339,33 @@ class AuthenticationControllerTest {
             )
         ).willReturn(user);
 
+        final var expectedAccessToken = "accessToken";
+        final var expectedRefreshToken = "refreshToken";
+
+        given(tokenProvider.generateAccessToken(userId)).willReturn(expectedAccessToken);
+        given(tokenProvider.generateRefreshToken(userId)).willReturn(expectedRefreshToken);
+
+        final var userPrincipal = new UserPrincipal(
+            userId,
+            username,
+            password,
+            Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+        );
+
+        final var usernamePasswordToken = new UsernamePasswordAuthenticationToken(
+            userPrincipal,
+            password,
+            Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+        );
+
+        given(authenticationManager.authenticate(any())).willReturn(usernamePasswordToken);
+
         // When
         final var action = performSignUpRequest(request);
 
         // Then
         then(passwordEncoder).should(times(1))
-            .encode(password);
+            .encode(matches(password));
 
         action.andExpect(status().isCreated())
             .andExpect(authenticated());
@@ -371,7 +388,14 @@ class AuthenticationControllerTest {
             Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
         );
 
-        given(customUserDetailsService.loadUserByUsername(username)).willReturn(userPrincipal);
+        given(authenticationManager.authenticate(any())).willReturn(
+            new UsernamePasswordAuthenticationToken(
+                userPrincipal,
+                password,
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+            )
+        );
+
         return userPrincipal;
     }
 
