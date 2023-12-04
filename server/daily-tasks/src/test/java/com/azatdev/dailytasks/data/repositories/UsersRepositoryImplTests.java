@@ -161,7 +161,7 @@ class UsersRepositoryImplTests {
             encodedPassword
         );
 
-        given(sut.jpaUsersRepository.saveAndFlush(expectedUserData)).willReturn(expectedUserData);
+        given(sut.jpaUsersRepository.saveAndFlush(any())).willReturn(expectedUserData);
 
         // When
         final var createdUser = sut.usersRepository.create(

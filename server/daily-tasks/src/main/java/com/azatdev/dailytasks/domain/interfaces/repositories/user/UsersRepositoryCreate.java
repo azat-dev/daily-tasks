@@ -16,6 +16,9 @@ public interface UsersRepositoryCreate {
     public abstract class CreateException extends RuntimeException {
     }
 
+    public class UsernameIsEmptyException extends CreateException {
+    }
+
     public class UsernameAlreadyExistsException extends CreateException {
     }
 

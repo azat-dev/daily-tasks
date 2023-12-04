@@ -54,7 +54,29 @@ public class UsersRepositoryImpl implements UsersRepository {
         String username,
         String encodedPassword
     ) throws CreateException {
-        // TODO Auto-generated method stub
-        return null;
+
+        if (username == null || username.isEmpty()) {
+            throw new UsernameIsEmptyException();
+        }
+
+        if (encodedPassword == null || encodedPassword.isEmpty()) {
+            throw new PasswordIsEmptyException();
+        }
+
+        final var foundUserDataResult = jpaUsersRepository.findByUsername(username);
+
+        if (foundUserDataResult.isPresent()) {
+            throw new UsernameAlreadyExistsException();
+        }
+
+        final var userData = new UserData(
+            UUID.randomUUID(),
+            username,
+            encodedPassword
+        );
+
+        final var createdUserData = jpaUsersRepository.saveAndFlush(userData);
+
+        return mapUserDataToAppUser(createdUserData);
     }
 }
