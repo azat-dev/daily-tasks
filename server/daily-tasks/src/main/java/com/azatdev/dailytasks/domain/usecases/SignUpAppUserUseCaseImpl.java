@@ -5,8 +5,6 @@ import com.azatdev.dailytasks.domain.models.AppUser;
 
 public final class SignUpAppUserUseCaseImpl implements SignUpAppUserUseCase {
 
-    // Constructors
-
     private final UsersRepositoryCreate usersRepository;
 
     public SignUpAppUserUseCaseImpl(UsersRepositoryCreate usersRepository) {
@@ -18,8 +16,18 @@ public final class SignUpAppUserUseCaseImpl implements SignUpAppUserUseCase {
         String username,
         String encodedPassword
     ) throws UseCaseException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
-    }
 
+        try {
+            return usersRepository.create(
+                username,
+                encodedPassword
+            );
+        } catch (UsersRepositoryCreate.UsernameAlreadyExistsException e) {
+            throw new UsernameAlreadyExistsException();
+        } catch (UsersRepositoryCreate.PasswordIsEmptyException e) {
+            throw new PasswordIsEmptyException();
+        } catch (UsersRepositoryCreate.InternalErrorException e) {
+            throw new InternalErrorException();
+        }
+    }
 }
