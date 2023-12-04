@@ -48,4 +48,13 @@ public class UsersRepositoryImpl implements UsersRepository {
         final var foundUserData = foundUserDataResult.get();
         return Result.success(Optional.of(mapUserDataToAppUser(foundUserData)));
     }
+
+    @Override
+    public AppUser create(
+        String username,
+        String encodedPassword
+    ) throws CreateException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

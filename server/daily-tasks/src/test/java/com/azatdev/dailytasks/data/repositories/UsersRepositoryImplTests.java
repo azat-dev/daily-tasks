@@ -2,6 +2,8 @@ package com.azatdev.dailytasks.data.repositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -9,6 +11,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import com.azatdev.dailytasks.data.repositories.data.UsersRepositoryImpl;
+import com.azatdev.dailytasks.data.repositories.data.user.UserData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepository;
 import com.azatdev.dailytasks.domain.models.AppUser;
@@ -32,7 +35,7 @@ class UsersRepositoryImplTests {
     }
 
     @Test
-    void findByUsernameNotExistingUserMustReturnEmptyOptionalTest() {
+    void findByUsername_givenNotExistingUser_thenMustReturnEmptyOptional() {
 
         // Given
         String wrongUserName = "wrongUserName";
@@ -52,7 +55,7 @@ class UsersRepositoryImplTests {
     }
 
     @Test
-    void findByUsernameExistingUserMustReturnUserTest() {
+    void findByUsername_givenExistingUser_thenMustReturnUser() {
 
         // Given
         final String userName = "userName";
@@ -84,7 +87,7 @@ class UsersRepositoryImplTests {
     }
 
     @Test
-    void findByIdNotExistingUserMustReturnEmptyOptionalTest() {
+    void findById_givenNotExistingUser_thenMustReturnEmptyOptional() {
 
         // Given
         final var wrongUserId = UUID.randomUUID();
@@ -104,7 +107,7 @@ class UsersRepositoryImplTests {
     }
 
     @Test
-    void findByIdExistingUserMustReturnUserTest() {
+    void findById_givenExistingUser_thenMustReturnUser() {
 
         // Given
         final var userData = TestEntityDataGenerator.anyUserDataWithUserName("userName");
@@ -133,5 +136,43 @@ class UsersRepositoryImplTests {
             result.getValue()
                 .get()
         ).isEqualTo(expectedUser);
+    }
+
+    @Test
+    void create_givenValidData_thenMustCreateUser() throws Exception {
+
+        // Given
+        final var username = "username";
+        final var encodedPassword = "encodedPassword";
+
+        final var sut = createSUT();
+
+        final var userId = UUID.randomUUID();
+
+        final var expectedAppUser = new AppUser(
+            userId,
+            username,
+            encodedPassword
+        );
+
+        final var expectedUserData = new UserData(
+            userId,
+            username,
+            encodedPassword
+        );
+
+        given(sut.jpaUsersRepository.saveAndFlush(expectedUserData)).willReturn(expectedUserData);
+
+        // When
+        final var createdUser = sut.usersRepository.create(
+            username,
+            encodedPassword
+        );
+
+        // Then
+        then(sut.jpaUsersRepository).should(times(1))
+            .saveAndFlush(any());
+
+        assertThat(createdUser).isEqualTo(expectedAppUser);
     }
 }
