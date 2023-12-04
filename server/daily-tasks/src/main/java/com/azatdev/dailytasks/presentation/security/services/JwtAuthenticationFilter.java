@@ -1,16 +1,19 @@
 package com.azatdev.dailytasks.presentation.security.services;
 
 import java.io.IOException;
-import java.util.UUID;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.core.log.LogMessage;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import com.azatdev.dailytasks.presentation.security.services.jwt.JWTService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,51 +22,97 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private JWTService tokenProvider;
-    private CustomUserDetailsService customUserDetailsService;
+    private AuthenticationManager authenticationManager;
 
-    public JwtAuthenticationFilter(
-        JWTService tokenProvider,
-        CustomUserDetailsService customUserDetailsService
-    ) {
-        this.tokenProvider = tokenProvider;
-        this.customUserDetailsService = customUserDetailsService;
+    private SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder
+        .getContextHolderStrategy();
+
+    private SecurityContextRepository securityContextRepository = new RequestAttributeSecurityContextRepository();
+
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+        Assert.notNull(
+            authenticationManager,
+            "authenticationManager cannot be null"
+        );
+        this.authenticationManager = authenticationManager;
     }
 
     @Override
     protected void doFilterInternal(
         HttpServletRequest request,
         HttpServletResponse response,
-        FilterChain filterChain
-    ) throws ServletException, IOException {
-        String token = getJwtFromRequest(request);
-
-        if (StringUtils.hasText(token) && tokenProvider.verifyToken(token)) {
-            UUID userId = tokenProvider.getUserIdFromToken(token);
-
-            UserDetails userDetails = customUserDetailsService.loadUserById(userId);
-
-            if (userDetails != null) {
-                final var authentication = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.getAuthorities()
+        FilterChain chain
+    ) throws IOException, ServletException {
+        try {
+            final var authRequest = getTokenFromRequest(request);
+            if (authRequest == null) {
+                this.logger.trace(
+                    "Did not process authentication request since failed to find jwt token Authorization header"
                 );
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext()
-                    .setAuthentication(authentication);
+                chain.doFilter(
+                    request,
+                    response
+                );
+                return;
             }
 
+            final var token = authRequest.getToken();
+
+            if (!authenticationIsRequired(token)) {
+                chain.doFilter(
+                    request,
+                    response
+                );
+                return;
+            }
+
+            Authentication authResult = this.authenticationManager.authenticate(authRequest);
+
+            SecurityContext context = this.securityContextHolderStrategy.createEmptyContext();
+            context.setAuthentication(authResult);
+            this.securityContextHolderStrategy.setContext(context);
+
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug(
+                    LogMessage.format(
+                        "Set SecurityContextHolder to %s",
+                        authResult
+                    )
+                );
+            }
+            this.securityContextRepository.saveContext(
+                context,
+                request,
+                response
+            );
+        } catch (AuthenticationException ex) {
+            this.securityContextHolderStrategy.clearContext();
+            this.logger.debug(
+                "Failed to process authentication request",
+                ex
+            );
         }
 
-        filterChain.doFilter(
+        chain.doFilter(
             request,
             response
         );
     }
 
-    private String getJwtFromRequest(HttpServletRequest request) {
+    protected boolean authenticationIsRequired(String token) {
+        JWTAuthenticationToken existingAuth = (JWTAuthenticationToken) this.securityContextHolderStrategy.getContext()
+            .getAuthentication();
+
+        if (
+            existingAuth == null || !existingAuth.getToken()
+                .equals(token) || !existingAuth.isAuthenticated()
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    private JWTAuthenticationToken getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         final var hasBearerToken = StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ");
 
@@ -71,9 +120,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return null;
         }
 
-        return bearerToken.substring(
+        final var token = bearerToken.substring(
             7,
             bearerToken.length()
         );
+        return JWTAuthenticationToken.unauthenticated(token);
     }
 }

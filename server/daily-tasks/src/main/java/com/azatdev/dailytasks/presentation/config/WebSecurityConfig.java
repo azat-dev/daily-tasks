@@ -20,6 +20,7 @@ import org.springframework.security.web.context.SecurityContextRepository;
 
 import com.azatdev.dailytasks.presentation.security.services.CustomUserDetailsService;
 import com.azatdev.dailytasks.presentation.security.services.JwtAuthenticationFilter;
+import com.azatdev.dailytasks.presentation.security.services.JwtAuthenticationProvider;
 import com.azatdev.dailytasks.presentation.security.services.jwt.DateTimeProvider;
 import com.azatdev.dailytasks.presentation.security.services.jwt.JWTService;
 import com.azatdev.dailytasks.presentation.security.services.jwt.JWTServiceImpl;
@@ -29,14 +30,8 @@ import com.azatdev.dailytasks.presentation.security.services.jwt.JWTServiceImpl;
 public class WebSecurityConfig {
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter(
-        CustomUserDetailsService customUserDetailsService,
-        JWTService tokenProvider
-    ) {
-        return new JwtAuthenticationFilter(
-            tokenProvider,
-            customUserDetailsService
-        );
+    public JwtAuthenticationFilter jwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+        return new JwtAuthenticationFilter(authenticationManager);
     }
 
     @Bean
@@ -72,13 +67,23 @@ public class WebSecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(
         CustomUserDetailsService customUserDetailsService,
-        PasswordEncoder passwordEncoder
+        PasswordEncoder passwordEncoder,
+        JWTService jwtService
     ) {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(customUserDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder);
 
-        return new ProviderManager(authenticationProvider);
+        JwtAuthenticationProvider jwtAuthenticationProvider = new JwtAuthenticationProvider(
+            jwtService,
+            customUserDetailsService
+        );
+
+        DaoAuthenticationProvider userNameAuthenticationProvider = new DaoAuthenticationProvider();
+        userNameAuthenticationProvider.setUserDetailsService(customUserDetailsService);
+        userNameAuthenticationProvider.setPasswordEncoder(passwordEncoder);
+
+        return new ProviderManager(
+            jwtAuthenticationProvider,
+            userNameAuthenticationProvider
+        );
     }
 
     @Bean
