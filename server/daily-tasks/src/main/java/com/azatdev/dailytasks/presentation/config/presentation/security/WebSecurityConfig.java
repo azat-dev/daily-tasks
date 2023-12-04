@@ -39,12 +39,10 @@ public class WebSecurityConfig {
             .authorizeHttpRequests(
                 requests -> requests.requestMatchers(
                     HttpMethod.POST,
-                    "/api/auth/token",
-                    "/api/auth/token/refresh",
-                    "/api/auth/token/verify"
+                    "/api/public/**"
                 )
                     .permitAll()
-                    .requestMatchers("/api/**")
+                    .requestMatchers("/api/with-auth/**")
                     .authenticated()
             )
             .addFilterBefore(

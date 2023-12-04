@@ -13,6 +13,7 @@ import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.Auth
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.AuthenticationResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.RefreshTokenRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.RefreshTokenResponse;
+import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.SignUpRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.TokenVerificationRequest;
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 import com.azatdev.dailytasks.presentation.security.services.jwt.JWTService;
@@ -122,5 +123,19 @@ public class AuthenticationController implements AuthenticationResource {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<Void> signUp(@Valid SignUpRequest signUpRequest) {
+
+        final var doesPasswordsMatch =  signUpRequest.password1() == signUpRequest.password2();
+
+        if (!doesPasswordsMatch) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST.value())
+                .build();
+        }
+        
+        // TODO Auto-generated method stub
+        return null;
     }
 }

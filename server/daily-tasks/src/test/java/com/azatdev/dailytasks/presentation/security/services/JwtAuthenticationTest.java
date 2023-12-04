@@ -30,12 +30,17 @@ import com.azatdev.dailytasks.presentation.security.services.jwt.JWTService;
 @RestController
 class TestController {
 
-    @PostMapping("/api/test_path")
-    ResponseEntity<String> testPath(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+    @PostMapping("/api/with-auth/test_path")
+    ResponseEntity<String> testPathWithAuth(@AuthenticationPrincipal UserPrincipal userPrincipal) {
         return ResponseEntity.ok(
             userPrincipal.getId()
                 .toString()
         );
+    }
+
+    @PostMapping("/api/public/test_path")
+    ResponseEntity<String> testPublicPath() {
+        return ResponseEntity.ok("public");
     }
 }
 
@@ -120,6 +125,20 @@ class JwtAuthenticationTest {
             .andExpect(content().string(userId.toString()));
     }
 
+    @Test
+    void givenPublicPath_thenReturnSuccess() throws Exception {
+
+        // Given
+
+        // When
+        final var action = performRequestPublicPath();
+
+        // Then
+        action.andExpect(status().isOk())
+            .andExpect(unauthenticated())
+            .andExpect(content().string("public"));
+    }
+
     UUID anyUserId() {
         return UUID.randomUUID();
     }
@@ -145,7 +164,7 @@ class JwtAuthenticationTest {
 
     private ResultActions performRequestWithToken(String token) throws Exception {
 
-        final var url = "/api/test_path";
+        final var url = "/api/with-auth/test_path";
 
         var request = post(url);
 
@@ -157,5 +176,11 @@ class JwtAuthenticationTest {
             );
         }
         return mockMvc.perform(request);
+    }
+
+    private ResultActions performRequestPublicPath() throws Exception {
+
+        final var url = "/api/public/test_path";
+        return mockMvc.perform(post(url));
     }
 }

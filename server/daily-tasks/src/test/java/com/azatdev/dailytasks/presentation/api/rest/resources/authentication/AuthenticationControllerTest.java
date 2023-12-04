@@ -342,7 +342,7 @@ class AuthenticationControllerTest {
     }
 
     private ResultActions performAuthenticateRequest(AuthenticationRequest request) throws Exception {
-        final String url = "/api/auth/token";
+        final String url = "/api/public/auth/token";
         return performPostRequest(
             url,
             request
@@ -350,7 +350,7 @@ class AuthenticationControllerTest {
     }
 
     private ResultActions performVerifyTokenRequest(TokenVerificationRequest request) throws Exception {
-        final String url = "/api/auth/token/verify";
+        final String url = "/api/public/auth/token/verify";
         return performPostRequest(
             url,
             request
@@ -358,7 +358,7 @@ class AuthenticationControllerTest {
     }
 
     private ResultActions performRefreshTokenRequest(RefreshTokenRequest request) throws Exception {
-        final String url = "/api/auth/token/refresh";
+        final String url = "/api/public/auth/token/refresh";
         return performPostRequest(
             url,
             request
@@ -366,7 +366,7 @@ class AuthenticationControllerTest {
     }
 
     private ResultActions performSignUpRequest(SignUpRequest request) throws Exception {
-        final String url = "/api/auth/sign-up";
+        final String url = "/api/public/auth/sign-up";
         return performPostRequest(
             url,
             request

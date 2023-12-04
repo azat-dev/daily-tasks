@@ -11,6 +11,7 @@ import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.Auth
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.AuthenticationResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.RefreshTokenRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.RefreshTokenResponse;
+import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.SignUpRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.authentication.TokenVerificationRequest;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/public/auth")
 @Validated
 public interface AuthenticationResource {
 
@@ -34,4 +35,8 @@ public interface AuthenticationResource {
 
     @PostMapping("/token/refresh")
     ResponseEntity<RefreshTokenResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest);
+
+
+    @PostMapping("/sign-up")
+    ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequest signUpRequest);
 }
