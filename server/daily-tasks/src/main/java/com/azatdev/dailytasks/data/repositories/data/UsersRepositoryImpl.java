@@ -3,6 +3,8 @@ package com.azatdev.dailytasks.data.repositories.data;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.dao.DataIntegrityViolationException;
+
 import com.azatdev.dailytasks.data.repositories.data.user.UserData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepository;
@@ -75,8 +77,20 @@ public class UsersRepositoryImpl implements UsersRepository {
             encodedPassword
         );
 
-        final var createdUserData = jpaUsersRepository.saveAndFlush(userData);
+        try {
+            final var createdUserData = jpaUsersRepository.saveAndFlush(userData);
+            return mapUserDataToAppUser(createdUserData);
+        } catch (DataIntegrityViolationException e) {
 
-        return mapUserDataToAppUser(createdUserData);
+            final var isUserWithSameUsernameExists = jpaUsersRepository.findByUsername(username)
+                .isPresent();
+
+            if (isUserWithSameUsernameExists) {
+                throw new UsernameAlreadyExistsException();
+            }
+
+            throw new InternalErrorException();
+
+        }
     }
 }

@@ -10,10 +10,34 @@ import jakarta.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "users", uniqueConstraints = { @UniqueConstraint(columnNames = "username") })
-public record UserData(
-    @Id UUID id,
-    @Nonnull String username,
-    @Nonnull String password
-) {
+public class UserData {
 
+    private @Id UUID id;
+    private @Nonnull String username;
+    private @Nonnull String password;
+
+    public UserData() {
+    }
+
+    public UserData(
+        UUID id,
+        @Nonnull String username,
+        @Nonnull String password
+    ) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+    }
+
+    public UUID id() {
+        return id;
+    }
+
+    public String username() {
+        return username;
+    }
+
+    public String password() {
+        return password;
+    }
 }
