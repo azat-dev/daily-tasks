@@ -95,4 +95,55 @@ public class CreateBacklogForDateIfDoesntExistUseCaseImplTest {
 
         assertThat(createdBacklogId).isEqualTo(backlogId);
     }
+
+    @Test
+    void execute_givenBacklogExists_thenThrowException() throws Exception {
+
+        // Given
+        final var wednesday = LocalDate.of(
+            2021,
+            1,
+            7
+        );
+
+        final var adjustedDate = LocalDate.of(
+            2021,
+            1,
+            7
+        );
+
+        final var backlogDuration = Backlog.Duration.WEEK;
+
+        final var sut = createSUT();
+
+        final var backlogId = 1L;
+
+        given(
+            sut.adjustDate.calculate(
+                wednesday,
+                backlogDuration
+            )
+        ).willReturn(adjustedDate);
+
+        given(
+            sut.backlogRepository.create(
+                adjustedDate,
+                Backlog.Duration.WEEK,
+                Optional.empty()
+            )
+        ).willThrow(new BacklogRepositoryCreate.BacklogAlreadyExistsException(backlogId));
+
+        // When
+        final var createdBacklogId = assertDoesNotThrow(
+            () -> sut.useCase.execute(
+                wednesday,
+                backlogDuration,
+                Optional.empty()
+            )
+        );
+
+        // Then
+
+        assertThat(createdBacklogId).isEqualTo(backlogId);
+    }
 }
