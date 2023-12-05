@@ -1,5 +1,6 @@
 package com.azatdev.dailytasks.domain.usecases;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.mock;
@@ -10,7 +11,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryGet;
+import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryCreate;
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.usecases.utils.AdjustDateToStartOfBacklog;
 
@@ -19,14 +20,14 @@ public class CreateBacklogForDateIfDoesntExistUseCaseImplTest {
     private record SUT(
         CreateBacklogForDateIfDoesntExistUseCase useCase,
         AdjustDateToStartOfBacklog adjustDate,
-        BacklogRepositoryGet backlogRepository
+        BacklogRepositoryCreate backlogRepository
     ) {
 
     }
 
     private SUT createSUT() {
         final var adjustDate = mock(AdjustDateToStartOfBacklog.class);
-        final var backlogRepository = mock(BacklogRepositoryGet.class);
+        final var backlogRepository = mock(BacklogRepositoryCreate.class);
 
         return new SUT(
             new CreateBacklogForDateIfDoesntExistUseCaseImpl(
@@ -39,7 +40,7 @@ public class CreateBacklogForDateIfDoesntExistUseCaseImplTest {
     }
 
     @Test
-    void execute_givenBacklogDoesntExist_thenCreateNewBacklog() {
+    void execute_givenBacklogDoesntExist_thenCreateNewBacklog() throws Exception {
 
         // Given
         final var wednesday = LocalDate.of(
@@ -58,12 +59,15 @@ public class CreateBacklogForDateIfDoesntExistUseCaseImplTest {
 
         final var sut = createSUT();
 
+        final var backlogId = 1L;
+
         given(
-            sut.backlogRepository.getBacklogId(
+            sut.backlogRepository.create(
                 any(),
-                eq(Backlog.Duration.WEEK)
+                eq(Backlog.Duration.WEEK),
+                any()
             )
-        ).willReturn(Optional.empty());
+        ).willReturn(backlogId);
 
         given(
             sut.adjustDate.calculate(
@@ -73,7 +77,7 @@ public class CreateBacklogForDateIfDoesntExistUseCaseImplTest {
         ).willReturn(adjustedDate);
 
         // When
-        assertDoesNotThrow(
+        final var createdBacklogId = assertDoesNotThrow(
             () -> sut.useCase.execute(
                 wednesday,
                 backlogDuration,
@@ -82,12 +86,13 @@ public class CreateBacklogForDateIfDoesntExistUseCaseImplTest {
         );
 
         // Then
-        then(sut.useCase).should(times(1))
-            .execute(
+        then(sut.backlogRepository).should(times(1))
+            .create(
                 adjustedDate,
-                Backlog.Duration.WEEK,
+                backlogDuration,
                 Optional.empty()
             );
-    }
 
+        assertThat(createdBacklogId).isEqualTo(backlogId);
+    }
 }
