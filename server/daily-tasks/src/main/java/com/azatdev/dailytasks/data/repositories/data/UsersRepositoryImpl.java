@@ -55,15 +55,7 @@ public class UsersRepositoryImpl implements UsersRepository {
     public AppUser create(
         String username,
         String encodedPassword
-    ) throws CreateException {
-
-        if (username == null || username.isEmpty()) {
-            throw new UsernameIsEmptyException();
-        }
-
-        if (encodedPassword == null || encodedPassword.isEmpty()) {
-            throw new PasswordIsEmptyException();
-        }
+    ) throws UsernameAlreadyExistsException {
 
         final var foundUserDataResult = jpaUsersRepository.findByUsername(username);
 
@@ -89,8 +81,7 @@ public class UsersRepositoryImpl implements UsersRepository {
                 throw new UsernameAlreadyExistsException();
             }
 
-            throw new InternalErrorException();
-
+            throw new RuntimeException(e);
         }
     }
 }

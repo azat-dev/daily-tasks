@@ -6,9 +6,9 @@ import java.util.Optional;
 import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPABacklogRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepository;
-import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryGet;
+import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transaction;
 import com.azatdev.dailytasks.domain.models.Backlog;
-import com.azatdev.dailytasks.utils.Result;
+import com.azatdev.dailytasks.domain.models.Backlog.Duration;
 
 public class BacklogRepositoryImpl implements BacklogRepository {
 
@@ -31,20 +31,34 @@ public class BacklogRepositoryImpl implements BacklogRepository {
     }
 
     @Override
-    public Result<Optional<Long>, BacklogRepositoryGet.Error> getBacklogId(
+    public Optional<Long> getBacklogId(
         LocalDate startDate,
         Backlog.Duration duration
     ) {
 
-        var backlogData = jpaBacklogRepository.findByStartDateAndDuration(
-            startDate,
-            this.mapDuration(duration)
-        );
+        try {
+            var backlogData = jpaBacklogRepository.findByStartDateAndDuration(
+                startDate,
+                this.mapDuration(duration)
+            );
 
-        if (backlogData != null) {
-            return Result.success(Optional.of(backlogData.getId()));
+            if (backlogData != null) {
+                return Optional.of(backlogData.getId());
+            }
+
+            return Optional.empty();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+    }
 
-        return Result.success(Optional.empty());
+    @Override
+    public long create(
+        LocalDate startDate,
+        Duration duration,
+        Transaction transaction
+    ) throws CreateException {
+        // TODO Auto-generated method stub
+        return 0;
     }
 }

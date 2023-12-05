@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -74,9 +75,9 @@ class CreateTaskInBacklogUseCaseImplTests {
             sut.createBacklogIfDoesntExist.execute(
                 backlogStartDate,
                 backlogDuration,
-                sut.transaction
+                Optional.of(sut.transaction)
             )
-        ).willReturn(Result.success(backlogId));
+        ).willReturn(backlogId);
 
         given(
             sut.tasksRepository.createTask(
@@ -104,7 +105,7 @@ class CreateTaskInBacklogUseCaseImplTests {
             .execute(
                 backlogStartDate,
                 backlogDuration,
-                sut.transaction
+                Optional.of(sut.transaction)
             );
 
         then(sut.tasksRepository).should(times(1))

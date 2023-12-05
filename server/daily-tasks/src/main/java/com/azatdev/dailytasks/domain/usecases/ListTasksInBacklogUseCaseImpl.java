@@ -11,7 +11,7 @@ import com.azatdev.dailytasks.domain.models.Task;
 import com.azatdev.dailytasks.domain.usecases.utils.AdjustDateToStartOfBacklog;
 import com.azatdev.dailytasks.utils.Result;
 
-public class ListTasksInBacklogUseCaseImpl implements ListTasksInBacklogUseCase {
+public final class ListTasksInBacklogUseCaseImpl implements ListTasksInBacklogUseCase {
 
     private final BacklogRepositoryGet backlogRepository;
     private final TasksRepositoryList tasksRepository;
@@ -32,26 +32,21 @@ public class ListTasksInBacklogUseCaseImpl implements ListTasksInBacklogUseCase 
         LocalDate forDate,
         Backlog.Duration duration
     ) {
-        var backlogStartDate = adjustDateToStart.calculate(
+        final var backlogStartDate = adjustDateToStart.calculate(
             forDate,
             duration
         );
-        var getBacklogIdResult = backlogRepository.getBacklogId(
+
+        final var backlogIdResult = backlogRepository.getBacklogId(
             backlogStartDate,
             duration
         );
 
-        if (!getBacklogIdResult.isSuccess()) {
+        if (backlogIdResult.isEmpty()) {
             return Result.success(new ArrayList<>());
         }
 
-        final var optionalBacklogId = getBacklogIdResult.getValue();
-
-        if (optionalBacklogId.isEmpty()) {
-            return Result.success(new ArrayList<>());
-        }
-
-        var listTasksResult = tasksRepository.list(optionalBacklogId.get());
+        final var listTasksResult = tasksRepository.list(backlogIdResult.get());
 
         if (listTasksResult.isSuccess()) {
             return Result.success(listTasksResult.getValue());

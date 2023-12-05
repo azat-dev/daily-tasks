@@ -1,6 +1,7 @@
 package com.azatdev.dailytasks.domain.usecases;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryCreate;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.TransactionFactory;
@@ -37,18 +38,11 @@ public class CreateTaskInBacklogUseCaseImpl implements CreateTaskInBacklogUseCas
         try {
             transaction.begin();
 
-            final var backlogIdResult = createBacklogIfDoesntExistUseCase.execute(
+            final var backlogId = createBacklogIfDoesntExistUseCase.execute(
                 date,
                 backlogDuration,
-                transaction
+                Optional.of(transaction)
             );
-
-            if (!backlogIdResult.isSuccess()) {
-                transaction.rollback();
-                return Result.failure(Error.INTERNAL_ERROR);
-            }
-
-            final var backlogId = backlogIdResult.getValue();
 
             final var creationResult = tasksRepository.createTask(
                 backlogId,

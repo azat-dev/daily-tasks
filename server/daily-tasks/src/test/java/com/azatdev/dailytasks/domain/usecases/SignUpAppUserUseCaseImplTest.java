@@ -113,13 +113,6 @@ public class SignUpAppUserUseCaseImplTest {
 
         final var sut = createSUT();
 
-        given(
-            sut.usersRepository.create(
-                username,
-                emptyPassword
-            )
-        ).willThrow(new UsersRepositoryCreate.PasswordIsEmptyException());
-
         // When
         final var exception = assertThrows(
             SignUpAppUserUseCase.PasswordIsEmptyException.class,
@@ -130,7 +123,7 @@ public class SignUpAppUserUseCaseImplTest {
         );
 
         // Then
-        then(sut.usersRepository).should(times(1))
+        then(sut.usersRepository).should(never())
             .create(
                 username,
                 emptyPassword

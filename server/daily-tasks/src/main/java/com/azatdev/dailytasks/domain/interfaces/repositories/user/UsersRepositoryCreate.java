@@ -9,23 +9,10 @@ public interface UsersRepositoryCreate {
     public AppUser create(
         String username,
         String encodedPassword
-    ) throws CreateException;
+    ) throws UsernameAlreadyExistsException;
 
     // Exceptions
 
-    public abstract class CreateException extends RuntimeException {
+    public class UsernameAlreadyExistsException extends Exception {
     }
-
-    public class UsernameIsEmptyException extends CreateException {
-    }
-
-    public class UsernameAlreadyExistsException extends CreateException {
-    }
-
-    public class PasswordIsEmptyException extends CreateException {
-    }
-
-    public class InternalErrorException extends CreateException {
-    }
-
 }

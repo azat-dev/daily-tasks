@@ -70,7 +70,7 @@ public class ListTasksInBacklogUseCaseTests {
                 backlogStartDate,
                 backlogDuration
             )
-        ).willReturn(Result.success(Optional.empty()));
+        ).willReturn(Optional.empty());
 
         // When
         var result = sut.listTasksInBacklogUseCase.execute(
@@ -124,7 +124,7 @@ public class ListTasksInBacklogUseCaseTests {
                 backlogStartDate,
                 backlogDuration
             )
-        ).willReturn(Result.success(Optional.of(backlogId)));
+        ).willReturn(Optional.of(backlogId));
 
         given(sut.tasksRepository.list(backlogId)).willReturn(Result.success(expectedTasks));
 

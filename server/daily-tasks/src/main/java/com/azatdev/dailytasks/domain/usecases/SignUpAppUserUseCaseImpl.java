@@ -15,19 +15,26 @@ public final class SignUpAppUserUseCaseImpl implements SignUpAppUserUseCase {
     public AppUser execute(
         String username,
         String encodedPassword
-    ) throws UseCaseException {
+    ) throws UsernameAlreadyExistsException, PasswordIsEmptyException, UsernameIsEmptyException {
+
+        final var cleanedUserName = username.toLowerCase()
+            .trim();
+
+        if (username.isEmpty()) {
+            throw new UsernameIsEmptyException();
+        }
+
+        if (encodedPassword.isEmpty()) {
+            throw new PasswordIsEmptyException();
+        }
 
         try {
             return usersRepository.create(
-                username,
+                cleanedUserName,
                 encodedPassword
             );
         } catch (UsersRepositoryCreate.UsernameAlreadyExistsException e) {
             throw new UsernameAlreadyExistsException();
-        } catch (UsersRepositoryCreate.PasswordIsEmptyException e) {
-            throw new PasswordIsEmptyException();
-        } catch (UsersRepositoryCreate.InternalErrorException e) {
-            throw new InternalErrorException();
         }
     }
 }

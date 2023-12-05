@@ -27,7 +27,7 @@ class BacklogRepositoryTests {
     BacklogRepositoryImpl backlogRepository;
 
     @Test
-    void getBacklogIdEmptyDbShouldReturnEmptyOptionalTest() {
+    void getBacklogId_givenEmptyDb_thenShouldReturnEmptyOptional() {
 
         // Given
         final var startDate = LocalDate.now();
@@ -42,14 +42,13 @@ class BacklogRepositoryTests {
         ).willReturn(expectedBacklogData);
 
         // When
-        var result = backlogRepository.getBacklogId(
+        final var result = backlogRepository.getBacklogId(
             startDate,
             duration
         );
 
         // Then
-        assertThat(result.isSuccess()).isTrue();
-        assertThat(result.getValue()).isEmpty();
+        assertThat(result).isEmpty();
 
         then(jpaBacklogRepository).should(times(1))
             .findByStartDateAndDuration(
