@@ -4,14 +4,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.azatdev.dailytasks.domain.models.AppUser;
-import com.azatdev.dailytasks.utils.Result;
 
 public interface UsersRepository extends UsersRepositoryCreate {
-    public enum Error {
-        NOT_FOUND
-    }
 
-    public Result<Optional<AppUser>, Error> findByUsername(String username);
+    // Methods
 
-    public Result<Optional<AppUser>, Error> findById(UUID id);
+    Optional<AppUser> findByUsername(String username);
+
+    Optional<AppUser> findById(UUID id);
 }

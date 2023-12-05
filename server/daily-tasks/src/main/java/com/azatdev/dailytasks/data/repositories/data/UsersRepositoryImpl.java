@@ -9,9 +9,8 @@ import com.azatdev.dailytasks.data.repositories.data.user.UserData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepository;
 import com.azatdev.dailytasks.domain.models.AppUser;
-import com.azatdev.dailytasks.utils.Result;
 
-public class UsersRepositoryImpl implements UsersRepository {
+public final class UsersRepositoryImpl implements UsersRepository {
 
     private final JpaUsersRepository jpaUsersRepository;
 
@@ -28,27 +27,19 @@ public class UsersRepositoryImpl implements UsersRepository {
     }
 
     @Override
-    public Result<Optional<AppUser>, UsersRepository.Error> findByUsername(String username) {
+    public Optional<AppUser> findByUsername(String username) {
+
         final var foundUserDataResult = jpaUsersRepository.findByUsername(username);
 
-        if (foundUserDataResult.isEmpty()) {
-            return Result.success(Optional.empty());
-        }
-
-        final var foundUserData = foundUserDataResult.get();
-        return Result.success(Optional.of(mapUserDataToAppUser(foundUserData)));
+        return foundUserDataResult.map((userData) -> mapUserDataToAppUser(userData));
     }
 
     @Override
-    public Result<Optional<AppUser>, Error> findById(UUID userId) {
+    public Optional<AppUser> findById(UUID userId) {
+
         final var foundUserDataResult = jpaUsersRepository.findById(userId);
 
-        if (foundUserDataResult.isEmpty()) {
-            return Result.success(Optional.empty());
-        }
-
-        final var foundUserData = foundUserDataResult.get();
-        return Result.success(Optional.of(mapUserDataToAppUser(foundUserData)));
+        return foundUserDataResult.map((userData) -> mapUserDataToAppUser(userData));
     }
 
     @Override

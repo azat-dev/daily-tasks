@@ -33,7 +33,6 @@ import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskPriorityPresentation;
 import com.azatdev.dailytasks.presentation.config.presentation.PresentationConfig;
-import com.azatdev.dailytasks.utils.Result;
 
 @WebMvcTest(TaskController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -66,7 +65,7 @@ class TaskControllerTest {
 
         var backlogDuration = Backlog.Duration.WEEK;
 
-        final var tasks = List.of(
+        final var existingTasks = List.of(
             TestDomainDataGenerator.anyTask(0L),
             TestDomainDataGenerator.anyTask(1L)
         );
@@ -76,7 +75,7 @@ class TaskControllerTest {
                 any(LocalDate.class),
                 any(Backlog.Duration.class)
             )
-        ).willReturn(Result.success(tasks));
+        ).willReturn(existingTasks);
 
         // When
         final var action = mockMvc.perform(get(url).contentType(MediaType.APPLICATION_JSON));
@@ -91,9 +90,9 @@ class TaskControllerTest {
                 backlogDuration
             );
 
-        action.andExpect(jsonPath("$.length()").value(tasks.size()));
+        action.andExpect(jsonPath("$.length()").value(existingTasks.size()));
 
-        final var expectedTaskIds = tasks.stream()
+        final var expectedTaskIds = existingTasks.stream()
             .map(
                 task -> task.id()
                     .intValue()
@@ -107,7 +106,6 @@ class TaskControllerTest {
 
             ).value(Matchers.contains(expectedTaskIds))
         );
-
     }
 
     @Test
@@ -149,7 +147,7 @@ class TaskControllerTest {
         // Then
         action.andExpect(status().isCreated());
 
-        var expectedNewTaskData = new NewTaskData(
+        final var expectedNewTaskData = new NewTaskData(
             newTaskData.title(),
             Task.Priority.HIGH,
             newTaskData.description()

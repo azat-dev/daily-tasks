@@ -1,7 +1,6 @@
 package com.azatdev.dailytasks.domain.usecases;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryGet;
@@ -9,7 +8,6 @@ import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksReposito
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.Task;
 import com.azatdev.dailytasks.domain.usecases.utils.AdjustDateToStartOfBacklog;
-import com.azatdev.dailytasks.utils.Result;
 
 public final class ListTasksInBacklogUseCaseImpl implements ListTasksInBacklogUseCase {
 
@@ -28,7 +26,7 @@ public final class ListTasksInBacklogUseCaseImpl implements ListTasksInBacklogUs
     }
 
     @Override
-    public Result<List<Task>, Error> execute(
+    public List<Task> execute(
         LocalDate forDate,
         Backlog.Duration duration
     ) {
@@ -43,11 +41,10 @@ public final class ListTasksInBacklogUseCaseImpl implements ListTasksInBacklogUs
         );
 
         if (backlogIdResult.isEmpty()) {
-            return Result.success(new ArrayList<>());
+            return List.of();
         }
 
-        final var listTasksResult = tasksRepository.list(backlogIdResult.get());
-
-        return Result.success(listTasksResult);
+        final var tasksInBacklog = tasksRepository.list(backlogIdResult.get());
+        return tasksInBacklog;
     }
 }

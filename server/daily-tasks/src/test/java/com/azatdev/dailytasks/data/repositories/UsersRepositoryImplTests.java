@@ -50,8 +50,7 @@ class UsersRepositoryImplTests {
         then(sut.jpaUsersRepository).should(times(1))
             .findByUsername(wrongUserName);
 
-        assertThat(result.isSuccess()).isTrue();
-        assertThat(result.getValue()).isEmpty();
+        assertThat(result).isEmpty();
     }
 
     @Test
@@ -71,8 +70,7 @@ class UsersRepositoryImplTests {
         then(sut.jpaUsersRepository).should(times(1))
             .findByUsername(userName);
 
-        assertThat(result.isSuccess()).isTrue();
-        assertThat(result.getValue()).isPresent();
+        assertThat(result).isPresent();
 
         final var expectedUser = new AppUser(
             userData.id(),
@@ -80,10 +78,7 @@ class UsersRepositoryImplTests {
             userData.password()
         );
 
-        assertThat(
-            result.getValue()
-                .get()
-        ).isEqualTo(expectedUser);
+        assertThat(result.get()).isEqualTo(expectedUser);
     }
 
     @Test
@@ -102,8 +97,7 @@ class UsersRepositoryImplTests {
         then(sut.jpaUsersRepository).should(times(1))
             .findById(wrongUserId);
 
-        assertThat(result.isSuccess()).isTrue();
-        assertThat(result.getValue()).isEmpty();
+        assertThat(result).isEmpty();
     }
 
     @Test
@@ -123,8 +117,7 @@ class UsersRepositoryImplTests {
         then(sut.jpaUsersRepository).should(times(1))
             .findById(userId);
 
-        assertThat(result.isSuccess()).isTrue();
-        assertThat(result.getValue()).isPresent();
+        assertThat(result).isPresent();
 
         final var expectedUser = new AppUser(
             userData.id(),
@@ -132,10 +125,7 @@ class UsersRepositoryImplTests {
             userData.password()
         );
 
-        assertThat(
-            result.getValue()
-                .get()
-        ).isEqualTo(expectedUser);
+        assertThat(result.get()).isEqualTo(expectedUser);
     }
 
     @Test

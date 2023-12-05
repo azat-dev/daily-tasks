@@ -19,29 +19,17 @@ public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
     @Override
     public UserPrincipal loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        final var result = usersRepository.findByUsername(username);
+        final var appUserResult = usersRepository.findByUsername(username);
 
-        if (!result.isSuccess()) {
-            throw new IllegalStateException("Internal error occurred");
-        }
-
-        final var appUser = result.getValue()
+        return appUserResult.map((appUser) -> UserPrincipal.from(appUser))
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        return UserPrincipal.from(appUser);
     }
 
     public UserPrincipal loadUserById(UUID userId) throws UserIdNotFoundException {
 
-        final var result = usersRepository.findById(userId);
+        final var appUserResult = usersRepository.findById(userId);
 
-        if (!result.isSuccess()) {
-            throw new IllegalStateException("Internal error occurred");
-        }
-
-        final var appUser = result.getValue()
+        return appUserResult.map((appUser) -> UserPrincipal.from(appUser))
             .orElseThrow(() -> new UserIdNotFoundException("User not found"));
-
-        return UserPrincipal.from(appUser);
     }
 }

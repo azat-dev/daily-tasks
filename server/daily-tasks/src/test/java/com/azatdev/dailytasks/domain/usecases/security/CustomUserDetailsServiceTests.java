@@ -17,7 +17,6 @@ import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
 import com.azatdev.dailytasks.presentation.security.services.CustomUserDetailsService;
 import com.azatdev.dailytasks.presentation.security.services.CustomUserDetailsServiceImpl;
 import com.azatdev.dailytasks.presentation.security.services.jwt.UserIdNotFoundException;
-import com.azatdev.dailytasks.utils.Result;
 
 class CustomUserDetailsServiceTests {
 
@@ -44,7 +43,7 @@ class CustomUserDetailsServiceTests {
         String wrongUserName = "wrongUserName";
 
         SUT sut = createSUT();
-        given(sut.usersRepository.findByUsername(wrongUserName)).willReturn(Result.success(Optional.empty()));
+        given(sut.usersRepository.findByUsername(wrongUserName)).willReturn(Optional.empty());
 
         // When
         assertThrows(
@@ -69,7 +68,7 @@ class CustomUserDetailsServiceTests {
 
         SUT sut = createSUT();
 
-        given(sut.usersRepository.findByUsername(userName)).willReturn(Result.success(Optional.of(user)));
+        given(sut.usersRepository.findByUsername(userName)).willReturn(Optional.of(user));
 
         // When
         final var result = sut.userDetailsService.loadUserByUsername(userName);
@@ -92,7 +91,7 @@ class CustomUserDetailsServiceTests {
         final var wrongUserId = UUID.randomUUID();
 
         SUT sut = createSUT();
-        given(sut.usersRepository.findById(wrongUserId)).willReturn(Result.success(Optional.empty()));
+        given(sut.usersRepository.findById(wrongUserId)).willReturn(Optional.empty());
 
         // When
         assertThrows(
@@ -117,7 +116,7 @@ class CustomUserDetailsServiceTests {
 
         SUT sut = createSUT();
 
-        given(sut.usersRepository.findById(userId)).willReturn(Result.success(Optional.of(user)));
+        given(sut.usersRepository.findById(userId)).willReturn(Optional.of(user));
 
         // When
         final var result = sut.userDetailsService.loadUserById(userId);

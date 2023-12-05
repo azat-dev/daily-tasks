@@ -37,18 +37,12 @@ public class TaskController implements TaskResource {
         Backlog.Duration backlogDuration,
         LocalDate date
     ) {
-        final var result = listTasksInBacklogUseCase.execute(
+        final var tasksInBacklog = listTasksInBacklogUseCase.execute(
             date,
             backlogDuration
         );
 
-        if (!result.isSuccess()) {
-            return ResponseEntity.internalServerError()
-                .build();
-        }
-
-        final var ouputItems = result.getValue()
-            .stream()
+        final var ouputItems = tasksInBacklog.stream()
             .map(mapTaskToResponse::map)
             .toList();
 

@@ -72,7 +72,7 @@ public class ListTasksInBacklogUseCaseTests {
         ).willReturn(Optional.empty());
 
         // When
-        var result = sut.listTasksInBacklogUseCase.execute(
+        var foundTasks = sut.listTasksInBacklogUseCase.execute(
             backlogStartDate,
             backlogDuration
         );
@@ -87,11 +87,8 @@ public class ListTasksInBacklogUseCaseTests {
         then(sut.tasksRepository).should(never())
             .list(any(long.class));
 
-        assertThat(result.isSuccess()).isTrue();
-        assertThat(
-            result.getValue()
-                .isEmpty()
-        ).isTrue();
+        assertThat(foundTasks).isNotNull();
+        assertThat(foundTasks).isEmpty();
     }
 
     @Test
@@ -128,7 +125,7 @@ public class ListTasksInBacklogUseCaseTests {
         given(sut.tasksRepository.list(backlogId)).willReturn(expectedTasks);
 
         // When
-        var result = sut.listTasksInBacklogUseCase.execute(
+        final var foundTasks = sut.listTasksInBacklogUseCase.execute(
             backlogStartDate,
             backlogDuration
         );
@@ -143,8 +140,8 @@ public class ListTasksInBacklogUseCaseTests {
         then(sut.tasksRepository).should(times(1))
             .list(backlogId);
 
-        assertThat(result.isSuccess()).isTrue();
-        assertThat(result.getValue()).isEqualTo(expectedTasks);
+        assertThat(foundTasks).isNotNull();
+        assertThat(foundTasks).isEqualTo(expectedTasks);
     }
 
     private Long anyBacklogId() {
