@@ -28,6 +28,7 @@ public final class ListTasksInBacklogUseCaseImpl implements ListTasksInBacklogUs
 
     @Override
     public List<Task> execute(
+        UUID ownerId,
         LocalDate forDate,
         Backlog.Duration duration
     ) {
@@ -37,7 +38,7 @@ public final class ListTasksInBacklogUseCaseImpl implements ListTasksInBacklogUs
         );
 
         final var backlogIdResult = backlogRepository.getBacklogId(
-            UUID.randomUUID(),
+            ownerId,
             backlogStartDate,
             duration
         );

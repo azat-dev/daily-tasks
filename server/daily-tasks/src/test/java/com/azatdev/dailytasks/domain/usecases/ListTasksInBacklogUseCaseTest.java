@@ -53,10 +53,10 @@ public class ListTasksInBacklogUseCaseTest {
     }
 
     @Test
-    void listTasksInNotExistingBacklogShouldReturnEmptyListTest() {
+    void execute_givenNotExistingBacklog_thenReturnEmptyList() {
 
         // Given
-        final var userId = anyUserId();
+        final var ownerId = anyUserId();
         final var backlogDuration = Backlog.Duration.DAY;
         final var backlogStartDate = LocalDate.now();
         final var adjustedBacklogStartDate = backlogStartDate;
@@ -72,7 +72,7 @@ public class ListTasksInBacklogUseCaseTest {
 
         given(
             sut.backlogRepository.getBacklogId(
-                userId,
+                ownerId,
                 backlogStartDate,
                 backlogDuration
             )
@@ -80,6 +80,7 @@ public class ListTasksInBacklogUseCaseTest {
 
         // When
         var foundTasks = sut.listTasksInBacklogUseCase.execute(
+            ownerId,
             backlogStartDate,
             backlogDuration
         );
@@ -87,7 +88,7 @@ public class ListTasksInBacklogUseCaseTest {
         // Then
         then(sut.backlogRepository).should(times(1))
             .getBacklogId(
-                userId,
+                ownerId,
                 adjustedBacklogStartDate,
                 backlogDuration
             );
@@ -100,7 +101,7 @@ public class ListTasksInBacklogUseCaseTest {
     }
 
     @Test
-    void listTasksInExistingBacklogShouldReturnTasksFromBacklogTest() {
+    void execute_givenExistingBacklog_thenReturnTasksInBacklog() {
 
         // Given
         final var userId = anyUserId();
@@ -136,6 +137,7 @@ public class ListTasksInBacklogUseCaseTest {
 
         // When
         final var foundTasks = sut.listTasksInBacklogUseCase.execute(
+            userId,
             backlogStartDate,
             backlogDuration
         );

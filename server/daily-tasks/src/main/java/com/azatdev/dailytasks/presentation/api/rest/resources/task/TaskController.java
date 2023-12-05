@@ -2,6 +2,7 @@ package com.azatdev.dailytasks.presentation.api.rest.resources.task;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -38,6 +39,7 @@ public class TaskController implements TaskResource {
         LocalDate date
     ) {
         final var tasksInBacklog = listTasksInBacklogUseCase.execute(
+            UUID.randomUUID(),
             date,
             backlogDuration
         );

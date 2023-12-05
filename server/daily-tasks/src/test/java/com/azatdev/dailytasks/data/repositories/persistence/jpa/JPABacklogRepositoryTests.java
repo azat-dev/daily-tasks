@@ -40,13 +40,15 @@ class JPABacklogRepositoryTests {
     }
 
     private UserData userReference(UUID userId) {
-        return entityManager.getEntityManager().getReference(UserData.class, userId);
+        return entityManager.getEntityManager()
+            .getReference(
+                UserData.class,
+                userId
+            );
     }
 
     private UserData anyExistingUser(String name) {
-        return entityManager.persistAndFlush(
-            TestEntityDataGenerator.anyUserDataWithUserName(name)
-        );
+        return entityManager.persistAndFlush(TestEntityDataGenerator.anyUserDataWithUserName(name));
     }
 
     @Test
@@ -101,7 +103,6 @@ class JPABacklogRepositoryTests {
                 BacklogData.Duration.WEEK
             )
         );
-
 
         final var backlogWithWrongUserId = entityManager.persistFlushFind(
             new BacklogData(

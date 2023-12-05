@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -56,6 +57,7 @@ class TaskControllerTest {
 
         // Given
         final var url = "/tasks/backlog/WEEK/for/2023-11-11";
+        final var userId = UUID.randomUUID();
 
         LocalDate startDate = LocalDate.of(
             2023,
@@ -72,6 +74,7 @@ class TaskControllerTest {
 
         given(
             listTasksInBacklogUseCase.execute(
+                eq(userId),
                 any(LocalDate.class),
                 any(Backlog.Duration.class)
             )
@@ -86,6 +89,7 @@ class TaskControllerTest {
 
         then(listTasksInBacklogUseCase).should(times(1))
             .execute(
+                userId,
                 startDate,
                 backlogDuration
             );

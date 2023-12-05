@@ -1,7 +1,6 @@
 package com.azatdev.dailytasks.data.repositories.persistence.entities;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 import com.azatdev.dailytasks.data.repositories.data.user.UserData;
 
