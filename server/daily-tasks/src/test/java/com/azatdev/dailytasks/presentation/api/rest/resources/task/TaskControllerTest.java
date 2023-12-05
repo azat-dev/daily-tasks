@@ -2,14 +2,17 @@ package com.azatdev.dailytasks.presentation.api.rest.resources.task;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.times;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,6 +24,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,6 +38,7 @@ import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskPriorityPresentation;
 import com.azatdev.dailytasks.presentation.config.presentation.PresentationConfig;
+import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 
 @WebMvcTest(TaskController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -59,6 +64,13 @@ class TaskControllerTest {
         final var url = "/tasks/backlog/WEEK/for/2023-11-11";
         final var userId = UUID.randomUUID();
 
+        final var userPrincipal = new UserPrincipal(
+            userId,
+            "username",
+            "password",
+            Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+        );
+
         LocalDate startDate = LocalDate.of(
             2023,
             11,
@@ -81,10 +93,12 @@ class TaskControllerTest {
         ).willReturn(existingTasks);
 
         // When
-        final var action = mockMvc.perform(get(url).contentType(MediaType.APPLICATION_JSON));
+        final var action = mockMvc.perform(
+            get(url).contentType(MediaType.APPLICATION_JSON)
+                .with(user(userPrincipal))
+        );
 
         // Then
-
         action.andExpect(status().isOk());
 
         then(listTasksInBacklogUseCase).should(times(1))
