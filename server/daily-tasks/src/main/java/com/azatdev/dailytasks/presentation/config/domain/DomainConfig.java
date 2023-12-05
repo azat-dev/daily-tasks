@@ -3,12 +3,14 @@ package com.azatdev.dailytasks.presentation.config.domain;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryCreate;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryGet;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryCreate;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryList;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.TransactionFactory;
 import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepositoryCreate;
 import com.azatdev.dailytasks.domain.usecases.CreateBacklogForDateIfDoesntExistUseCase;
+import com.azatdev.dailytasks.domain.usecases.CreateBacklogForDateIfDoesntExistUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
@@ -40,8 +42,14 @@ public class DomainConfig {
     }
 
     @Bean
-    public CreateBacklogForDateIfDoesntExistUseCase createBacklogForDateIfDoesntExistUseCase() {
-        return null;
+    public CreateBacklogForDateIfDoesntExistUseCase createBacklogForDateIfDoesntExistUseCase(
+        AdjustDateToStartOfBacklog adjustDateToStartOfBacklog,
+        BacklogRepositoryCreate backlogRepository
+    ) {
+        return new CreateBacklogForDateIfDoesntExistUseCaseImpl(
+            adjustDateToStartOfBacklog,
+            backlogRepository
+        );
     }
 
     @Bean
