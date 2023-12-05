@@ -138,7 +138,7 @@ class TaskControllerTest {
                 eq(backlogDuration),
                 any()
             )
-        ).willReturn(Result.success(createdTask));
+        ).willReturn(createdTask);
 
         // When
         final var action = mockMvc.perform(

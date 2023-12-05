@@ -1,6 +1,7 @@
 package com.azatdev.dailytasks.domain.usecases;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDate;
@@ -14,7 +15,6 @@ import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transac
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.models.Task;
-import com.azatdev.dailytasks.utils.Result;
 
 class CreateTaskInBacklogUseCaseImplTests {
 
@@ -53,7 +53,7 @@ class CreateTaskInBacklogUseCaseImplTests {
     }
 
     @Test
-    void executeShouldCreateBacklogCreateTaskAndReturnCreatedTaskTest() {
+    void execute_givenNoExistingBacklog_thenShouldCreateBacklogCreateTaskAndReturnCreatedTask() throws Exception {
 
         // Given
         final var backlogDuration = Backlog.Duration.DAY;
@@ -83,12 +83,12 @@ class CreateTaskInBacklogUseCaseImplTests {
             sut.tasksRepository.createTask(
                 backlogId,
                 newTaskData,
-                sut.transaction
+                Optional.of(sut.transaction)
             )
-        ).willReturn(Result.success(expectedTask));
+        ).willReturn(expectedTask);
 
         // When
-        final var result = sut.useCase.execute(
+        final var createdTask = sut.useCase.execute(
             backlogStartDate,
             backlogDuration,
             newTaskData
@@ -112,7 +112,7 @@ class CreateTaskInBacklogUseCaseImplTests {
             .createTask(
                 backlogId,
                 newTaskData,
-                sut.transaction
+                Optional.of(sut.transaction)
             );
 
         then(sut.transaction).should(times(1))
@@ -121,12 +121,12 @@ class CreateTaskInBacklogUseCaseImplTests {
         then(sut.transaction).should(never())
             .rollback();
 
-        assertThat(result).isNotNull();
-        assertThat(result.getValue()).isEqualTo(expectedTask);
+        assertThat(createdTask).isNotNull();
+        assertThat(createdTask).isEqualTo(expectedTask);
     }
 
     @Test
-    void executeShouldRollbackTransactionOnFailTest() {
+    void execute_givenFail_thenShouldRollbackTransaction() throws Exception {
 
         // Given
         final var backlogDuration = Backlog.Duration.DAY;
@@ -143,21 +143,34 @@ class CreateTaskInBacklogUseCaseImplTests {
         final var sut = createSUT();
 
         given(
-            sut.tasksRepository.createTask(
-                backlogId,
-                newTaskData,
-                sut.transaction
+            sut.createBacklogIfDoesntExist.execute(
+                backlogStartDate,
+                backlogDuration,
+                Optional.of(sut.transaction)
             )
-        ).willReturn(Result.failure(TasksRepositoryCreate.Error.INTERNAL_ERROR));
+        ).willReturn(backlogId);
+
+        given(
+            sut.tasksRepository.createTask(
+                eq(backlogId),
+                any(NewTaskData.class),
+                any()
+            )
+        ).willThrow(new RuntimeException());
 
         // When
-        final var result = sut.useCase.execute(
-            backlogStartDate,
-            backlogDuration,
-            newTaskData
+        final var exception = assertThrows(
+            RuntimeException.class,
+            () -> sut.useCase.execute(
+                backlogStartDate,
+                backlogDuration,
+                newTaskData
+            )
         );
 
         // Then
+        assertThat(exception).isNotNull();
+
         then(sut.transactionFactory).should(times(1))
             .make();
 
@@ -169,7 +182,5 @@ class CreateTaskInBacklogUseCaseImplTests {
 
         then(sut.transaction).should(times(1))
             .rollback();
-
-        assertThat(result.getError()).isEqualTo(CreateTaskInBacklogUseCase.Error.INTERNAL_ERROR);
     }
 }

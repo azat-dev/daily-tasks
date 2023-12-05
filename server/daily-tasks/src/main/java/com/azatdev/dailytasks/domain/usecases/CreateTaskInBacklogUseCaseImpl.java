@@ -8,7 +8,6 @@ import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transac
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.models.Task;
-import com.azatdev.dailytasks.utils.Result;
 
 public class CreateTaskInBacklogUseCaseImpl implements CreateTaskInBacklogUseCase {
 
@@ -27,7 +26,7 @@ public class CreateTaskInBacklogUseCaseImpl implements CreateTaskInBacklogUseCas
     }
 
     @Override
-    public Result<Task, Error> execute(
+    public Task execute(
         LocalDate date,
         Backlog.Duration backlogDuration,
         NewTaskData newTaskData
@@ -44,24 +43,19 @@ public class CreateTaskInBacklogUseCaseImpl implements CreateTaskInBacklogUseCas
                 Optional.of(transaction)
             );
 
-            final var creationResult = tasksRepository.createTask(
+            final var createdTask = tasksRepository.createTask(
                 backlogId,
                 newTaskData,
-                transaction
+                Optional.of(transaction)
             );
 
-            if (!creationResult.isSuccess()) {
-                transaction.rollback();
-                return Result.failure(Error.INTERNAL_ERROR);
-            }
-
             transaction.commit();
-            return Result.success(creationResult.getValue());
+            return createdTask;
 
         } catch (Exception e) {
 
             transaction.rollback();
-            return Result.failure(Error.INTERNAL_ERROR);
+            throw new RuntimeException(e);
         }
     }
 }

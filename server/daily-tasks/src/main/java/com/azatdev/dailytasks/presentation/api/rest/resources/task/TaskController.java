@@ -69,20 +69,13 @@ public class TaskController implements TaskResource {
             request.description()
         );
 
-        final var result = createTaskInBacklogUseCase.execute(
+        final var createdTask = createTaskInBacklogUseCase.execute(
             date,
             backlogDuration,
             newTaskData
         );
 
-        if (!result.isSuccess()) {
-            return ResponseEntity.internalServerError()
-                .build();
-        }
-
-        final var createdTask = result.getValue();
         final var mappedTask = mapTaskToResponse.map(createdTask);
-
         return ResponseEntity.created(null)
             .body(mappedTask);
     }

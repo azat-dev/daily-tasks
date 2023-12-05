@@ -124,10 +124,10 @@ class TasksRepositoryTests {
             .willReturn(Optional.of(orderInBacklogProjection));
 
         // When
-        final var creationResult = sut.tasksRepository.createTask(
+        final var createdTask = sut.tasksRepository.createTask(
             backlogId,
             newTaskData,
-            null
+            Optional.empty()
         );
 
         // Then
@@ -148,6 +148,7 @@ class TasksRepositoryTests {
         then(sut.jpaTasksRepository).should(times(1))
             .saveAndFlush(eq(expectedTaskData));
 
-        assertThat(creationResult.isSuccess()).isTrue();
+        assertThat(createdTask).isNotNull();
+        assertThat(createdTask.id()).isEqualTo(savedTaskData.getId());
     }
 }
