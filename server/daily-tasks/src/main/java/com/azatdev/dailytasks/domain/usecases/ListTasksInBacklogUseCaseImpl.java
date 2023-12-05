@@ -48,10 +48,6 @@ public final class ListTasksInBacklogUseCaseImpl implements ListTasksInBacklogUs
 
         final var listTasksResult = tasksRepository.list(backlogIdResult.get());
 
-        if (listTasksResult.isSuccess()) {
-            return Result.success(listTasksResult.getValue());
-        }
-
-        return Result.failure(Error.INTERNAL_ERROR);
+        return Result.success(listTasksResult);
     }
 }

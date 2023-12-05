@@ -7,7 +7,6 @@ import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPATasksRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryCreate;
-import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryList;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transaction;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.models.Task;
@@ -33,17 +32,17 @@ public class TasksRepositoryImpl implements TasksRepository {
     // Methods
 
     @Override
-    public Result<List<Task>, TasksRepositoryList.Error> list(Long backlogId) {
+    public List<Task> list(long backlogId) {
 
-        final Iterable<TaskData> items = jpaTasksRepository.findAllByBacklogIdOrderByOrderInBacklogAsc(backlogId);
+        final var items = jpaTasksRepository.findAllByBacklogIdOrderByOrderInBacklogAsc(backlogId);
 
-        final List<Task> tasks = new ArrayList<>();
+        final var tasks = new ArrayList<Task>(items.size());
 
         for (TaskData item : items) {
             tasks.add(mapTaskDataToDomain.map(item));
         }
 
-        return Result.success(tasks);
+        return tasks;
     }
 
     private static TaskData.Priority map(Task.Priority priority) {

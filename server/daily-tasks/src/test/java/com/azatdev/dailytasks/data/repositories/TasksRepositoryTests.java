@@ -77,13 +77,9 @@ class TasksRepositoryTests {
             .willReturn(existingTasksData);
 
         // When
-        final var result = sut.tasksRepository.list(backlogId);
+        final var receivedTasks = sut.tasksRepository.list(backlogId);
 
         // Then
-        assertThat(result.isSuccess()).isTrue();
-
-        final var receivedTasks = result.getValue();
-
         final var expectedTaskTitles = existingTasksData.stream()
             .map(TaskData::getTitle)
             .toList();

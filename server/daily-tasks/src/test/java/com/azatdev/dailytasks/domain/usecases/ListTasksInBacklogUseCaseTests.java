@@ -17,7 +17,6 @@ import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepo
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryList;
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.usecases.utils.AdjustDateToStartOfBacklog;
-import com.azatdev.dailytasks.utils.Result;
 
 public class ListTasksInBacklogUseCaseTests {
 
@@ -86,7 +85,7 @@ public class ListTasksInBacklogUseCaseTests {
             );
 
         then(sut.tasksRepository).should(never())
-            .list(any());
+            .list(any(long.class));
 
         assertThat(result.isSuccess()).isTrue();
         assertThat(
@@ -126,7 +125,7 @@ public class ListTasksInBacklogUseCaseTests {
             )
         ).willReturn(Optional.of(backlogId));
 
-        given(sut.tasksRepository.list(backlogId)).willReturn(Result.success(expectedTasks));
+        given(sut.tasksRepository.list(backlogId)).willReturn(expectedTasks);
 
         // When
         var result = sut.listTasksInBacklogUseCase.execute(

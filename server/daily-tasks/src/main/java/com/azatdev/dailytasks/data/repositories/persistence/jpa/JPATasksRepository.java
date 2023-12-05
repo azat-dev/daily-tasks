@@ -1,5 +1,6 @@
 package com.azatdev.dailytasks.data.repositories.persistence.jpa;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +13,7 @@ public interface JPATasksRepository extends JpaRepository<TaskData, Long> {
         Integer getOrderInBacklog();
     }
 
-    public Iterable<TaskData> findAllByBacklogIdOrderByOrderInBacklogAsc(Long backlogId);
+    public List<TaskData> findAllByBacklogIdOrderByOrderInBacklogAsc(Long backlogId);
 
     public Optional<OrderInBacklogProjection> findFirstOrderInBacklogByBacklogIdOrderByOrderInBacklogDesc(
         Long backlogId
