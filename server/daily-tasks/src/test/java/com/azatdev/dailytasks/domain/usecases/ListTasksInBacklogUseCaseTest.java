@@ -10,6 +10,7 @@ import static org.mockito.Mockito.times;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,7 @@ import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksReposito
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.usecases.utils.AdjustDateToStartOfBacklog;
 
-public class ListTasksInBacklogUseCaseTests {
+public class ListTasksInBacklogUseCaseTest {
 
     private record SUT(
         ListTasksInBacklogUseCase listTasksInBacklogUseCase,
@@ -47,13 +48,18 @@ public class ListTasksInBacklogUseCaseTests {
         );
     }
 
+    private UUID anyUserId() {
+        return UUID.randomUUID();
+    }
+
     @Test
     void listTasksInNotExistingBacklogShouldReturnEmptyListTest() {
 
         // Given
+        final var userId = anyUserId();
         final var backlogDuration = Backlog.Duration.DAY;
         final var backlogStartDate = LocalDate.now();
-        final LocalDate adjustedBacklogStartDate = backlogStartDate;
+        final var adjustedBacklogStartDate = backlogStartDate;
 
         final var sut = createSUT();
 
@@ -66,6 +72,7 @@ public class ListTasksInBacklogUseCaseTests {
 
         given(
             sut.backlogRepository.getBacklogId(
+                userId,
                 backlogStartDate,
                 backlogDuration
             )
@@ -80,6 +87,7 @@ public class ListTasksInBacklogUseCaseTests {
         // Then
         then(sut.backlogRepository).should(times(1))
             .getBacklogId(
+                userId,
                 adjustedBacklogStartDate,
                 backlogDuration
             );
@@ -95,7 +103,8 @@ public class ListTasksInBacklogUseCaseTests {
     void listTasksInExistingBacklogShouldReturnTasksFromBacklogTest() {
 
         // Given
-        var backlogId = anyBacklogId();
+        final var userId = anyUserId();
+        final var backlogId = anyBacklogId();
 
         final var backlogDuration = Backlog.Duration.DAY;
         final var backlogStartDate = LocalDate.now();
@@ -117,6 +126,7 @@ public class ListTasksInBacklogUseCaseTests {
 
         given(
             sut.backlogRepository.getBacklogId(
+                userId,
                 backlogStartDate,
                 backlogDuration
             )
@@ -133,6 +143,7 @@ public class ListTasksInBacklogUseCaseTests {
         // Then
         then(sut.backlogRepository).should(times(1))
             .getBacklogId(
+                userId,
                 adjustedBacklogStartDate,
                 backlogDuration
             );

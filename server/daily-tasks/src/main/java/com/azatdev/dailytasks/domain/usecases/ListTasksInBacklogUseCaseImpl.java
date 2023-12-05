@@ -2,6 +2,7 @@ package com.azatdev.dailytasks.domain.usecases;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryGet;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryList;
@@ -36,6 +37,7 @@ public final class ListTasksInBacklogUseCaseImpl implements ListTasksInBacklogUs
         );
 
         final var backlogIdResult = backlogRepository.getBacklogId(
+            UUID.randomUUID(),
             backlogStartDate,
             duration
         );

@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,12 +31,14 @@ class BacklogRepositoryTests {
     void getBacklogId_givenEmptyDb_thenShouldReturnEmptyOptional() {
 
         // Given
+        final var userId = UUID.randomUUID();
         final var startDate = LocalDate.now();
         final var duration = Backlog.Duration.DAY;
         final BacklogData expectedBacklogData = null;
 
         given(
-            jpaBacklogRepository.findByStartDateAndDuration(
+            jpaBacklogRepository.findByOwnerIdAndStartDateAndDuration(
+                eq(userId),
                 any(LocalDate.class),
                 any(BacklogData.Duration.class)
             )
@@ -43,6 +46,7 @@ class BacklogRepositoryTests {
 
         // When
         final var result = backlogRepository.getBacklogId(
+            userId,
             startDate,
             duration
         );
@@ -51,7 +55,8 @@ class BacklogRepositoryTests {
         assertThat(result).isEmpty();
 
         then(jpaBacklogRepository).should(times(1))
-            .findByStartDateAndDuration(
+            .findByOwnerIdAndStartDateAndDuration(
+                userId,
                 startDate,
                 BacklogData.Duration.DAY
             );

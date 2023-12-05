@@ -3,12 +3,15 @@ package com.azatdev.dailytasks.data.repositories.persistence.jpa;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
+import com.azatdev.dailytasks.data.repositories.TestEntityDataGenerator;
+import com.azatdev.dailytasks.data.repositories.data.user.UserData;
 import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
 
 @DataJpaTest
@@ -32,17 +35,33 @@ class JPABacklogRepositoryTests {
         return BacklogData.Duration.DAY;
     }
 
+    private UUID anyUserId() {
+        return UUID.randomUUID();
+    }
+
+    private UserData userReference(UUID userId) {
+        return entityManager.getEntityManager().getReference(UserData.class, userId);
+    }
+
+    private UserData anyExistingUser(String name) {
+        return entityManager.persistAndFlush(
+            TestEntityDataGenerator.anyUserDataWithUserName(name)
+        );
+    }
+
     @Test
-    void findByStartDateAndDurationEmptyDbShouldReturnNullTest() {
+    void findByOwnerIdAndStartDateAndDuration_givenEmptyDb_thenShouldReturnNull() {
 
         // Given
-        final var startDate = this.anyDate();
-        final var duration = this.anyDuration();
+        final var userId = anyUserId();
+        final var startDate = anyDate();
+        final var duration = anyDuration();
 
         // Empty DB
 
         // When
-        var result = jpaBacklogRepository.findByStartDateAndDuration(
+        final var result = jpaBacklogRepository.findByOwnerIdAndStartDateAndDuration(
+            userId,
             startDate,
             duration
         );
@@ -52,33 +71,49 @@ class JPABacklogRepositoryTests {
     }
 
     @Test
-    void findByStartDateAndDurationEmptyDbShouldReturnCorrectRecordTest() {
+    void findByOwnerIdAndStartDateAndDuration_givenEmptyDb_thenShouldReturnCorrectRecord() {
 
         // Given
-        final var startDate = this.anyDate();
-        final var duration = this.anyDuration();
+        final var expectedUser = anyExistingUser("expectedUser");
+        final var wrongUser = anyExistingUser("wrongUser");
 
-        BacklogData expectedBacklog = entityManager.persistFlushFind(
+        final var startDate = anyDate();
+        final var duration = anyDuration();
+
+        final var expectedBacklog = entityManager.persistFlushFind(
             new BacklogData(
+                expectedUser,
                 startDate,
                 duration
             )
         );
-        BacklogData backlogWithWrongDate = entityManager.persistFlushFind(
+        final var backlogWithWrongDate = entityManager.persistFlushFind(
             new BacklogData(
+                expectedUser,
                 startDate.plusDays(1),
                 duration
             )
         );
-        BacklogData backlogWithWrongDuration = entityManager.persistFlushFind(
+        final var backlogWithWrongDuration = entityManager.persistFlushFind(
             new BacklogData(
+                expectedUser,
+                startDate,
+                BacklogData.Duration.WEEK
+            )
+        );
+
+
+        final var backlogWithWrongUserId = entityManager.persistFlushFind(
+            new BacklogData(
+                wrongUser,
                 startDate,
                 BacklogData.Duration.WEEK
             )
         );
 
         // When
-        var result = jpaBacklogRepository.findByStartDateAndDuration(
+        final var result = jpaBacklogRepository.findByOwnerIdAndStartDateAndDuration(
+            expectedUser.id(),
             startDate,
             duration
         );
@@ -87,7 +122,8 @@ class JPABacklogRepositoryTests {
         assertThat(result).isEqualTo(expectedBacklog);
         assertThat(result).isNotIn(
             backlogWithWrongDate,
-            backlogWithWrongDuration
+            backlogWithWrongDuration,
+            backlogWithWrongUserId
         );
     }
 }

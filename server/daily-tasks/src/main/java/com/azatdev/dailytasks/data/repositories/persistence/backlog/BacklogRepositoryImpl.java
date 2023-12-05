@@ -2,6 +2,7 @@ package com.azatdev.dailytasks.data.repositories.persistence.backlog;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPABacklogRepository;
@@ -32,12 +33,14 @@ public class BacklogRepositoryImpl implements BacklogRepository {
 
     @Override
     public Optional<Long> getBacklogId(
+        UUID ownerId,
         LocalDate startDate,
         Backlog.Duration duration
     ) {
 
         try {
-            var backlogData = jpaBacklogRepository.findByStartDateAndDuration(
+            final var backlogData = jpaBacklogRepository.findByOwnerIdAndStartDateAndDuration(
+                ownerId,
                 startDate,
                 this.mapDuration(duration)
             );

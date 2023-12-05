@@ -1,6 +1,7 @@
 package com.azatdev.dailytasks.data.repositories.persistence.jpa;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -8,7 +9,8 @@ import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData
 
 public interface JPABacklogRepository extends JpaRepository<BacklogData, Long> {
 
-    BacklogData findByStartDateAndDuration(
+    BacklogData findByOwnerIdAndStartDateAndDuration(
+        UUID userId,
         LocalDate startDate,
         BacklogData.Duration duration
     );
