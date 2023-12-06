@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
@@ -39,10 +40,15 @@ public class CreateBacklogForDateIfDoesntExistUseCaseImplTest {
         );
     }
 
+    private UUID anyUserId() {
+        return UUID.randomUUID();
+    }
+
     @Test
     void execute_givenBacklogDoesntExist_thenCreateNewBacklog() throws Exception {
 
         // Given
+        final var ownerId = anyUserId();
         final var wednesday = LocalDate.of(
             2021,
             1,
@@ -63,6 +69,7 @@ public class CreateBacklogForDateIfDoesntExistUseCaseImplTest {
 
         given(
             sut.backlogRepository.create(
+                eq(ownerId),
                 any(),
                 eq(Backlog.Duration.WEEK),
                 any()
@@ -88,6 +95,7 @@ public class CreateBacklogForDateIfDoesntExistUseCaseImplTest {
         // Then
         then(sut.backlogRepository).should(times(1))
             .create(
+                ownerId,
                 adjustedDate,
                 backlogDuration,
                 Optional.empty()
@@ -100,6 +108,7 @@ public class CreateBacklogForDateIfDoesntExistUseCaseImplTest {
     void execute_givenBacklogExists_thenThrowException() throws Exception {
 
         // Given
+        final var ownerId = anyUserId();
         final var wednesday = LocalDate.of(
             2021,
             1,
@@ -127,6 +136,7 @@ public class CreateBacklogForDateIfDoesntExistUseCaseImplTest {
 
         given(
             sut.backlogRepository.create(
+                ownerId,
                 adjustedDate,
                 Backlog.Duration.WEEK,
                 Optional.empty()
@@ -143,7 +153,6 @@ public class CreateBacklogForDateIfDoesntExistUseCaseImplTest {
         );
 
         // Then
-
         assertThat(createdBacklogId).isEqualTo(backlogId);
     }
 }

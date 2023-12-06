@@ -2,6 +2,7 @@ package com.azatdev.dailytasks.domain.usecases;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryCreate;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryCreate.BacklogAlreadyExistsException;
@@ -36,6 +37,7 @@ public class CreateBacklogForDateIfDoesntExistUseCaseImpl implements CreateBackl
 
         try {
             return backlogRepository.create(
+                UUID.randomUUID(),
                 backlogStartTime,
                 backlogDuration,
                 transaction

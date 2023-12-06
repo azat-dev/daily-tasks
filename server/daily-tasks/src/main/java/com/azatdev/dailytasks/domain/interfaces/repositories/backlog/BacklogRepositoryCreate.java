@@ -2,6 +2,7 @@ package com.azatdev.dailytasks.domain.interfaces.repositories.backlog;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transaction;
 import com.azatdev.dailytasks.domain.models.Backlog;
@@ -9,6 +10,7 @@ import com.azatdev.dailytasks.domain.models.Backlog;
 public interface BacklogRepositoryCreate {
 
     public long create(
+        UUID ownerId,
         LocalDate startDate,
         Backlog.Duration duration,
         Optional<Transaction> transaction
