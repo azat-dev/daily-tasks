@@ -1,6 +1,7 @@
 package com.azatdev.dailytasks.data.repositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
@@ -13,12 +14,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import com.azatdev.dailytasks.data.repositories.data.user.UserData;
 import com.azatdev.dailytasks.data.repositories.persistence.backlog.BacklogRepositoryImpl;
 import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPABacklogRepository;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
+import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryCreate;
 import com.azatdev.dailytasks.domain.models.Backlog;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,7 +48,6 @@ class BacklogRepositoryImplTests {
 
         final var startDate = LocalDate.now();
         final var duration = Backlog.Duration.DAY;
-        final BacklogData expectedBacklogData = null;
 
         given(
             jpaBacklogRepository.findByOwnerIdAndStartDateAndDuration(
@@ -53,7 +55,7 @@ class BacklogRepositoryImplTests {
                 any(LocalDate.class),
                 any(BacklogData.Duration.class)
             )
-        ).willReturn(expectedBacklogData);
+        ).willReturn(Optional.empty());
 
         // When
         final var result = backlogRepository.getBacklogId(
@@ -103,8 +105,62 @@ class BacklogRepositoryImplTests {
 
         // Then
         then(jpaBacklogRepository).should(times(1))
-            .saveAndFlush(any());
+            .saveAndFlush(
+                new BacklogData(
+                    ownerReference,
+                    startDate,
+                    BacklogData.Duration.DAY
+                )
+            );
 
         assertThat(createdBacklogId).isEqualTo(expectedBacklogData.getId());
+    }
+
+    @Test
+    void create_givenBacklogExists_thenThrowException() throws Exception {
+
+        // Given
+        final var ownerId = anyUserId();
+
+        final var startDate = LocalDate.now();
+        final var duration = Backlog.Duration.DAY;
+        final var backlogId = 1L;
+
+        final var ownerReference = mock(UserData.class);
+
+        final var backlogIdProjection = mock(JPABacklogRepository.BacklogIdProjection.class);
+        given(backlogIdProjection.getId()).willReturn(backlogId);
+
+        given(jpaBacklogRepository.findByOwnerIdAndStartDateAndDuration(
+            ownerId,
+            startDate,
+            BacklogData.Duration.DAY
+        )).willReturn(Optional.of(backlogIdProjection));
+
+        given(jpaUsersRepository.getReferenceById(ownerId)).willReturn(ownerReference);
+
+        given(jpaBacklogRepository.saveAndFlush(any(BacklogData.class)))
+            .willThrow(new DataIntegrityViolationException("Backlog exists"));
+
+        // When
+        final var exception = assertThrows(
+            BacklogRepositoryCreate.BacklogAlreadyExistsException.class,
+            () -> backlogRepository.create(
+                ownerId,
+                startDate,
+                duration,
+                Optional.empty()
+            )
+        );
+
+        // Then
+        assertThat(exception).isNotNull();
+
+        then(jpaBacklogRepository).should(times(1))
+            .findByOwnerIdAndStartDateAndDuration(
+                ownerId,
+                startDate,
+                BacklogData.Duration.DAY
+            );
     }
 }

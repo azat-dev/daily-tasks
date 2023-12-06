@@ -46,17 +46,13 @@ public class BacklogRepositoryImpl implements BacklogRepository {
     ) {
 
         try {
-            final var backlogData = jpaBacklogRepository.findByOwnerIdAndStartDateAndDuration(
+            final var backlogIdProjection = jpaBacklogRepository.findByOwnerIdAndStartDateAndDuration(
                 ownerId,
                 startDate,
                 this.mapDuration(duration)
             );
 
-            if (backlogData != null) {
-                return Optional.of(backlogData.getId());
-            }
-
-            return Optional.empty();
+            return backlogIdProjection.map(JPABacklogRepository.BacklogIdProjection::getId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
