@@ -38,7 +38,7 @@ public class CreateBacklogForDateIfDoesntExistUseCaseImpl implements CreateBackl
 
         try {
             return backlogRepository.create(
-                UUID.randomUUID(),
+                ownerId,
                 backlogStartTime,
                 backlogDuration,
                 transaction
