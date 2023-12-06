@@ -1,8 +1,8 @@
 package com.azatdev.dailytasks.data.repositories.persistence.jpa;
 
 import java.time.LocalDate;
-import java.util.UUID;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

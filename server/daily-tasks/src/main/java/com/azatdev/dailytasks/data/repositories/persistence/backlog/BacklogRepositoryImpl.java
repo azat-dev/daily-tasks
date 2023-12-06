@@ -78,8 +78,21 @@ public class BacklogRepositoryImpl implements BacklogRepository {
             return result.getId();
 
         } catch (DataIntegrityViolationException e) {
-            throw new UnsupportedOperationException("Not implemented yet");
 
+            final var backlogIdProjection = jpaBacklogRepository.findByOwnerIdAndStartDateAndDuration(
+                ownerId,
+                startDate,
+                this.mapDuration(duration)
+            );
+
+            if (backlogIdProjection.isEmpty()) {
+                throw new RuntimeException(e);
+            }
+
+            throw new BacklogAlreadyExistsException(
+                backlogIdProjection.get()
+                    .getId()
+            );
         }
     }
 }

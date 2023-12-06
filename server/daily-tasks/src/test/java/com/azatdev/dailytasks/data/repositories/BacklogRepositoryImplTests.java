@@ -131,11 +131,13 @@ class BacklogRepositoryImplTests {
         final var backlogIdProjection = mock(JPABacklogRepository.BacklogIdProjection.class);
         given(backlogIdProjection.getId()).willReturn(backlogId);
 
-        given(jpaBacklogRepository.findByOwnerIdAndStartDateAndDuration(
-            ownerId,
-            startDate,
-            BacklogData.Duration.DAY
-        )).willReturn(Optional.of(backlogIdProjection));
+        given(
+            jpaBacklogRepository.findByOwnerIdAndStartDateAndDuration(
+                ownerId,
+                startDate,
+                BacklogData.Duration.DAY
+            )
+        ).willReturn(Optional.of(backlogIdProjection));
 
         given(jpaUsersRepository.getReferenceById(ownerId)).willReturn(ownerReference);
 
@@ -155,6 +157,7 @@ class BacklogRepositoryImplTests {
 
         // Then
         assertThat(exception).isNotNull();
+        assertThat(exception.getBacklogId()).isEqualTo(backlogId);
 
         then(jpaBacklogRepository).should(times(1))
             .findByOwnerIdAndStartDateAndDuration(

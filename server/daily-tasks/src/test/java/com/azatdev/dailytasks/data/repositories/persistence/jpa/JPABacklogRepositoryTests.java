@@ -69,11 +69,11 @@ class JPABacklogRepositoryTests {
         );
 
         // Then
-        assertThat(result).isNull();
+        assertThat(result).isEmpty();
     }
 
     @Test
-    void findByOwnerIdAndStartDateAndDuration_givenEmptyDb_thenShouldReturnCorrectRecord() {
+    void findByOwnerIdAndStartDateAndDuration_givenNotEmptyDb_thenShouldReturnCorrectRecord() {
 
         // Given
         final var expectedUser = anyExistingUser("expectedUser");
@@ -113,18 +113,23 @@ class JPABacklogRepositoryTests {
         );
 
         // When
-        final var result = jpaBacklogRepository.findByOwnerIdAndStartDateAndDuration(
+        final var foundBacklogIdProjection = jpaBacklogRepository.findByOwnerIdAndStartDateAndDuration(
             expectedUser.id(),
             startDate,
             duration
         );
 
         // Then
-        assertThat(result).isEqualTo(expectedBacklog);
-        assertThat(result).isNotIn(
-            backlogWithWrongDate,
-            backlogWithWrongDuration,
-            backlogWithWrongUserId
+        assertThat(foundBacklogIdProjection).isNotEmpty();
+        final var foundBacklogId = foundBacklogIdProjection.get()
+            .getId();
+
+        assertThat(foundBacklogId).isEqualTo(expectedBacklog.getId());
+
+        assertThat(foundBacklogId).isNotIn(
+            backlogWithWrongDate.getId(),
+            backlogWithWrongDuration.getId(),
+            backlogWithWrongUserId.getId()
         );
     }
 }

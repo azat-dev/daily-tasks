@@ -15,7 +15,5 @@ public interface JPATasksRepository extends JpaRepository<TaskData, Long> {
 
     List<TaskData> findAllByBacklogIdOrderByOrderInBacklogAsc(Long backlogId);
 
-    Optional<OrderInBacklogProjection> findFirstOrderInBacklogByBacklogIdOrderByOrderInBacklogDesc(
-        Long backlogId
-    );
+    Optional<OrderInBacklogProjection> findFirstOrderInBacklogByBacklogIdOrderByOrderInBacklogDesc(Long backlogId);
 }

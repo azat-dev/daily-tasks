@@ -12,8 +12,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@EqualsAndHashCode
+@Getter
 @Entity
+@NoArgsConstructor
 @Table(name = "tasks")
 public class TaskData {
 
@@ -91,110 +97,5 @@ public class TaskData {
     @PreUpdate
     void preUpdate() {
         updatedAt = ZonedDateTime.now();
-    }
-
-    // Accessors
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public ZonedDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public ZonedDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public Priority getPriority() {
-        return priority;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Long getBacklogId() {
-        return backlogId;
-    }
-
-    public Integer getOrderInBacklog() {
-        return orderInBacklog;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((backlogId == null) ? 0 : backlogId.hashCode());
-        result = prime * result + ((orderInBacklog == null) ? 0 : orderInBacklog.hashCode());
-        result = prime * result + ((createdAt == null) ? 0 : createdAt.hashCode());
-        result = prime * result + ((updatedAt == null) ? 0 : updatedAt.hashCode());
-        result = prime * result + ((title == null) ? 0 : title.hashCode());
-        result = prime * result + ((description == null) ? 0 : description.hashCode());
-        result = prime * result + ((priority == null) ? 0 : priority.hashCode());
-        result = prime * result + ((status == null) ? 0 : status.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        TaskData other = (TaskData) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        if (backlogId == null) {
-            if (other.backlogId != null)
-                return false;
-        } else if (!backlogId.equals(other.backlogId))
-            return false;
-        if (orderInBacklog == null) {
-            if (other.orderInBacklog != null)
-                return false;
-        } else if (!orderInBacklog.equals(other.orderInBacklog))
-            return false;
-        if (createdAt == null) {
-            if (other.createdAt != null)
-                return false;
-        } else if (!createdAt.equals(other.createdAt))
-            return false;
-        if (updatedAt == null) {
-            if (other.updatedAt != null)
-                return false;
-        } else if (!updatedAt.equals(other.updatedAt))
-            return false;
-        if (title == null) {
-            if (other.title != null)
-                return false;
-        } else if (!title.equals(other.title))
-            return false;
-        if (description == null) {
-            if (other.description != null)
-                return false;
-        } else if (!description.equals(other.description))
-            return false;
-        if (priority != other.priority)
-            return false;
-        if (status != other.status)
-            return false;
-        return true;
     }
 }

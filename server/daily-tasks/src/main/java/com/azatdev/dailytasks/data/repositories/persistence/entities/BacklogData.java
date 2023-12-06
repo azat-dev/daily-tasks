@@ -15,8 +15,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@EqualsAndHashCode
+@NoArgsConstructor
 @Entity
+@Getter
 @Table(
     name = "backlogs",
     uniqueConstraints = { @UniqueConstraint(columnNames = { "start_date", "duration", "owner_id" }) }
@@ -49,9 +55,6 @@ public class BacklogData {
 
     // Constructors
 
-    private BacklogData() {
-    }
-
     public BacklogData(
         UserData owner,
         LocalDate startDate,
@@ -60,23 +63,5 @@ public class BacklogData {
         this.owner = owner;
         this.startDate = startDate;
         this.duration = duration;
-    }
-
-    // Getters
-
-    public UserData getOwner() {
-        return owner;
-    }
-
-    public Duration getDuration() {
-        return duration;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public Long getId() {
-        return id;
     }
 }
