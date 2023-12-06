@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskResponse;
+import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 
 import jakarta.validation.Valid;
 
@@ -26,7 +28,8 @@ public interface TaskResource {
     @GetMapping("/backlog/{backlogDuration}/for/{date}")
     public ResponseEntity<List<TaskResponse>> findAllTasksInBacklog(
         @PathVariable Backlog.Duration backlogDuration,
-        @PathVariable LocalDate date
+        @PathVariable LocalDate date,
+        @AuthenticationPrincipal UserPrincipal userPrincipal
     );
 
     @PostMapping("/backlog/{backlogDuration}/for/{date}")

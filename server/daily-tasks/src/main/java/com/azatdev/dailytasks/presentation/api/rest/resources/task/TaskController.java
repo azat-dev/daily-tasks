@@ -2,9 +2,9 @@ package com.azatdev.dailytasks.presentation.api.rest.resources.task;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 
 import com.azatdev.dailytasks.domain.models.Backlog;
@@ -15,6 +15,7 @@ import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.utils.MapTaskToResponse;
+import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 
 @Controller
 public class TaskController implements TaskResource {
@@ -36,10 +37,11 @@ public class TaskController implements TaskResource {
     @Override
     public ResponseEntity<List<TaskResponse>> findAllTasksInBacklog(
         Backlog.Duration backlogDuration,
-        LocalDate date
+        LocalDate date,
+        @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         final var tasksInBacklog = listTasksInBacklogUseCase.execute(
-            UUID.randomUUID(),
+            userPrincipal.getId(),
             date,
             backlogDuration
         );

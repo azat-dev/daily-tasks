@@ -41,7 +41,7 @@ import com.azatdev.dailytasks.presentation.config.presentation.PresentationConfi
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 
 @WebMvcTest(TaskController.class)
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc()
 @Import({ PresentationConfig.class })
 class TaskControllerTest {
 
