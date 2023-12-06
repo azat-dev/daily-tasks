@@ -6,16 +6,21 @@ import java.util.UUID;
 
 import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPABacklogRepository;
+import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transaction;
 import com.azatdev.dailytasks.domain.models.Backlog;
-import com.azatdev.dailytasks.domain.models.Backlog.Duration;
 
 public class BacklogRepositoryImpl implements BacklogRepository {
 
+    private final JpaUsersRepository jpaUsersRepository;
     private final JPABacklogRepository jpaBacklogRepository;
 
-    public BacklogRepositoryImpl(JPABacklogRepository jpaBacklogRepository) {
+    public BacklogRepositoryImpl(
+        JpaUsersRepository jpaUsersRepository,
+        JPABacklogRepository jpaBacklogRepository
+    ) {
+        this.jpaUsersRepository = jpaUsersRepository;
         this.jpaBacklogRepository = jpaBacklogRepository;
     }
 
@@ -59,7 +64,7 @@ public class BacklogRepositoryImpl implements BacklogRepository {
     public long create(
         UUID ownerId,
         LocalDate startDate,
-        Duration duration,
+        Backlog.Duration duration,
         Optional<Transaction> transaction
     ) throws BacklogAlreadyExistsException {
 

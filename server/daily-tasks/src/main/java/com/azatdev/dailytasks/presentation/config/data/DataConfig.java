@@ -11,6 +11,7 @@ import com.azatdev.dailytasks.data.repositories.data.transaction.TransactionImpl
 import com.azatdev.dailytasks.data.repositories.persistence.backlog.BacklogRepositoryImpl;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPABacklogRepository;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPATasksRepository;
+import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.TransactionFactory;
@@ -27,8 +28,14 @@ public class DataConfig {
     }
 
     @Bean
-    public BacklogRepository backlogRepository(JPABacklogRepository jpaBacklogRepository) {
-        return new BacklogRepositoryImpl(jpaBacklogRepository);
+    public BacklogRepository backlogRepository(
+        JpaUsersRepository jpaUsersRepository,
+        JPABacklogRepository jpaBacklogRepository
+    ) {
+        return new BacklogRepositoryImpl(
+            jpaUsersRepository,
+            jpaBacklogRepository
+        );
     }
 
     @Bean
