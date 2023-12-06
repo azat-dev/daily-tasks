@@ -86,6 +86,7 @@ public class CreateBacklogForDateIfDoesntExistUseCaseImplTest {
         // When
         final var createdBacklogId = assertDoesNotThrow(
             () -> sut.useCase.execute(
+                ownerId,
                 wednesday,
                 backlogDuration,
                 Optional.empty()
@@ -146,6 +147,7 @@ public class CreateBacklogForDateIfDoesntExistUseCaseImplTest {
         // When
         final var createdBacklogId = assertDoesNotThrow(
             () -> sut.useCase.execute(
+                ownerId,
                 wednesday,
                 backlogDuration,
                 Optional.empty()

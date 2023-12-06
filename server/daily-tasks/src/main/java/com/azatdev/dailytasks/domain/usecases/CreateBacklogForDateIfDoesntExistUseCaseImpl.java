@@ -25,6 +25,7 @@ public class CreateBacklogForDateIfDoesntExistUseCaseImpl implements CreateBackl
 
     @Override
     public long execute(
+        UUID ownerId,
         LocalDate date,
         Backlog.Duration backlogDuration,
         Optional<Transaction> transaction

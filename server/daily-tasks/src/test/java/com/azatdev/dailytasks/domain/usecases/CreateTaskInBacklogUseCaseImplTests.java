@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
@@ -52,10 +53,15 @@ class CreateTaskInBacklogUseCaseImplTests {
         );
     }
 
+    private UUID anyUserId() {
+        return UUID.randomUUID();
+    }
+
     @Test
     void execute_givenNoExistingBacklog_thenShouldCreateBacklogCreateTaskAndReturnCreatedTask() throws Exception {
 
         // Given
+        final var ownerId = anyUserId();
         final var backlogDuration = Backlog.Duration.DAY;
         final var backlogStartDate = LocalDate.now();
 
@@ -73,6 +79,7 @@ class CreateTaskInBacklogUseCaseImplTests {
 
         given(
             sut.createBacklogIfDoesntExist.execute(
+                UUID.randomUUID(),
                 backlogStartDate,
                 backlogDuration,
                 Optional.of(sut.transaction)
@@ -103,6 +110,7 @@ class CreateTaskInBacklogUseCaseImplTests {
 
         then(sut.createBacklogIfDoesntExist).should(times(1))
             .execute(
+                ownerId,
                 backlogStartDate,
                 backlogDuration,
                 Optional.of(sut.transaction)
@@ -129,6 +137,7 @@ class CreateTaskInBacklogUseCaseImplTests {
     void execute_givenFail_thenShouldRollbackTransaction() throws Exception {
 
         // Given
+        final var ownerId = anyUserId();
         final var backlogDuration = Backlog.Duration.DAY;
         final var backlogStartDate = LocalDate.now();
 
@@ -144,6 +153,7 @@ class CreateTaskInBacklogUseCaseImplTests {
 
         given(
             sut.createBacklogIfDoesntExist.execute(
+                ownerId,
                 backlogStartDate,
                 backlogDuration,
                 Optional.of(sut.transaction)
