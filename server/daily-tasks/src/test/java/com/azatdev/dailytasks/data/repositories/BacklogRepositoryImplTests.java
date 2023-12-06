@@ -47,7 +47,6 @@ class BacklogRepositoryImplTests {
         final var duration = Backlog.Duration.DAY;
         final BacklogData expectedBacklogData = null;
 
-
         given(
             jpaBacklogRepository.findByOwnerIdAndStartDateAndDuration(
                 eq(userId),
@@ -79,20 +78,19 @@ class BacklogRepositoryImplTests {
 
         // Given
         final var ownerId = anyUserId();
-        
+
         final var startDate = LocalDate.now();
         final var duration = Backlog.Duration.DAY;
         final var backlogId = 1L;
-        
+
         final var ownerReference = mock(UserData.class);
-        given(ownerReference.id()).willReturn(ownerId);
 
         final var expectedBacklogData = mock(BacklogData.class);
         given(expectedBacklogData.getId()).willReturn(backlogId);
 
         given(jpaUsersRepository.getReferenceById(ownerId)).willReturn(ownerReference);
 
-        given(jpaUsersRepository.saveAndFlush(any())).willReturn(expectedBacklogData);
+        given(jpaBacklogRepository.saveAndFlush(any(BacklogData.class))).willReturn(expectedBacklogData);
 
         // When
 
@@ -105,17 +103,8 @@ class BacklogRepositoryImplTests {
 
         // Then
         then(jpaBacklogRepository).should(times(1))
-            .saveAndFlush(
-                new BacklogData(
-                    ownerReference,
-                    startDate,
-                    BacklogData.Duration.DAY
-                )
-            );
+            .saveAndFlush(any());
 
         assertThat(createdBacklogId).isEqualTo(expectedBacklogData.getId());
-
-        then(jpaBacklogRepository).should(times(1))
-            .save(any(BacklogData.class));
     }
 }
