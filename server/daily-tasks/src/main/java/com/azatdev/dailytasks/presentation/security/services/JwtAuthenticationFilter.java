@@ -105,7 +105,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             .getAuthentication();
 
         if (!(auth instanceof JWTAuthenticationToken)) {
-            return false;
+            return true;
         }
 
         JWTAuthenticationToken existingAuth = (JWTAuthenticationToken) auth;
