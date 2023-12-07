@@ -57,7 +57,8 @@ public class TaskController implements TaskResource {
     public ResponseEntity<TaskResponse> createTaskInBacklog(
         Duration backlogDuration,
         LocalDate date,
-        CreateTaskInBacklogRequest request
+        CreateTaskInBacklogRequest request,
+        @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
 
         final var newTaskData = new NewTaskData(
@@ -68,12 +69,14 @@ public class TaskController implements TaskResource {
         );
 
         final var createdTask = createTaskInBacklogUseCase.execute(
+            userPrincipal.getId(),
             date,
             backlogDuration,
             newTaskData
         );
 
         final var mappedTask = mapTaskToResponse.map(createdTask);
+
         return ResponseEntity.created(null)
             .body(mappedTask);
     }

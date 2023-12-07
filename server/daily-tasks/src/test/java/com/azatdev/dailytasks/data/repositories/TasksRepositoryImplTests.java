@@ -89,6 +89,20 @@ class TasksRepositoryImplTests {
             )
         ).willReturn(existingTasksData);
 
+        given(sut.mapTaskDataToDomain.execute(any(TaskData.class))).will(invocation -> {
+
+            final var taskId = invocation.getArgument(
+                0,
+                TaskData.class
+            )
+                .getId();
+
+            final var mockedTask = mock(Task.class);
+            given(mockedTask.id()).willReturn(taskId);
+
+            return mockedTask;
+        });
+
         // When
         final var receivedTasks = sut.tasksRepository.list(
             userId,

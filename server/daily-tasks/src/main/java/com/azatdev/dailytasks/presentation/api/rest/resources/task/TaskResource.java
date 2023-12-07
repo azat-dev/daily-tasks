@@ -22,7 +22,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @Validated
-@RequestMapping("/tasks")
+@RequestMapping("/api/with-auth/tasks")
 public interface TaskResource {
 
     @GetMapping("/backlog/{backlogDuration}/for/{date}")
@@ -36,6 +36,7 @@ public interface TaskResource {
     public ResponseEntity<TaskResponse> createTaskInBacklog(
         @PathVariable Backlog.Duration backlogDuration,
         @PathVariable LocalDate date,
-        @Valid @RequestBody CreateTaskInBacklogRequest request
+        @Valid @RequestBody CreateTaskInBacklogRequest request,
+        @AuthenticationPrincipal UserPrincipal userPrincipal
     );
 }

@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -12,20 +14,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -41,8 +41,8 @@ import com.azatdev.dailytasks.presentation.config.presentation.PresentationConfi
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 
 @WebMvcTest(TaskController.class)
-@AutoConfigureMockMvc()
-@Import({ PresentationConfig.class })
+// @AutoConfigureMockMvc(printOnlyOnFailure = false)
+@Import(PresentationConfig.class)
 class TaskControllerTest {
 
     @Autowired
@@ -61,15 +61,10 @@ class TaskControllerTest {
     void findAllTasksInBacklog_givenExistingTasks_thenReturnAllTasksInBacklog() throws Exception {
 
         // Given
-        final var url = "/tasks/backlog/WEEK/for/2023-11-11";
-        final var userId = UUID.randomUUID();
+        final var url = "/api/with-auth/tasks/backlog/WEEK/for/2023-11-11";
 
-        final var userPrincipal = new UserPrincipal(
-            userId,
-            "username",
-            "password",
-            Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
-        );
+        final var userPrincipal = anyUserPrincipal();
+        final var userId = userPrincipal.getId();
 
         LocalDate startDate = LocalDate.of(
             2023,
@@ -96,7 +91,9 @@ class TaskControllerTest {
         final var action = mockMvc.perform(
             get(url).contentType(MediaType.APPLICATION_JSON)
                 .with(user(userPrincipal))
-        );
+        )
+            .andDo(MockMvcResultHandlers.print());
+        ;
 
         // Then
         action.andExpect(status().isOk());
@@ -126,11 +123,21 @@ class TaskControllerTest {
         );
     }
 
+    UserPrincipal anyUserPrincipal() {
+        final var mockedUser = mock(UserPrincipal.class);
+        given(mockedUser.getId()).willReturn(UUID.randomUUID());
+
+        return mockedUser;
+    }
+
     @Test
     void createNewTaskInBacklog_givenValidTaskData_thenCreateTask() throws Exception {
 
         // Given
-        final var url = "/tasks/backlog/WEEK/for/2023-11-11";
+        final var userPrincipal = anyUserPrincipal();
+        final var userId = userPrincipal.getId();
+
+        final var url = "/api/with-auth/tasks/backlog/WEEK/for/2023-11-11";
 
         LocalDate date = LocalDate.of(
             2023,
@@ -150,6 +157,7 @@ class TaskControllerTest {
 
         given(
             createTaskInBacklogUseCase.execute(
+                eq(userId),
                 eq(date),
                 eq(backlogDuration),
                 any()
@@ -159,10 +167,14 @@ class TaskControllerTest {
         // When
         final var action = mockMvc.perform(
             post(url).contentType(MediaType.APPLICATION_JSON)
+                .with(user(userPrincipal))
+                .with(csrf())
                 .content(objectMapper.writeValueAsString(newTaskData))
-        );
+        )
+            .andDo(MockMvcResultHandlers.print());
 
         // Then
+        action.andDo(MockMvcResultHandlers.log());
         action.andExpect(status().isCreated());
 
         final var expectedNewTaskData = new NewTaskData(
@@ -173,9 +185,10 @@ class TaskControllerTest {
 
         then(createTaskInBacklogUseCase).should(times(1))
             .execute(
-                eq(date),
-                eq(backlogDuration),
-                eq(expectedNewTaskData)
+                userId,
+                date,
+                backlogDuration,
+                expectedNewTaskData
             );
 
         action.andExpect(jsonPath("$.id").value(createdTask.id()));

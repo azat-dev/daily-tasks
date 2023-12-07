@@ -79,24 +79,25 @@ class CreateTaskInBacklogUseCaseImplTests {
 
         given(
             sut.createBacklogIfDoesntExist.execute(
-                UUID.randomUUID(),
-                backlogStartDate,
-                backlogDuration,
-                Optional.of(sut.transaction)
+                any(),
+                any(),
+                any(),
+                any()
             )
         ).willReturn(backlogId);
 
         given(
             sut.tasksRepository.createTask(
-                ownerId,
-                backlogId,
-                newTaskData,
-                Optional.of(sut.transaction)
+                any(),
+                anyLong(),
+                any(),
+                any()
             )
         ).willReturn(expectedTask);
 
         // When
         final var createdTask = sut.useCase.execute(
+            ownerId,
             backlogStartDate,
             backlogDuration,
             newTaskData
@@ -155,26 +156,27 @@ class CreateTaskInBacklogUseCaseImplTests {
 
         given(
             sut.createBacklogIfDoesntExist.execute(
-                ownerId,
-                backlogStartDate,
-                backlogDuration,
-                Optional.of(sut.transaction)
+                any(),
+                any(),
+                any(),
+                any()
             )
         ).willReturn(backlogId);
 
         given(
             sut.tasksRepository.createTask(
-                eq(ownerId),
+                any(),
                 eq(backlogId),
-                any(NewTaskData.class),
+                any(),
                 any()
             )
         ).willThrow(new RuntimeException());
 
         // When
         final var exception = assertThrows(
-            RuntimeException.class,
+            Exception.class,
             () -> sut.useCase.execute(
+                ownerId,
                 backlogStartDate,
                 backlogDuration,
                 newTaskData
@@ -183,6 +185,34 @@ class CreateTaskInBacklogUseCaseImplTests {
 
         // Then
         assertThat(exception).isNotNull();
+
+        then(sut.createBacklogIfDoesntExist()).should(times(1))
+            .execute(
+                ownerId,
+                backlogStartDate,
+                backlogDuration,
+                Optional.of(sut.transaction)
+            );
+
+        then(sut.tasksRepository).should(times(1))
+            .createTask(
+                ownerId,
+                backlogId,
+                newTaskData,
+                Optional.of(sut.transaction)
+            );
+
+        then(sut.transactionFactory).should(times(1))
+            .make();
+
+        then(sut.transaction).should(times(1))
+            .begin();
+
+        then(sut.transaction).should(never())
+            .commit();
+
+        then(sut.transaction).should(times(1))
+            .rollback();
 
         then(sut.transactionFactory).should(times(1))
             .make();

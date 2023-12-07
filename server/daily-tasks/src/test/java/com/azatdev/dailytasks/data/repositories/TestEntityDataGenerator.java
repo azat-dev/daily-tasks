@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.stereotype.Component;
 
 import com.github.javafaker.Faker;
 
@@ -13,7 +12,6 @@ import com.azatdev.dailytasks.data.repositories.data.user.UserData;
 import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
 import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
 
-@Component
 public class TestEntityDataGenerator {
 
     // Fields

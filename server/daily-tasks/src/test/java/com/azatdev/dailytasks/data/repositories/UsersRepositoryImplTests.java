@@ -8,9 +8,9 @@ import static org.mockito.Mockito.times;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.azatdev.dailytasks.data.repositories.data.UsersRepositoryImpl;
@@ -22,8 +22,12 @@ import com.azatdev.dailytasks.domain.models.AppUser;
 @ExtendWith(SpringExtension.class)
 class UsersRepositoryImplTest {
 
-    @Autowired
     private TestEntityDataGenerator testData;
+
+    @BeforeEach
+    void setupTestDataManager() {
+        testData = new TestEntityDataGenerator();
+    }
 
     private record SUT(
         UsersRepository usersRepository,
