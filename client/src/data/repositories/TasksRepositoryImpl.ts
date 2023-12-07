@@ -33,10 +33,11 @@ export default class TasksRepositoryImpl
         backlogDay: string
     ): Promise<Result<Task[], TasksRepositoryError>> => {
         try {
-            const tasksDTO = await this.api.apiBacklogBacklogTypeDayTasksGet({
-                backlogType: backlogType,
-                day: backlogDay as any,
-            });
+            const tasksDTO =
+                await this.api.apiWithAuthTasksBacklogBacklogTypeForDayGet({
+                    backlogType: backlogType,
+                    day: backlogDay as any,
+                });
 
             return {
                 type: ResultType.Success,
@@ -54,9 +55,10 @@ export default class TasksRepositoryImpl
         taskId: TaskId
     ): Promise<Result<undefined, TasksRepositoryError>> => {
         try {
-            await this.api.apiTasksTaskIdStartPost({
-                taskId: taskId,
-            });
+            throw new Error("Not implemented");
+            // await this.api.apiTasksTaskIdStartPost({
+            //     taskId: taskId,
+            // });
 
             return {
                 type: ResultType.Success,
@@ -82,9 +84,10 @@ export default class TasksRepositoryImpl
         taskId: TaskId
     ): Promise<Result<undefined, TasksRepositoryError>> => {
         try {
-            await this.api.apiTasksTaskIdStopPost({
-                taskId: taskId,
-            });
+            throw new Error("Not implemented");
+            // await this.api.apiTasksTaskIdStopPost({
+            //     taskId: taskId,
+            // });
 
             return {
                 type: ResultType.Success,
@@ -110,9 +113,10 @@ export default class TasksRepositoryImpl
         taskId: TaskId
     ): Promise<Result<undefined, TasksRepositoryError>> => {
         try {
-            await this.api.apiTasksTaskIdDelete({
-                taskId: taskId,
-            });
+            throw new Error("Not implemented");
+            // await this.api.apiTasksTaskIdDelete({
+            //     taskId: taskId,
+            // });
 
             return {
                 type: ResultType.Success,
@@ -150,11 +154,12 @@ export default class TasksRepositoryImpl
                 newTaskData.description = cleanedDescription;
             }
 
-            const response = await this.api.apiBacklogBacklogTypeDayTasksPost({
-                backlogType: backlogType,
-                day: backlogDay as any,
-                newTaskData,
-            });
+            const response =
+                await this.api.apiWithAuthTasksBacklogBacklogTypeForDayPost({
+                    backlogType: backlogType,
+                    day: backlogDay as any,
+                    newTaskData,
+                });
 
             return {
                 type: ResultType.Success,

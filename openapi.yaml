@@ -67,7 +67,7 @@ paths:
                                 $ref: "#/components/schemas/SignUpResponse"
                 "401":
                     description: Wrong credentials
-    /api/token/verify:
+    /api/public/auth/token/verify:
         post:
             summary: Check if a token is valid
             security: []

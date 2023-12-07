@@ -60,7 +60,7 @@ const useAppModel = (): AppModel => {
 
         const apiClient = new DefaultApi(
             new Configuration({
-                basePath: "http://localhost:8000",
+                basePath: "http://localhost:8080",
                 accessToken: async () => {
                     const tokens = await localTokensRepository.getTokens();
                     return tokens?.accessToken ?? "";

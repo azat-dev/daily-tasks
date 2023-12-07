@@ -25,8 +25,8 @@ export default class DefaultAuthenticationService
         Result<IAuthenticationTokenPair, AuthenticationServiceError>
     > => {
         try {
-            const response = await this.api.apiTokenPost({
-                apiTokenPostRequest: {
+            const response = await this.api.apiPublicAuthTokenPost({
+                apiPublicAuthTokenPostRequest: {
                     username: username,
                     password: password,
                 },
@@ -58,8 +58,8 @@ export default class DefaultAuthenticationService
         accessToken: string
     ): Promise<Result<boolean, AuthenticationServiceError>> => {
         try {
-            await this.api.apiTokenVerifyPost({
-                apiTokenVerifyPostRequest: {
+            await this.api.apiPublicAuthTokenVerifyPost({
+                apiPublicAuthTokenVerifyPostRequest: {
                     token: accessToken,
                 },
             });

@@ -46,6 +46,7 @@ export default class StartNewSessionUseCaseImpl
 
         switch (isTokenValidResult.type) {
             case ResultType.Failure:
+                this.authStateRepository.updateAuthState(AuthState.LOGGED_OUT);
                 throw new Error("Unexpected error");
 
             case ResultType.Success:
