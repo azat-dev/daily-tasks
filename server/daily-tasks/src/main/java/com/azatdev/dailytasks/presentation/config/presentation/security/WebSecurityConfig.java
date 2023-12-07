@@ -1,5 +1,7 @@
 package com.azatdev.dailytasks.presentation.config.presentation.security;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,6 +16,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.azatdev.dailytasks.presentation.security.services.CustomUserDetailsService;
 import com.azatdev.dailytasks.presentation.security.services.JwtAuthenticationFilter;
@@ -34,7 +39,7 @@ public class WebSecurityConfig {
         HttpSecurity http,
         JwtAuthenticationFilter jwtAuthenticationFilter
     ) throws Exception {
-        return http.cors(corse -> corse.disable())
+        return http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(
                 requests -> requests.requestMatchers(
@@ -50,6 +55,23 @@ public class WebSecurityConfig {
                 UsernamePasswordAuthenticationFilter.class
             )
             .build();
+    }
+
+    CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration configuration = new CorsConfiguration();
+        
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        
+        source.registerCorsConfiguration(
+            "/**",
+            configuration
+        );
+        return source;
     }
 
     @Bean
