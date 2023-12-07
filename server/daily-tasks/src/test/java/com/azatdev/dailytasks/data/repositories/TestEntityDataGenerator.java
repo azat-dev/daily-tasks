@@ -73,6 +73,23 @@ public class TestEntityDataGenerator {
         );
     }
 
+    public BacklogData givenExistingDayBacklog(UserData owner) {
+        final var anyDay = LocalDate.of(
+            2022,
+            1,
+            1
+        );
+
+        return entityManager.persistAndFlush(
+
+            new BacklogData(
+                owner,
+                anyDay,
+                BacklogData.Duration.DAY
+            )
+        );
+    }
+
     public BacklogData givenExistingDayBacklog(
         UserData owner,
         LocalDate starDate
@@ -83,6 +100,20 @@ public class TestEntityDataGenerator {
                 owner,
                 starDate,
                 BacklogData.Duration.DAY
+            )
+        );
+    }
+
+    public TaskData givenExistingTaskData(
+        UserData owner,
+        BacklogData backlog,
+        Integer orderInBacklog
+    ) {
+        return entityManager.persistAndFlush(
+            anyTaskData(
+                owner,
+                backlog,
+                orderInBacklog
             )
         );
     }

@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.annotation.Import;
 
 import com.azatdev.dailytasks.data.repositories.TestEntityDataGenerator;
 import com.azatdev.dailytasks.data.repositories.data.user.UserData;
@@ -15,15 +15,13 @@ import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData
 import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
 
 @DataJpaTest
+@Import(TestEntityDataGenerator.class)
 class JPATasksRepositoryTests {
 
     // Fields
 
     @Autowired
-    TestEntityDataGenerator testData;
-
-    @Autowired
-    TestEntityManager entityManager;
+    TestEntityDataGenerator dm;
 
     @Autowired
     private JPATasksRepository jpaTasksRepository;
@@ -57,13 +55,7 @@ class JPATasksRepositoryTests {
         final var tasks = new TaskData[count];
 
         for (var i = 0; i < count; i++) {
-            tasks[i] = entityManager.persistAndFlush(
-                testData.anyTaskData(
-                    owner,
-                    backlog,
-                    i
-                )
-            );
+            tasks[i] = dm.givenExistingTaskData(owner, backlog, i);
         }
 
         return tasks;
@@ -73,24 +65,29 @@ class JPATasksRepositoryTests {
     void findAllByOwnerIdAndBacklogIdOrderByOrderInBacklogAsc_givenExistingTasks_thenReturnCorrectTasks() {
 
         // Given
-        final var owner = testData.givenExistingUser("rightOwner");
-        final var wrongOwner = testData.givenExistingUser("wrongOwner");
+        final var owner = dm.givenExistingUser("rightOwner");
+        final var wrongOwner = dm.givenExistingUser("wrongOwner");
 
-        final var backlog = testData.givenExistingWeekBacklog(owner);
-        final var wrongBacklog = testData.givenExistingWeekBacklog(owner);
+        final var backlog = dm.givenExistingDayBacklog(owner);
+        final var wrongBacklog = dm.givenExistingDayBacklog(
+            owner,
+            backlog.getStartDate()
+                .plusDays(1)
+        );
 
         final var tasksBacklog1 = givenExistingTasks(
             owner,
             backlog,
             3
         );
-        final var tasksBacklog2 = givenExistingTasks(
+
+        givenExistingTasks(
             owner,
             wrongBacklog,
             3
         );
 
-        final var tasksBacklog3 = givenExistingTasks(
+        givenExistingTasks(
             wrongOwner,
             backlog,
             3
@@ -129,17 +126,17 @@ class JPATasksRepositoryTests {
     void findFirstOrderInBacklogByOwnerIdAndBacklogIdOrderByOrderInBacklogDesc_givenExistingTasks_thenReturnLastOrder() {
 
         // Given
-        final var owner = testData.givenExistingUser();
-        final var backlog = testData.givenExistingWeekBacklog(owner);
-        final int lastOrder = 10;
+        final var owner = dm.givenExistingUser("owner");
+        final var wrongOwner = dm.givenExistingUser("wrongOwner");
 
-        entityManager.persistAndFlush(
-            testData.anyTaskData(
-                owner,
-                backlog,
-                lastOrder
-            )
-        );
+        final var backlog = dm.givenExistingWeekBacklog(owner);
+        final var wrongBacklog = dm.givenExistingDayBacklog(owner);
+
+        final int numberOfTasks = 5;
+
+        givenExistingTasks(owner, backlog, numberOfTasks);
+        givenExistingTasks(owner, wrongBacklog, numberOfTasks + 1);
+        givenExistingTasks(wrongOwner, backlog, numberOfTasks + 2);
 
         // When
         final var result = jpaTasksRepository.findFirstOrderInBacklogByOwnerIdAndBacklogIdOrderByOrderInBacklogDesc(
@@ -149,5 +146,6 @@ class JPATasksRepositoryTests {
 
         // Then
         assertThat(result).isNotEmpty();
+        assertThat(result.get().getOrderInBacklog()).isEqualTo(numberOfTasks - 1);
     }
 }
