@@ -2,7 +2,6 @@ package com.azatdev.dailytasks.data.repositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -10,47 +9,60 @@ import static org.mockito.Mockito.times;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.azatdev.dailytasks.data.repositories.data.MapTaskDataToDomainImpl;
+import com.azatdev.dailytasks.data.repositories.data.MapTaskDataToDomain;
 import com.azatdev.dailytasks.data.repositories.data.TasksRepositoryImpl;
 import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
-import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPATasksRepository;
-import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
-import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryCreate;
-import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryList;
+import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaGetBacklogReference;
+import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaGetUserReference;
+import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaTasksRepository;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.models.Task;
-
-interface TasksRepository extends TasksRepositoryCreate, TasksRepositoryList {
-}
 
 @ExtendWith(MockitoExtension.class)
 class TasksRepositoryImplTests {
 
     @Autowired
-    private TestDataManager dm;
+    TestDataManager dm;
+
+    @BeforeEach
+    void setupTestDataManager() {
+        dm = new TestDataManager();
+    }
 
     private record SUT(
         TasksRepositoryImpl tasksRepository,
-        JPATasksRepository jpaTasksRepository
+        JpaGetUserReference jpaGetUserReference,
+        JpaGetBacklogReference jpaGetBacklogReference,
+        JpaTasksRepository jpaTasksRepository,
+        MapTaskDataToDomain mapTaskDataToDomain
     ) {
     };
 
     private SUT createSUT() {
-        final var jpaUsersRepository = mock(JpaUsersRepository.class);
-        final var jpaTasksRepository = mock(JPATasksRepository.class);
+        final var japGetUserReference = mock(JpaGetUserReference.class);
+        final var jpaGetBacklogReference = mock(JpaGetBacklogReference.class);
+        final var jpaTasksRepository = mock(JpaTasksRepository.class);
+        final var mapTaskDataToDomain = mock(MapTaskDataToDomain.class);
+
+        given(mapTaskDataToDomain.execute(any())).willReturn(null);
 
         return new SUT(
             new TasksRepositoryImpl(
-                jpaUsersRepository,
+                japGetUserReference,
+                jpaGetBacklogReference,
                 jpaTasksRepository,
-                new MapTaskDataToDomainImpl()
+                mapTaskDataToDomain
             ),
-            jpaTasksRepository
+            japGetUserReference,
+            jpaGetBacklogReference,
+            jpaTasksRepository,
+            mapTaskDataToDomain
         );
     }
 
@@ -84,12 +96,18 @@ class TasksRepositoryImplTests {
         );
 
         // Then
-        final var expectedTaskTitles = existingTasksData.stream()
-            .map(TaskData::getTitle)
+        final var expectedTaskIds = existingTasksData.stream()
+            .map(TaskData::getId)
             .toList();
 
-        assertThat(receivedTasks).extracting("title")
-            .isEqualTo(expectedTaskTitles);
+        then(sut.jpaTasksRepository).should(times(1))
+            .findAllByOwnerIdAndBacklogIdOrderByOrderInBacklogAsc(
+                userId,
+                backlogId
+            );
+
+        assertThat(receivedTasks).extractingResultOf("id")
+            .isEqualTo(expectedTaskIds);
 
         then(sut.jpaTasksRepository).should(times(1))
             .findAllByOwnerIdAndBacklogIdOrderByOrderInBacklogAsc(
@@ -130,7 +148,7 @@ class TasksRepositoryImplTests {
 
         given(sut.jpaTasksRepository.saveAndFlush(any(TaskData.class))).willReturn(savedTaskData);
 
-        final var orderInBacklogProjection = mock(JPATasksRepository.OrderInBacklogProjection.class);
+        final var orderInBacklogProjection = mock(JpaTasksRepository.OrderInBacklogProjection.class);
         given(orderInBacklogProjection.getOrderInBacklog()).willReturn(lastOrderInBacklog);
 
         given(
@@ -139,6 +157,9 @@ class TasksRepositoryImplTests {
                 backlogId
             )
         ).willReturn(Optional.of(orderInBacklogProjection));
+
+        final var mappedTask = mock(Task.class);
+        given(sut.mapTaskDataToDomain.execute(any(TaskData.class))).willReturn(mappedTask);
 
         // When
         final var createdTask = sut.tasksRepository.createTask(
@@ -155,9 +176,9 @@ class TasksRepositoryImplTests {
             );
 
         then(sut.jpaTasksRepository).should(times(1))
-            .saveAndFlush(eq(savedTaskData));
+            .saveAndFlush(any());
 
         assertThat(createdTask).isNotNull();
-        assertThat(createdTask).isEqualTo(savedTaskData.getId());
+        assertThat(createdTask).isEqualTo(mappedTask);
     }
 }

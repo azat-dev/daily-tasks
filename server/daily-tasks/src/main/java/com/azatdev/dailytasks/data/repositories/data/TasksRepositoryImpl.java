@@ -6,8 +6,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
-import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPATasksRepository;
-import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
+import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaGetBacklogReference;
+import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaGetUserReference;
+import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaTasksRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transaction;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
@@ -17,18 +18,21 @@ public class TasksRepositoryImpl implements TasksRepository {
 
     // Fields
 
-    private final JpaUsersRepository jpaUsersRepository;
-    private final JPATasksRepository jpaTasksRepository;
+    private final JpaGetUserReference getUserReference;
+    private final JpaGetBacklogReference getBacklogReference;
+    private final JpaTasksRepository jpaTasksRepository;
     private final MapTaskDataToDomain mapTaskDataToDomain;
 
     // Constructors
 
     public TasksRepositoryImpl(
-        JpaUsersRepository jpaUsersRepository,
-        JPATasksRepository jpaTasksRepository,
+        JpaGetUserReference getUserReference,
+        JpaGetBacklogReference getBacklogReference,
+        JpaTasksRepository jpaTasksRepository,
         MapTaskDataToDomain mapTaskDataToDomain
     ) {
-        this.jpaUsersRepository = jpaUsersRepository;
+        this.getUserReference = getUserReference;
+        this.getBacklogReference = getBacklogReference;
         this.jpaTasksRepository = jpaTasksRepository;
         this.mapTaskDataToDomain = mapTaskDataToDomain;
     }
@@ -42,14 +46,14 @@ public class TasksRepositoryImpl implements TasksRepository {
     ) {
 
         final var items = jpaTasksRepository.findAllByOwnerIdAndBacklogIdOrderByOrderInBacklogAsc(
-            null,
+            ownerId,
             backlogId
         );
 
         final var tasks = new ArrayList<Task>(items.size());
 
         for (TaskData item : items) {
-            tasks.add(mapTaskDataToDomain.map(item));
+            tasks.add(mapTaskDataToDomain.execute(item));
         }
 
         return tasks;
@@ -77,7 +81,7 @@ public class TasksRepositoryImpl implements TasksRepository {
 
         final var lastOrderInBacklog = jpaTasksRepository
             .findFirstOrderInBacklogByOwnerIdAndBacklogIdOrderByOrderInBacklogDesc(
-                null,
+                ownerId,
                 backlogId
             );
 
@@ -89,8 +93,8 @@ public class TasksRepositoryImpl implements TasksRepository {
         }
 
         final var taskData = new TaskData(
-            null,
-            null,
+            getUserReference.execute(ownerId),
+            getBacklogReference.execute(backlogId),
             orderInBacklog,
             newTaskData.title(),
             newTaskData.description(),
@@ -99,6 +103,6 @@ public class TasksRepositoryImpl implements TasksRepository {
         );
 
         final var savedTaskData = jpaTasksRepository.saveAndFlush(taskData);
-        return mapTaskDataToDomain.map(savedTaskData);
+        return mapTaskDataToDomain.execute(savedTaskData);
     }
 }

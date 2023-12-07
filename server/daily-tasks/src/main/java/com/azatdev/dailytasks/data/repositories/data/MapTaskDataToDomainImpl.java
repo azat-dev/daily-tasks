@@ -47,7 +47,7 @@ public class MapTaskDataToDomainImpl implements MapTaskDataToDomain {
 
     @Override
     @Nonnull
-    public Task map(TaskData taskData) {
+    public Task execute(TaskData taskData) {
         return new Task(
             taskData.getId(),
             taskData.getTitle(),

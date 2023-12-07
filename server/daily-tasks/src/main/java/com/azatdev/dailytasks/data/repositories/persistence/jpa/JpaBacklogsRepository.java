@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
 
-public interface JPABacklogRepository extends JpaRepository<BacklogData, Long> {
+public interface JpaBacklogsRepository extends JpaRepository<BacklogData, Long> {
 
     interface BacklogIdProjection {
         Long getId();

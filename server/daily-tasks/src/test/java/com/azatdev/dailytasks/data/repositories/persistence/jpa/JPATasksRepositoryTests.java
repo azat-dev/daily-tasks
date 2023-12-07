@@ -16,7 +16,7 @@ import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
 
 @DataJpaTest
 @Import(TestEntityDataGenerator.class)
-class JPATasksRepositoryTests {
+class JpaTasksRepositoryTests {
 
     // Fields
 
@@ -24,7 +24,7 @@ class JPATasksRepositoryTests {
     TestEntityDataGenerator dm;
 
     @Autowired
-    private JPATasksRepository jpaTasksRepository;
+    private JpaTasksRepository jpaTasksRepository;
 
     // Methods
 
@@ -55,7 +55,11 @@ class JPATasksRepositoryTests {
         final var tasks = new TaskData[count];
 
         for (var i = 0; i < count; i++) {
-            tasks[i] = dm.givenExistingTaskData(owner, backlog, i);
+            tasks[i] = dm.givenExistingTaskData(
+                owner,
+                backlog,
+                i
+            );
         }
 
         return tasks;
@@ -134,9 +138,21 @@ class JPATasksRepositoryTests {
 
         final int numberOfTasks = 5;
 
-        givenExistingTasks(owner, backlog, numberOfTasks);
-        givenExistingTasks(owner, wrongBacklog, numberOfTasks + 1);
-        givenExistingTasks(wrongOwner, backlog, numberOfTasks + 2);
+        givenExistingTasks(
+            owner,
+            backlog,
+            numberOfTasks
+        );
+        givenExistingTasks(
+            owner,
+            wrongBacklog,
+            numberOfTasks + 1
+        );
+        givenExistingTasks(
+            wrongOwner,
+            backlog,
+            numberOfTasks + 2
+        );
 
         // When
         final var result = jpaTasksRepository.findFirstOrderInBacklogByOwnerIdAndBacklogIdOrderByOrderInBacklogDesc(
@@ -146,6 +162,9 @@ class JPATasksRepositoryTests {
 
         // Then
         assertThat(result).isNotEmpty();
-        assertThat(result.get().getOrderInBacklog()).isEqualTo(numberOfTasks - 1);
+        assertThat(
+            result.get()
+                .getOrderInBacklog()
+        ).isEqualTo(numberOfTasks - 1);
     }
 }

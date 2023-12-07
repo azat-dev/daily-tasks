@@ -21,7 +21,7 @@ class JPABacklogRepositoryTests {
     TestEntityDataGenerator testData;
 
     @Autowired
-    private JPABacklogRepository jpaBacklogRepository;
+    private JpaBacklogsRepository jpaBacklogRepository;
 
     private LocalDate anyDate() {
         return LocalDate.of(

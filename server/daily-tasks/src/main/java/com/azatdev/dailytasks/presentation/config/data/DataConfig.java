@@ -9,8 +9,8 @@ import com.azatdev.dailytasks.data.repositories.data.MapTaskDataToDomainImpl;
 import com.azatdev.dailytasks.data.repositories.data.TasksRepositoryImpl;
 import com.azatdev.dailytasks.data.repositories.data.transaction.TransactionImplFactory;
 import com.azatdev.dailytasks.data.repositories.persistence.backlog.BacklogRepositoryImpl;
-import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPABacklogRepository;
-import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPATasksRepository;
+import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaBacklogsRepository;
+import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaTasksRepository;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepository;
@@ -30,7 +30,7 @@ public class DataConfig {
     @Bean
     public BacklogRepository backlogRepository(
         JpaUsersRepository jpaUsersRepository,
-        JPABacklogRepository jpaBacklogRepository
+        JpaBacklogsRepository jpaBacklogRepository
     ) {
         return new BacklogRepositoryImpl(
             jpaUsersRepository,
@@ -42,10 +42,13 @@ public class DataConfig {
     public TasksRepository tasksRepository(
 
         JpaUsersRepository jpaUsersRepository,
-        JPATasksRepository jpaTasksRepository
+        JpaBacklogsRepository jpaBacklogsRepository,
+        JpaTasksRepository jpaTasksRepository
     ) {
+
         return new TasksRepositoryImpl(
-            jpaUsersRepository,
+            jpaUsersRepository::getReferenceById,
+            jpaBacklogsRepository::getReferenceById,
             jpaTasksRepository,
             new MapTaskDataToDomainImpl()
         );

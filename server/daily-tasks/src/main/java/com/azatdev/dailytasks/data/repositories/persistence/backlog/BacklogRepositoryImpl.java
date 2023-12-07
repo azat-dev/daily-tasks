@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
-import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPABacklogRepository;
+import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaBacklogsRepository;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transaction;
@@ -16,11 +16,11 @@ import com.azatdev.dailytasks.domain.models.Backlog;
 public class BacklogRepositoryImpl implements BacklogRepository {
 
     private final JpaUsersRepository jpaUsersRepository;
-    private final JPABacklogRepository jpaBacklogRepository;
+    private final JpaBacklogsRepository jpaBacklogRepository;
 
     public BacklogRepositoryImpl(
         JpaUsersRepository jpaUsersRepository,
-        JPABacklogRepository jpaBacklogRepository
+        JpaBacklogsRepository jpaBacklogRepository
     ) {
         this.jpaUsersRepository = jpaUsersRepository;
         this.jpaBacklogRepository = jpaBacklogRepository;
@@ -52,7 +52,7 @@ public class BacklogRepositoryImpl implements BacklogRepository {
                 this.mapDuration(duration)
             );
 
-            return backlogIdProjection.map(JPABacklogRepository.BacklogIdProjection::getId);
+            return backlogIdProjection.map(JpaBacklogsRepository.BacklogIdProjection::getId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
 
-public interface JPATasksRepository extends JpaRepository<TaskData, Long> {
+public interface JpaTasksRepository extends JpaRepository<TaskData, Long> {
     interface OrderInBacklogProjection {
         Integer getOrderInBacklog();
     }

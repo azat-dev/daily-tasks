@@ -8,5 +8,5 @@ import io.micrometer.common.lang.NonNull;
 @FunctionalInterface
 public interface MapTaskDataToDomain {
 
-    @NonNull public Task map(@NonNull TaskData taskData);
+    @NonNull public Task execute(@NonNull TaskData taskData);
 }

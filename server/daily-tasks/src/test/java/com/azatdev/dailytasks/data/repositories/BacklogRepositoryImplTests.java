@@ -19,7 +19,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import com.azatdev.dailytasks.data.repositories.data.user.UserData;
 import com.azatdev.dailytasks.data.repositories.persistence.backlog.BacklogRepositoryImpl;
 import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
-import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPABacklogRepository;
+import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaBacklogsRepository;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryCreate;
 import com.azatdev.dailytasks.domain.models.Backlog;
@@ -28,7 +28,7 @@ import com.azatdev.dailytasks.domain.models.Backlog;
 class BacklogRepositoryImplTests {
 
     @Mock
-    JPABacklogRepository jpaBacklogRepository;
+    JpaBacklogsRepository jpaBacklogRepository;
 
     @Mock
     JpaUsersRepository jpaUsersRepository;
@@ -128,7 +128,7 @@ class BacklogRepositoryImplTests {
 
         final var ownerReference = mock(UserData.class);
 
-        final var backlogIdProjection = mock(JPABacklogRepository.BacklogIdProjection.class);
+        final var backlogIdProjection = mock(JpaBacklogsRepository.BacklogIdProjection.class);
         given(backlogIdProjection.getId()).willReturn(backlogId);
 
         given(
