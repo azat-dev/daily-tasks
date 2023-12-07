@@ -8,11 +8,13 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 import com.azatdev.dailytasks.data.repositories.TestEntityDataGenerator;
 import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
 
 @DataJpaTest
+@Import(TestEntityDataGenerator.class)
 class JPABacklogRepositoryTests {
 
     @Autowired

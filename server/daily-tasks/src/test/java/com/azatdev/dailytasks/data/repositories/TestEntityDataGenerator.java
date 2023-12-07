@@ -17,15 +17,10 @@ import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
 public class TestEntityDataGenerator {
 
     // Fields
-
-    private final TestEntityManager entityManager;
+    @Autowired
+    TestEntityManager entityManager;
 
     private final Faker faker = new Faker();
-
-    @Autowired
-    public TestEntityDataGenerator(TestEntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
 
     // Methods
 
