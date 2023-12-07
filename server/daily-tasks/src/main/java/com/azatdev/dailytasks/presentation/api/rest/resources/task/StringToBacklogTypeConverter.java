@@ -6,8 +6,7 @@ import org.springframework.stereotype.Component;
 import com.azatdev.dailytasks.domain.models.Backlog;
 
 @Component
-public class StringToBacklogTypeConverter
-  implements Converter<String, Backlog.Duration> {
+public class StringToBacklogTypeConverter implements Converter<String, Backlog.Duration> {
 
     @Override
     public Backlog.Duration convert(String source) {
