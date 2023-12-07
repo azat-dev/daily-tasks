@@ -8,17 +8,15 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import com.azatdev.dailytasks.data.repositories.TestEntityDataGenerator;
-import com.azatdev.dailytasks.data.repositories.data.user.UserData;
 import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
 
 @DataJpaTest
 class JPABacklogRepositoryTests {
 
     @Autowired
-    TestEntityManager entityManager;
+    TestEntityDataGenerator testData;
 
     @Autowired
     private JPABacklogRepository jpaBacklogRepository;
@@ -37,18 +35,6 @@ class JPABacklogRepositoryTests {
 
     private UUID anyUserId() {
         return UUID.randomUUID();
-    }
-
-    private UserData userReference(UUID userId) {
-        return entityManager.getEntityManager()
-            .getReference(
-                UserData.class,
-                userId
-            );
-    }
-
-    private UserData anyExistingUser(String name) {
-        return entityManager.persistAndFlush(TestEntityDataGenerator.anyUserDataWithUserName(name));
     }
 
     @Test
@@ -76,45 +62,32 @@ class JPABacklogRepositoryTests {
     void findByOwnerIdAndStartDateAndDuration_givenNotEmptyDb_thenShouldReturnCorrectRecord() {
 
         // Given
-        final var expectedUser = anyExistingUser("expectedUser");
-        final var wrongUser = anyExistingUser("wrongUser");
+        final var expectedUser = testData.givenExistingUser("expectedUser");
+        final var wrongUser = testData.givenExistingUser("wrongUser");
 
-        final var startDate = anyDate();
-        final var duration = anyDuration();
+        final var expectedBacklog = testData.givenExistingWeekBacklog(expectedUser);
 
-        final var expectedBacklog = entityManager.persistFlushFind(
-            new BacklogData(
-                expectedUser,
-                startDate,
-                duration
-            )
-        );
-        final var backlogWithWrongDate = entityManager.persistFlushFind(
-            new BacklogData(
-                expectedUser,
-                startDate.plusDays(1),
-                duration
-            )
-        );
-        final var backlogWithWrongDuration = entityManager.persistFlushFind(
-            new BacklogData(
-                expectedUser,
-                startDate,
-                BacklogData.Duration.WEEK
-            )
+        final var startDate = expectedBacklog.getStartDate();
+        final var duration = expectedBacklog.getDuration();
+
+        final var backlogWithWrongDate = testData.givenExistingWeekBacklog(
+            expectedUser,
+            startDate.plusDays(1)
         );
 
-        final var backlogWithWrongUserId = entityManager.persistFlushFind(
-            new BacklogData(
-                wrongUser,
-                startDate,
-                BacklogData.Duration.WEEK
-            )
+        final var backlogWithWrongDuration = testData.givenExistingDayBacklog(
+            expectedUser,
+            startDate
+        );
+
+        final var backlogWithWrongUserId = testData.givenExistingWeekBacklog(
+            wrongUser,
+            startDate
         );
 
         // When
         final var foundBacklogIdProjection = jpaBacklogRepository.findByOwnerIdAndStartDateAndDuration(
-            expectedUser.id(),
+            expectedUser.getId(),
             startDate,
             duration
         );

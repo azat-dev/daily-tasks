@@ -47,7 +47,10 @@ public final class ListTasksInBacklogUseCaseImpl implements ListTasksInBacklogUs
             return List.of();
         }
 
-        final var tasksInBacklog = tasksRepository.list(backlogIdResult.get());
+        final var tasksInBacklog = tasksRepository.list(
+            null,
+            backlogIdResult.get()
+        );
         return tasksInBacklog;
     }
 }

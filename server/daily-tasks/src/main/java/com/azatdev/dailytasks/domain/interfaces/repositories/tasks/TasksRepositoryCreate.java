@@ -1,6 +1,7 @@
 package com.azatdev.dailytasks.domain.interfaces.repositories.tasks;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transaction;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
@@ -11,6 +12,7 @@ public interface TasksRepositoryCreate {
     // Methods
 
     Task createTask(
+        UUID ownerId,
         long backlogId,
         NewTaskData newTaskData,
         Optional<Transaction> transaction

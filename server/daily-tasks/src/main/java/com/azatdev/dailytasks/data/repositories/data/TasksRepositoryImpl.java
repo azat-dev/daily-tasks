@@ -3,9 +3,11 @@ package com.azatdev.dailytasks.data.repositories.data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JPATasksRepository;
+import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transaction;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
@@ -15,15 +17,18 @@ public class TasksRepositoryImpl implements TasksRepository {
 
     // Fields
 
+    private final JpaUsersRepository jpaUsersRepository;
     private final JPATasksRepository jpaTasksRepository;
     private final MapTaskDataToDomain mapTaskDataToDomain;
 
     // Constructors
 
     public TasksRepositoryImpl(
+        JpaUsersRepository jpaUsersRepository,
         JPATasksRepository jpaTasksRepository,
         MapTaskDataToDomain mapTaskDataToDomain
     ) {
+        this.jpaUsersRepository = jpaUsersRepository;
         this.jpaTasksRepository = jpaTasksRepository;
         this.mapTaskDataToDomain = mapTaskDataToDomain;
     }
@@ -31,9 +36,15 @@ public class TasksRepositoryImpl implements TasksRepository {
     // Methods
 
     @Override
-    public List<Task> list(long backlogId) {
+    public List<Task> list(
+        UUID ownerId,
+        long backlogId
+    ) {
 
-        final var items = jpaTasksRepository.findAllByBacklogIdOrderByOrderInBacklogAsc(backlogId);
+        final var items = jpaTasksRepository.findAllByOwnerIdAndBacklogIdOrderByOrderInBacklogAsc(
+            null,
+            backlogId
+        );
 
         final var tasks = new ArrayList<Task>(items.size());
 
@@ -58,13 +69,17 @@ public class TasksRepositoryImpl implements TasksRepository {
 
     @Override
     public Task createTask(
+        UUID ownerId,
         long backlogId,
         NewTaskData newTaskData,
         Optional<Transaction> transaction
     ) {
 
         final var lastOrderInBacklog = jpaTasksRepository
-            .findFirstOrderInBacklogByBacklogIdOrderByOrderInBacklogDesc(backlogId);
+            .findFirstOrderInBacklogByOwnerIdAndBacklogIdOrderByOrderInBacklogDesc(
+                null,
+                backlogId
+            );
 
         int orderInBacklog = 0;
 
@@ -74,7 +89,8 @@ public class TasksRepositoryImpl implements TasksRepository {
         }
 
         final var taskData = new TaskData(
-            backlogId,
+            null,
+            null,
             orderInBacklog,
             newTaskData.title(),
             newTaskData.description(),

@@ -45,6 +45,7 @@ public class CreateTaskInBacklogUseCaseImpl implements CreateTaskInBacklogUseCas
             );
 
             final var createdTask = tasksRepository.createTask(
+                null,
                 backlogId,
                 newTaskData,
                 Optional.of(transaction)

@@ -39,8 +39,13 @@ public class DataConfig {
     }
 
     @Bean
-    public TasksRepository tasksRepository(JPATasksRepository jpaTasksRepository) {
+    public TasksRepository tasksRepository(
+
+        JpaUsersRepository jpaUsersRepository,
+        JPATasksRepository jpaTasksRepository
+    ) {
         return new TasksRepositoryImpl(
+            jpaUsersRepository,
             jpaTasksRepository,
             new MapTaskDataToDomainImpl()
         );

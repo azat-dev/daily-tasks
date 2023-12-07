@@ -94,7 +94,10 @@ public class ListTasksInBacklogUseCaseTest {
             );
 
         then(sut.tasksRepository).should(never())
-            .list(any(long.class));
+            .list(
+                any(UUID.class),
+                any(long.class)
+            );
 
         assertThat(foundTasks).isNotNull();
         assertThat(foundTasks).isEmpty();
@@ -104,7 +107,7 @@ public class ListTasksInBacklogUseCaseTest {
     void execute_givenExistingBacklog_thenReturnTasksInBacklog() {
 
         // Given
-        final var userId = anyUserId();
+        final var ownerId = anyUserId();
         final var backlogId = anyBacklogId();
 
         final var backlogDuration = Backlog.Duration.DAY;
@@ -127,17 +130,22 @@ public class ListTasksInBacklogUseCaseTest {
 
         given(
             sut.backlogRepository.getBacklogId(
-                userId,
+                ownerId,
                 backlogStartDate,
                 backlogDuration
             )
         ).willReturn(Optional.of(backlogId));
 
-        given(sut.tasksRepository.list(backlogId)).willReturn(expectedTasks);
+        given(
+            sut.tasksRepository.list(
+                ownerId,
+                backlogId
+            )
+        ).willReturn(expectedTasks);
 
         // When
         final var foundTasks = sut.listTasksInBacklogUseCase.execute(
-            userId,
+            ownerId,
             backlogStartDate,
             backlogDuration
         );
@@ -145,13 +153,16 @@ public class ListTasksInBacklogUseCaseTest {
         // Then
         then(sut.backlogRepository).should(times(1))
             .getBacklogId(
-                userId,
+                ownerId,
                 adjustedBacklogStartDate,
                 backlogDuration
             );
 
         then(sut.tasksRepository).should(times(1))
-            .list(backlogId);
+            .list(
+                ownerId,
+                backlogId
+            );
 
         assertThat(foundTasks).isNotNull();
         assertThat(foundTasks).isEqualTo(expectedTasks);

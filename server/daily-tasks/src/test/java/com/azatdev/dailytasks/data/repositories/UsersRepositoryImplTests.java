@@ -9,6 +9,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.azatdev.dailytasks.data.repositories.data.UsersRepositoryImpl;
 import com.azatdev.dailytasks.data.repositories.data.user.UserData;
@@ -16,7 +19,11 @@ import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersReposito
 import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepository;
 import com.azatdev.dailytasks.domain.models.AppUser;
 
-class UsersRepositoryImplTests {
+@ExtendWith(SpringExtension.class)
+class UsersRepositoryImplTest {
+
+    @Autowired
+    private TestEntityDataGenerator testData;
 
     private record SUT(
         UsersRepository usersRepository,
@@ -58,7 +65,7 @@ class UsersRepositoryImplTests {
 
         // Given
         final String userName = "userName";
-        final var userData = TestEntityDataGenerator.anyUserDataWithUserName(userName);
+        final var userData = testData.anyUserDataWithUserName(userName);
 
         SUT sut = createSUT();
         given(sut.jpaUsersRepository.findByUsername(userName)).willReturn(Optional.of(userData));
@@ -73,9 +80,9 @@ class UsersRepositoryImplTests {
         assertThat(result).isPresent();
 
         final var expectedUser = new AppUser(
-            userData.id(),
-            userData.username(),
-            userData.password()
+            userData.getId(),
+            userData.getUsername(),
+            userData.getPassword()
         );
 
         assertThat(result.get()).isEqualTo(expectedUser);
@@ -104,11 +111,11 @@ class UsersRepositoryImplTests {
     void findById_givenExistingUser_thenMustReturnUser() {
 
         // Given
-        final var userData = TestEntityDataGenerator.anyUserDataWithUserName("userName");
-        final var userId = userData.id();
+        final var owner = testData.anyUserDataWithUserName("userName");
+        final var userId = owner.getId();
 
         SUT sut = createSUT();
-        given(sut.jpaUsersRepository.findById(userId)).willReturn(Optional.of(userData));
+        given(sut.jpaUsersRepository.findById(userId)).willReturn(Optional.of(owner));
 
         // When
         final var result = sut.usersRepository.findById(userId);
@@ -120,9 +127,9 @@ class UsersRepositoryImplTests {
         assertThat(result).isPresent();
 
         final var expectedUser = new AppUser(
-            userData.id(),
-            userData.username(),
-            userData.password()
+            owner.getId(),
+            owner.getUsername(),
+            owner.getPassword()
         );
 
         assertThat(result.get()).isEqualTo(expectedUser);

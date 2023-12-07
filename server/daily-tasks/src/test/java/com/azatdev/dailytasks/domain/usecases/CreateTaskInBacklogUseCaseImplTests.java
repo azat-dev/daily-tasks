@@ -88,6 +88,7 @@ class CreateTaskInBacklogUseCaseImplTests {
 
         given(
             sut.tasksRepository.createTask(
+                ownerId,
                 backlogId,
                 newTaskData,
                 Optional.of(sut.transaction)
@@ -118,6 +119,7 @@ class CreateTaskInBacklogUseCaseImplTests {
 
         then(sut.tasksRepository).should(times(1))
             .createTask(
+                ownerId,
                 backlogId,
                 newTaskData,
                 Optional.of(sut.transaction)
@@ -162,6 +164,7 @@ class CreateTaskInBacklogUseCaseImplTests {
 
         given(
             sut.tasksRepository.createTask(
+                eq(ownerId),
                 eq(backlogId),
                 any(NewTaskData.class),
                 any()

@@ -20,9 +20,9 @@ public final class UsersRepositoryImpl implements UsersRepository {
 
     private AppUser mapUserDataToAppUser(UserData userData) {
         return new AppUser(
-            userData.id(),
-            userData.username(),
-            userData.password()
+            userData.getId(),
+            userData.getUsername(),
+            userData.getPassword()
         );
     }
 

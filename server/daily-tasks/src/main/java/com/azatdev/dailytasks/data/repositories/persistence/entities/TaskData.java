@@ -2,6 +2,8 @@ package com.azatdev.dailytasks.data.repositories.persistence.entities;
 
 import java.time.ZonedDateTime;
 
+import com.azatdev.dailytasks.data.repositories.data.user.UserData;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,6 +11,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -43,9 +47,13 @@ public class TaskData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // @ManyToOne(optional = false, targetEntity = BacklogData.class)
-    @Column(name = "backlog_id", nullable = false)
-    private Long backlogId;
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
+    private UserData owner;
+
+    @ManyToOne
+    @JoinColumn(name = "backlog_id", nullable = false)
+    private BacklogData backlog;
 
     @Column(name = "order_in_backlog")
     private Integer orderInBacklog;
@@ -73,14 +81,16 @@ public class TaskData {
     // Constructors
 
     public TaskData(
-        Long backlogId,
+        UserData owner,
+        BacklogData backlog,
         Integer orderInBacklog,
         String title,
         String description,
         Status status,
         Priority priority
     ) {
-        this.backlogId = backlogId;
+        this.owner = owner;
+        this.backlog = backlog;
         this.orderInBacklog = orderInBacklog;
         this.title = title;
         this.status = status;
