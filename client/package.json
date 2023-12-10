@@ -26,9 +26,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "generate-api-client": "openapi-generator-cli generate -g typescript-fetch -i ../openapi.yaml -o ./src/data/API",
-    "generate-api-client-spring": "openapi-generator-cli generate -g spring -i ../openapi.yaml -o ../../spring-server",
-    "generate-api-client-go": "openapi-generator-cli generate -g go-server -i ../openapi.yaml -o ./go"
+    "generate-api-client": "openapi-generator-cli generate -g typescript-fetch -i ../openapi.yaml -o ./src/data/API"
   },
   "eslintConfig": {
     "extends": [

@@ -2,11 +2,12 @@ import { useState } from "react";
 import AddTaskViewModel from "./AddTaskModalViewModel";
 import AddNewTaskUseCase from "../../../domain/usecases/AddNewTaskUseCase/AddNewTaskUseCase";
 import BacklogType from "../../../domain/models/BacklogType";
+import TaskPriority from "../../../domain/models/TaskPriority";
 
 const priorityOptions = [
-    { value: 1, label: "Low" },
-    { value: 2, label: "Medium" },
-    { value: 3, label: "High" },
+    { value: TaskPriority.LOW, label: "Low" },
+    { value: TaskPriority.MEDIUM, label: "Medium" },
+    { value: TaskPriority.HIGH, label: "High" },
 ];
 
 const useAddTaskViewModel = (
@@ -17,7 +18,9 @@ const useAddTaskViewModel = (
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [priority, setPriority] = useState<number | undefined>(undefined);
+    const [priority, setPriority] = useState<TaskPriority | undefined>(
+        undefined
+    );
     const [highlightTitleAsError, setHighlightTitleAsError] = useState(false);
 
     const onChangeTitle = (e: any) => {
@@ -78,7 +81,7 @@ const useAddTaskViewModel = (
         onCancel,
         onSave,
         onHide,
-        priority: priority,
+        priority,
         priorityOptions,
         onChangePriority,
     };

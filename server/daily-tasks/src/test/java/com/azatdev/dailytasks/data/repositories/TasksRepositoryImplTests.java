@@ -144,7 +144,7 @@ class TasksRepositoryImplTests {
         final int expectedOrderInBacklog = lastOrderInBacklog + 1;
         final var newTaskData = new NewTaskData(
             "title",
-            Task.Priority.LOW,
+            Optional.of(Task.Priority.LOW),
             "description"
         );
 

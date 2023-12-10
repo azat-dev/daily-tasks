@@ -1,5 +1,6 @@
+import TaskPriority from "../../../domain/models/TaskPriority";
 import TaskStatus from "../../../domain/models/TaskStatus";
-import { Task as TaskDTO, TaskStatusEnum } from "../../API";
+import { Task as TaskDTO, TaskPriorityEnum, TaskStatusEnum } from "../../API";
 import TaskMapperImpl from "./TaskMapperImpl";
 
 const createSut = () => {
@@ -18,7 +19,7 @@ describe("TaskMapper", () => {
             updatedAt: new Date(),
             description: "description 1",
             status: TaskStatusEnum.NotStarted,
-            priority: 1,
+            priority: "high",
         };
 
         // When
@@ -32,7 +33,7 @@ describe("TaskMapper", () => {
             updatedAt: task.updatedAt,
             description: task.description,
             status: TaskStatus.NotStarted,
-            priority: 1,
+            priority: "high",
         });
     });
 
@@ -45,7 +46,7 @@ describe("TaskMapper", () => {
             createdAt: new Date(),
             updatedAt: new Date(),
             status: TaskStatusEnum.NotStarted,
-            priority: 1,
+            priority: TaskPriorityEnum.Low,
         };
 
         // When
@@ -59,7 +60,7 @@ describe("TaskMapper", () => {
             updatedAt: task.updatedAt,
             description: "",
             status: TaskStatus.NotStarted,
-            priority: 1,
+            priority: TaskPriority.LOW,
         });
     });
 });

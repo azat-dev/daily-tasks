@@ -32,6 +32,8 @@ public class MapTaskToResponseImpl implements MapTaskToResponse {
         return new TaskResponse(
             task.id(),
             task.title(),
+            task.createdAt(),
+            task.updatedAt(),
             mapStatus(task.status()),
             mapPriority(task.priority()),
             task.description()

@@ -33,11 +33,23 @@ export interface NewTaskData {
     description?: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof NewTaskData
      */
-    priority?: number;
+    priority?: NewTaskDataPriorityEnum;
 }
+
+
+/**
+ * @export
+ */
+export const NewTaskDataPriorityEnum = {
+    Low: 'low',
+    Medium: 'medium',
+    High: 'high'
+} as const;
+export type NewTaskDataPriorityEnum = typeof NewTaskDataPriorityEnum[keyof typeof NewTaskDataPriorityEnum];
+
 
 /**
  * Check if a given object implements the NewTaskData interface.

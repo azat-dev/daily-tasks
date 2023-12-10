@@ -45,10 +45,10 @@ export interface Task {
     status: TaskStatusEnum;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Task
      */
-    priority?: number;
+    priority?: TaskPriorityEnum;
     /**
      * 
      * @type {Date}
@@ -74,6 +74,16 @@ export const TaskStatusEnum = {
     Archived: 'archived'
 } as const;
 export type TaskStatusEnum = typeof TaskStatusEnum[keyof typeof TaskStatusEnum];
+
+/**
+ * @export
+ */
+export const TaskPriorityEnum = {
+    Low: 'low',
+    Medium: 'medium',
+    High: 'high'
+} as const;
+export type TaskPriorityEnum = typeof TaskPriorityEnum[keyof typeof TaskPriorityEnum];
 
 
 /**

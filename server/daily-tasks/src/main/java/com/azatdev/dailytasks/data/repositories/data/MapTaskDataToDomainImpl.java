@@ -51,6 +51,8 @@ public class MapTaskDataToDomainImpl implements MapTaskDataToDomain {
         return new Task(
             taskData.getId(),
             taskData.getTitle(),
+            taskData.getCreatedAt(),
+            taskData.getUpdatedAt(),
             this.mapStatus(taskData.getStatus()),
             this.mapPriority(taskData.getPriority()),
             taskData.getDescription()

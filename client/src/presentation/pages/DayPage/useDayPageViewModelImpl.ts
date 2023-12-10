@@ -7,17 +7,17 @@ import StartTaskUseCase from "../../../domain/usecases/StartTaskUseCase/StartTas
 import Task from "../../../domain/models/Task";
 import StopTaskUseCase from "../../../domain/usecases/StopTaskUseCase/StopTaskUseCase";
 import DeleteTaskUseCase from "../../../domain/usecases/DeleteTaskUseCase/DeleteTaskUseCase";
-import BacklogType from "../../../domain/models/BacklogType";
+import TaskPriority from "../../../domain/models/TaskPriority";
 
-const mapPriority = (priority: number | undefined) => {
+const mapPriority = (priority: TaskPriority | undefined) => {
     switch (priority) {
         case undefined:
             return "";
-        case 1:
+        case TaskPriority.LOW:
             return "Low";
-        case 2:
+        case TaskPriority.MEDIUM:
             return "Medium";
-        case 3:
+        case TaskPriority.HIGH:
             return "High";
         default:
             return "";

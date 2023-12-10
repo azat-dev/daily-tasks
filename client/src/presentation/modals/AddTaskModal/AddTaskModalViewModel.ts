@@ -10,8 +10,8 @@ interface AddTaskViewModel {
     onCancel: (e: any) => void;
     onSave: (e: any) => void;
     onChangePriority: (e: any) => void;
-    priority: number | undefined;
-    priorityOptions: { value: number; label: string }[];
+    priority: string | undefined;
+    priorityOptions: { value: string; label: string }[];
 }
 
 export default AddTaskViewModel;

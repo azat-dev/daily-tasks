@@ -1,3 +1,4 @@
+import TaskPriority from "./TaskPriority";
 import TaskStatus from "./TaskStatus";
 
 export type TaskId = number;
@@ -7,7 +8,7 @@ interface Task {
     title: string;
     description: string;
     status: TaskStatus;
-    priority: number | undefined;
+    priority: TaskPriority | undefined;
     createdAt: Date;
     updatedAt: Date;
 }

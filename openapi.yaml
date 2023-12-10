@@ -301,9 +301,11 @@ components:
                         - completed
                         - archived
                 priority:
-                    type: integer
-                    minimum: 1
-                    maximum: 3
+                    type: string
+                    enum:
+                        - low
+                        - medium
+                        - high
                 created_at:
                     type: string
                     format: date-time
@@ -321,9 +323,11 @@ components:
                 description:
                     type: string
                 priority:
-                    type: integer
-                    minimum: 1
-                    maximum: 3
+                    type: string
+                    enum:
+                        - low
+                        - medium
+                        - high
 
         BacklogType:
             type: string

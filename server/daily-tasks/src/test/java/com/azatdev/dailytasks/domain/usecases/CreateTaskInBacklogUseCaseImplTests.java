@@ -15,7 +15,6 @@ import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transac
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.TransactionFactory;
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
-import com.azatdev.dailytasks.domain.models.Task;
 
 class CreateTaskInBacklogUseCaseImplTests {
 
@@ -69,7 +68,7 @@ class CreateTaskInBacklogUseCaseImplTests {
 
         final var newTaskData = new NewTaskData(
             "title",
-            Task.Priority.HIGH,
+            Optional.empty(),
             "description"
         );
 
@@ -148,7 +147,7 @@ class CreateTaskInBacklogUseCaseImplTests {
 
         final var newTaskData = new NewTaskData(
             "title",
-            Task.Priority.HIGH,
+            Optional.empty(),
             "description"
         );
 

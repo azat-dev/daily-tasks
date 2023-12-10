@@ -1,6 +1,7 @@
 import { Result, ResultType } from "../../../common/Result";
 import BacklogType from "../../models/BacklogType";
 import Task from "../../models/Task";
+import TaskPriority from "../../models/TaskPriority";
 import TaskStatus from "../../models/TaskStatus";
 import {
     TasksRepositoryError,
@@ -35,7 +36,7 @@ const anyTasks = (): Task[] => {
             updatedAt: new Date(),
             description: "description 1",
             status: TaskStatus.NotStarted,
-            priority: 1,
+            priority: TaskPriority.LOW,
         },
         {
             id: 2,
@@ -44,7 +45,7 @@ const anyTasks = (): Task[] => {
             updatedAt: new Date(),
             description: "description 2",
             status: TaskStatus.NotStarted,
-            priority: 2,
+            priority: TaskPriority.LOW,
         },
     ];
 };
