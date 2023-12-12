@@ -60,7 +60,7 @@ class TaskControllerTest {
     void findAllTasksInBacklog_givenExistingTasks_thenReturnAllTasksInBacklog() throws Exception {
 
         // Given
-        final var url = "/api/with-auth/tasks/backlog/week/for/2023-11-11";
+        final var url = "/api/with-auth/tasks/backlog/WEEK/for/2023-11-11";
 
         final var userPrincipal = anyUserPrincipal();
         final var userId = userPrincipal.getId();
@@ -136,7 +136,7 @@ class TaskControllerTest {
         final var userPrincipal = anyUserPrincipal();
         final var userId = userPrincipal.getId();
 
-        final var url = "/api/with-auth/tasks/backlog/week/for/2023-11-11";
+        final var url = "/api/with-auth/tasks/backlog/WEEK/for/2023-11-11";
 
         LocalDate date = LocalDate.of(
             2023,
