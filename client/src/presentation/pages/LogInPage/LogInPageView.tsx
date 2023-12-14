@@ -3,13 +3,15 @@ import { Form, Button, FloatingLabel, Spinner } from "react-bootstrap";
 
 import logo from "../../../logo.svg";
 import styles from "./styles.module.scss";
-import LogInPageViewModel from "./LogInPageViewModel";
+import { useViewModelBinding } from "./useBinding";
+import LogInPageViewModel from "./ViewModel/LogInPageViewModel";
 
 export interface LogInPageViewProps {
     viewModel: LogInPageViewModel;
 }
 
 const LogInPageView = ({ viewModel }: LogInPageViewProps) => {
+    const vm = useViewModelBinding(viewModel);
     return (
         <div className={styles.signInPage}>
             <main className={`${styles.formLogIn} w-100 m-auto`}>
@@ -23,7 +25,7 @@ const LogInPageView = ({ viewModel }: LogInPageViewProps) => {
                     />
                     <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
 
-                    <FloatingLabel controlId="usernameInput" label="User name">
+                    <FloatingLabel label="User name">
                         <Form.Control
                             type="text"
                             placeholder="Username..."
@@ -32,16 +34,13 @@ const LogInPageView = ({ viewModel }: LogInPageViewProps) => {
                             id="username"
                             autoCapitalize="none"
                             spellCheck={false}
-                            value={viewModel.username}
-                            disabled={viewModel.isProcessing}
-                            onChange={viewModel.onChangeUserName}
-                            isInvalid={viewModel.highlightAsErrorUserNameInput}
+                            value={vm.username}
+                            disabled={vm.isProcessing}
+                            onChange={vm.onChangeUserName}
+                            isInvalid={vm.highlightAsErrorUserNameInput}
                         />
                     </FloatingLabel>
-                    <FloatingLabel
-                        controlId="floatingPassword"
-                        label="Password..."
-                    >
+                    <FloatingLabel label="Password...">
                         <Form.Control
                             name="password"
                             type="password"
@@ -49,20 +48,21 @@ const LogInPageView = ({ viewModel }: LogInPageViewProps) => {
                             autoCapitalize="none"
                             spellCheck={false}
                             id="password"
-                            value={viewModel.password}
+                            value={vm.password}
                             placeholder="Password"
-                            disabled={viewModel.isProcessing}
-                            onChange={viewModel.onChangePassword}
-                            isInvalid={viewModel.highlightAsErrorPasswordInput}
+                            disabled={vm.isProcessing}
+                            onChange={vm.onChangePassword}
+                            isInvalid={vm.highlightAsErrorPasswordInput}
                         />
                     </FloatingLabel>
 
-                    <Form.Group className="mb-3" controlId="formBasicCheckbox">
+                    <Form.Group className="mb-3">
                         <Form.Check
+                            id="rememberMeCheckBox"
                             type="checkbox"
                             label="Remember me"
                             style={{ display: "none" }}
-                            disabled={viewModel.isProcessing}
+                            disabled={vm.isProcessing}
                         />
                     </Form.Group>
 
@@ -70,8 +70,8 @@ const LogInPageView = ({ viewModel }: LogInPageViewProps) => {
                         variant="primary"
                         type="submit"
                         className="w-100 btn btn-lg btn-primary"
-                        disabled={viewModel.isProcessing}
-                        onClick={viewModel.onSubmit}
+                        disabled={vm.isProcessing}
+                        onClick={vm.onSubmit}
                     >
                         <Spinner
                             as="span"
@@ -79,12 +79,12 @@ const LogInPageView = ({ viewModel }: LogInPageViewProps) => {
                             size="sm"
                             role="status"
                             aria-hidden="true"
-                            hidden={!viewModel.isProcessing}
+                            hidden={!vm.isProcessing}
                         />
-                        <span hidden={viewModel.isProcessing}>Sign in</span>
+                        <span hidden={vm.isProcessing}>Sign in</span>
                     </Button>
 
-                    {viewModel.showWrongCredentialsErrorText && (
+                    {vm.showWrongCredentialsErrorText && (
                         <div className="invalid-feedback">
                             You must agree before submitting.
                         </div>

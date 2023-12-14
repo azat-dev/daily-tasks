@@ -2,15 +2,17 @@ import React from "react";
 import { Button, ButtonGroup, Dropdown, Table } from "react-bootstrap";
 
 import styles from "./styles.module.scss";
-import DayPageViewViewModel from "./DayPageViewModel";
+import DayPageViewViewModel from "./ViewModel/DayPageViewModel";
 import { Action } from "history";
 import ActionButtonView from "./ActionButton/ActionButtonView";
+import { useViewModelBinding } from "../LogInPage/useBinding";
 
 export interface DayPageViewProps {
     viewModel: DayPageViewViewModel;
 }
 
-const DayPageView = ({ viewModel }: DayPageViewProps) => {
+const DayPageView = (props: DayPageViewProps) => {
+    const vm = useViewModelBinding(props.viewModel);
     return (
         <div className={styles.dayPageView}>
             <Table responsive="sm">
@@ -24,7 +26,7 @@ const DayPageView = ({ viewModel }: DayPageViewProps) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {viewModel.rows.map((row) => {
+                    {vm.rows.map((row) => {
                         const actionButtonViewModel = row.actionButtonViewModel;
                         return (
                             <tr key={row.key}>

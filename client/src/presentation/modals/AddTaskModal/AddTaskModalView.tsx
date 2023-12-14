@@ -1,14 +1,16 @@
 import React from "react";
-import AddTaskViewModel from "./AddTaskModalViewModel";
+import AddTaskViewModel from "./ViewModel/AddTaskModalViewModel";
 import { Button, Form, Modal, Spinner } from "react-bootstrap";
+import { useViewModelBinding } from "../../pages/LogInPage/useBinding";
 
 export interface AddTaskModalViewProps {
     viewModel: AddTaskViewModel;
 }
 
 const AddTaskModalView = ({ viewModel }: AddTaskModalViewProps) => {
+    const vm = useViewModelBinding(viewModel);
     return (
-        <Modal show={viewModel.show} onHide={viewModel.onHide}>
+        <Modal show={vm.show} onHide={vm.onHide}>
             <Modal.Header closeButton>
                 <Modal.Title>Add a new task</Modal.Title>
             </Modal.Header>
@@ -20,9 +22,9 @@ const AddTaskModalView = ({ viewModel }: AddTaskModalViewProps) => {
                             type="text"
                             placeholder="Title"
                             required
-                            isInvalid={viewModel.highlightTitleAsError}
-                            disabled={viewModel.isProcessing}
-                            onChange={viewModel.onChangeTitle}
+                            isInvalid={vm.highlightTitleAsError}
+                            disabled={vm.isProcessing}
+                            onChange={vm.onChangeTitle}
                         />
                     </Form.Group>
                     <Form.Group
@@ -31,12 +33,12 @@ const AddTaskModalView = ({ viewModel }: AddTaskModalViewProps) => {
                     >
                         <Form.Label>Priority</Form.Label>
                         <Form.Select
-                            value={viewModel.priority}
-                            disabled={viewModel.isProcessing}
-                            onChange={viewModel.onChangePriority}
+                            value={vm.priority}
+                            disabled={vm.isProcessing}
+                            onChange={vm.onChangePriority}
                         >
                             <option>Select priority</option>
-                            {viewModel.priorityOptions.map((option) => {
+                            {vm.priorityOptions.map((option) => {
                                 return (
                                     <option
                                         key={option.value}
@@ -57,21 +59,21 @@ const AddTaskModalView = ({ viewModel }: AddTaskModalViewProps) => {
                         <Form.Control
                             as="textarea"
                             rows={5}
-                            disabled={viewModel.isProcessing}
-                            value={viewModel.description}
-                            onChange={viewModel.onChangeDescription}
+                            disabled={vm.isProcessing}
+                            value={vm.description}
+                            onChange={vm.onChangeDescription}
                         />
                     </Form.Group>
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={viewModel.onCancel}>
+                <Button variant="secondary" onClick={vm.onCancel}>
                     Close
                 </Button>
                 <Button
                     variant="primary"
-                    onClick={viewModel.onSave}
-                    disabled={viewModel.isProcessing}
+                    onClick={vm.onSave}
+                    disabled={vm.isProcessing}
                     style={{ position: "relative" }}
                 >
                     <div
@@ -89,10 +91,10 @@ const AddTaskModalView = ({ viewModel }: AddTaskModalViewProps) => {
                         <Spinner
                             animation="border"
                             size="sm"
-                            hidden={!viewModel.isProcessing}
+                            hidden={!vm.isProcessing}
                         />
                     </div>
-                    <span style={{ opacity: viewModel.isProcessing ? 0 : 1 }}>
+                    <span style={{ opacity: vm.isProcessing ? 0 : 1 }}>
                         Create
                     </span>
                 </Button>

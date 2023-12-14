@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
-import ListTasksInBacklogUseCase from "../../../domain/usecases/ListTasksInBacklogUseCase/ListTasksInBacklogUseCase";
-import { ResultType } from "../../../common/Result";
-import { DayPageViewViewModelRow } from "./DayPageViewModel";
-import TaskStatus from "../../../domain/models/TaskStatus";
-import StartTaskUseCase from "../../../domain/usecases/StartTaskUseCase/StartTaskUseCase";
-import Task from "../../../domain/models/Task";
-import StopTaskUseCase from "../../../domain/usecases/StopTaskUseCase/StopTaskUseCase";
-import DeleteTaskUseCase from "../../../domain/usecases/DeleteTaskUseCase/DeleteTaskUseCase";
-import TaskPriority from "../../../domain/models/TaskPriority";
+import ListTasksInBacklogUseCase from "../../../../domain/usecases/ListTasksInBacklogUseCase/ListTasksInBacklogUseCase";
+import { ResultType } from "../../../../common/Result";
+import DayPageViewModel, { DayPageViewViewModelRow } from "./DayPageViewModel";
+import TaskStatus from "../../../../domain/models/TaskStatus";
+import StartTaskUseCase from "../../../../domain/usecases/StartTaskUseCase/StartTaskUseCase";
+import Task from "../../../../domain/models/Task";
+import StopTaskUseCase from "../../../../domain/usecases/StopTaskUseCase/StopTaskUseCase";
+import DeleteTaskUseCase from "../../../../domain/usecases/DeleteTaskUseCase/DeleteTaskUseCase";
+import TaskPriority from "../../../../domain/models/TaskPriority";
+import Value from "../../LogInPage/Value";
+import { value } from "../../LogInPage/DefaultValue";
 
 const mapPriority = (priority: TaskPriority | undefined) => {
     switch (priority) {
@@ -100,47 +101,44 @@ const mapTaskToRow = (
     };
 };
 
-const useDayPageViewModel = (
-    backlogDay: string,
-    listCurrentDayTasks: ListTasksInBacklogUseCase,
-    startTaskUseCase: StartTaskUseCase,
-    stopTaskUseCase: StopTaskUseCase,
-    deleteTaskUseCase: DeleteTaskUseCase
-) => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [rows, setRows] = useState<DayPageViewViewModelRow[]>([]);
+export default class DayPageViewModelImpl implements DayPageViewModel {
+    // Properties
+    public isLoading: Value<boolean> = value(true);
+    public rows: Value<DayPageViewViewModelRow[]> = value([]);
 
-    useEffect(() => {
-        setIsLoading(true);
+    // Constructor
 
-        const loadTasks = async () => {
-            listCurrentDayTasks.execute(backlogDay).then((result) => {
-                if (result.type !== ResultType.Success) {
-                    return;
-                }
+    constructor(
+        private backlogDay: string,
+        private listCurrentDayTasks: ListTasksInBacklogUseCase,
+        private startTaskUseCase: StartTaskUseCase,
+        private stopTaskUseCase: StopTaskUseCase,
+        private deleteTaskUseCase: DeleteTaskUseCase
+    ) {}
 
-                const tasks = result.value;
-                const rows = tasks.map((task) =>
-                    mapTaskToRow(
-                        task,
-                        startTaskUseCase,
-                        stopTaskUseCase,
-                        deleteTaskUseCase,
-                        loadTasks
-                    )
-                );
-                setRows(rows);
-                setIsLoading(false);
-            });
-        };
+    // Methods
 
-        loadTasks();
-    }, [listCurrentDayTasks, startTaskUseCase]);
+    public load = async () => {
+        this.isLoading.set(true);
 
-    return {
-        isLoading,
-        rows,
+        const result = await this.listCurrentDayTasks.execute(this.backlogDay);
+
+        if (result.type !== ResultType.Success) {
+            return;
+        }
+
+        const tasks = result.value;
+        const rows = tasks.map((task) =>
+            mapTaskToRow(
+                task,
+                this.startTaskUseCase,
+                this.stopTaskUseCase,
+                this.deleteTaskUseCase,
+                this.load
+            )
+        );
+
+        this.rows.set(rows);
+        this.isLoading.set(false);
     };
-};
-
-export default useDayPageViewModel;
+}

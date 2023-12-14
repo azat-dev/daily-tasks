@@ -1,15 +1,23 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import App from "./main/app/App";
 import reportWebVitals from "./reportWebVitals";
+import AppRoot from "./main/app/App";
+import AppSettings from "./main/app/AppSettings";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
 );
+
+const settings: AppSettings = {
+    api: {
+        basePath: "http://localhost:8080",
+    },
+};
+
 root.render(
     <React.StrictMode>
-        <App />
+        <AppRoot settings={settings} />
     </React.StrictMode>
 );
 

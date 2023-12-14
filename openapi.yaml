@@ -332,8 +332,8 @@ components:
         BacklogType:
             type: string
             enum:
-                - day
-                - week
+                - DAY
+                - WEEK
     securitySchemes:
         BearerAuth:
             type: http

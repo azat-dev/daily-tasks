@@ -1,30 +1,41 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
 import AppRouter from "../../presentation/router";
-import useAppModel from "./useAppModel";
-import usePageViews from "./usePageViews";
-import AddTaskModalView from "../../presentation/modals/AddTaskModal/AddTaskModalView";
-import useCurrentModalView from "./useCurrentModalView";
+import AppModelImpl from "./model/AppModelImpl";
+import { useViewModelBinding } from "../../presentation/pages/LogInPage/useBinding";
+import ModalPresenter from "./ModalPresenter";
+import useAppPages from "./useAppPages";
+import AppSettings from "./AppSettings";
+import AppModel from "./model/AppModel";
 
-const App = () => {
-    const { authState, currentModal, viewModelFactories } = useAppModel();
-    const views = usePageViews(viewModelFactories);
+const AppRoot = (props: { settings: AppSettings }) => {
+    const model = new AppModelImpl(props.settings);
 
-    const CurrentModalView = useCurrentModalView(currentModal);
+    useEffect(() => {
+        model.start();
+    }, [model]);
+    return <AppView model={model} />;
+};
+
+const AppView = (props: { model: AppModel }) => {
+    const model = useViewModelBinding(props.model);
+    const pages = useAppPages(model.getPages());
 
     return (
         <div className="appRoot">
             <AppRouter
-                authState={authState}
+                authState={model.authState}
                 signInPagePath="/sign-in"
-                views={views}
+                pages={pages}
             />
-            {CurrentModalView && <CurrentModalView />}
+            {model.currentModal && (
+                <ModalPresenter currentModal={model.currentModal} />
+            )}
         </div>
     );
 };
 
-export default App;
+export default AppRoot;

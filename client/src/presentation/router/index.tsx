@@ -11,15 +11,17 @@ import { RequireAuth } from "./require-auth";
 import AuthState from "../../domain/models/AuthState";
 import PageWithSidebarView from "../components/Sidebar/PageWithSidebar/PageWithSidebarView";
 
+export interface Pages {
+    SignInPage: React.ComponentType;
+    BacklogPage: React.ComponentType;
+    DayPage: React.ComponentType;
+    WeekPage: React.ComponentType;
+}
+
 interface AppRouterProps {
     authState: AuthState;
     signInPagePath: string;
-    views: {
-        SignInPage: React.ComponentType;
-        BacklogPage: React.ComponentType;
-        DayPage: React.ComponentType;
-        WeekPage: React.ComponentType;
-    };
+    pages: Pages;
 }
 
 const BacklogPageWithSidebar: React.FC = () => {
@@ -31,13 +33,13 @@ const BacklogPageWithSidebar: React.FC = () => {
     );
 };
 
-const AppRouter = ({ authState, signInPagePath, views }: AppRouterProps) => {
+const AppRouter = ({ authState, signInPagePath, pages }: AppRouterProps) => {
     const BacklogContent = () => {
         const params = useParams();
 
         switch (params.backlogType) {
             case "day":
-                return <views.DayPage />;
+                return <pages.DayPage />;
             default:
                 return null;
         }
@@ -51,7 +53,7 @@ const AppRouter = ({ authState, signInPagePath, views }: AppRouterProps) => {
                     return <Navigate replace to="/" />;
                 }
 
-                return <views.SignInPage />;
+                return <pages.SignInPage />;
             },
         },
         {
@@ -86,7 +88,7 @@ const AppRouter = ({ authState, signInPagePath, views }: AppRouterProps) => {
                             authState={authState}
                             redirectTo={signInPagePath}
                             AuthProcessingComponent={AuthProcessingPage}
-                            Component={views.BacklogPage}
+                            Component={pages.BacklogPage}
                         />
                     ),
                     children: [

@@ -1,6 +1,5 @@
-import Task from "../../../domain/models/Task";
-import { ActionButtonViewProps } from "./ActionButton/ActionButtonView";
-import ActionButtonViewModel from "./ActionButton/ActionButtonViewModel";
+import Value from "../../LogInPage/Value";
+import { ActionButtonViewProps } from "../ActionButton/ActionButtonView";
 
 export interface DayPageViewViewModelRow {
     key: string;
@@ -13,8 +12,8 @@ export interface DayPageViewViewModelRow {
 }
 
 interface DayPageViewViewModel {
-    isLoading: boolean;
-    rows: DayPageViewViewModelRow[];
+    isLoading: Value<boolean>;
+    rows: Value<DayPageViewViewModelRow[]>;
 }
 
 export default DayPageViewViewModel;

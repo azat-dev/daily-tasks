@@ -1,15 +1,17 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import CurrentBacklogPageViewModel from "./CurrentBacklogPageViewModel";
+import CurrentBacklogPageViewModel from "./ViewModel/CurrentBacklogPageViewModel";
 
 import styles from "./styles.module.scss";
-import { Button, Nav } from "react-bootstrap";
+import { Button } from "react-bootstrap";
+import { useViewModelBinding } from "../LogInPage/useBinding";
 
 export interface CurrentBacklogPageProps {
     viewModel: CurrentBacklogPageViewModel;
 }
 
-const CurrentBacklogPage = ({ viewModel }: CurrentBacklogPageProps) => {
+const CurrentBacklogPage = (props: CurrentBacklogPageProps) => {
+    const vm = useViewModelBinding(props.viewModel);
     return (
         <div className={`${styles.currentBacklogPage} ms-sm-auto px-md-4`}>
             <div
@@ -17,7 +19,7 @@ const CurrentBacklogPage = ({ viewModel }: CurrentBacklogPageProps) => {
                 style={{ alignItems: "end" }}
             >
                 <h3>Tasks</h3>
-                <Button variant="primary" onClick={viewModel.onClickAddTask}>
+                <Button variant="primary" onClick={vm.onClickAddTask}>
                     Add Task
                 </Button>
             </div>
