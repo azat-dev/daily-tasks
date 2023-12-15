@@ -16,6 +16,10 @@ export default class ValueImpl<T> implements Value<T> {
     }
 
     set = (newValue: T): void => {
+        if (this.currentValue === newValue) {
+            return;
+        }
+
         this.currentValue = newValue;
         this.notifySubscribers();
     };

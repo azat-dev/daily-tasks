@@ -5,8 +5,9 @@ import LogInPageView from "../../presentation/pages/LogInPage/LogInPageView";
 import BacklogType from "../../domain/models/BacklogType";
 import DayPageView from "../../presentation/pages/DayPage/DayPageView";
 
-const useAppPages = (appModel: AppModelPageFactories) => {
+const useAppPages = (getViewModelFactories: () => AppModelPageFactories) => {
     const pages = useMemo(() => {
+        const appModel = getViewModelFactories();
         return {
             SignInPage: () => {
                 return (
@@ -36,7 +37,7 @@ const useAppPages = (appModel: AppModelPageFactories) => {
                 return <h1>Week Page</h1>;
             },
         };
-    }, [appModel]);
+    }, [getViewModelFactories]);
 
     return pages;
 };

@@ -4,14 +4,14 @@ import { Button, ButtonGroup, Dropdown, Table } from "react-bootstrap";
 import styles from "./styles.module.scss";
 import DayPageViewViewModel from "./ViewModel/DayPageViewModel";
 import ActionButtonView from "./ActionButton/ActionButtonView";
-import { useViewModelBinding } from "../LogInPage/useBinding";
+import useUpdatesFrom from "../LogInPage/useUpdatesFrom";
 
 export interface DayPageViewProps {
     viewModel: DayPageViewViewModel;
 }
 
-const DayPageView = (props: DayPageViewProps) => {
-    const vm = useViewModelBinding(props.viewModel);
+const DayPageView = ({ viewModel: vm }: DayPageViewProps) => {
+    useUpdatesFrom(vm.isLoading, vm.rows);
 
     useEffect(() => {
         vm.load();
@@ -30,7 +30,7 @@ const DayPageView = (props: DayPageViewProps) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {vm.rows.map((row) => {
+                    {vm.rows.value.map((row) => {
                         const actionButtonViewModel = row.actionButtonViewModel;
                         return (
                             <tr key={row.key}>

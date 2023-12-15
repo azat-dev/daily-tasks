@@ -35,6 +35,8 @@ import DeleteTaskUseCase from "../../../domain/usecases/DeleteTaskUseCase/Delete
 import { IListenAuthenticationStateUseCaseOutput } from "../../../domain/usecases/ListenAuthenticationStateUseCase/ListenAuthenticationStateUseCase";
 import AppModel, { AppModelPageFactories, CurrentModalState } from "./AppModel";
 import AppSettings from "../AppSettings";
+import { Result, ResultType } from "../../../common/Result";
+import { TaskId } from "../../../domain/models/Task";
 
 export default class AppModelImpl implements AppModel {
     // Properties
@@ -82,11 +84,34 @@ export default class AppModelImpl implements AppModel {
 
         this.currentModal.set({
             type: "addTask",
-            viewModel: new AddTaskViewModelImpl(
-                backlogType,
-                backlogDay,
-                addNewTaskUseCase
-            ),
+            viewModel: new AddTaskViewModelImpl({
+                createTask: async (
+                    newTask
+                ): Promise<Result<TaskId, undefined>> => {
+                    const result = await addNewTaskUseCase.execute(
+                        backlogType,
+                        backlogDay,
+                        newTask
+                    );
+
+                    if (result.type === ResultType.Success) {
+                        return {
+                            type: ResultType.Success,
+                            value: result.value,
+                        };
+                    }
+                    return {
+                        type: ResultType.Failure,
+                        error: undefined,
+                    };
+                },
+                didComplete: () => {
+                    this.currentModal.set(null);
+                },
+                didHide: () => {
+                    this.currentModal.set(null);
+                },
+            }),
         });
     };
 

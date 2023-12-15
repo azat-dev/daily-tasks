@@ -1,16 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import AddTaskViewModel from "./ViewModel/AddTaskModalViewModel";
 import { Button, Form, Modal, Spinner } from "react-bootstrap";
-import { useViewModelBinding } from "../../pages/LogInPage/useBinding";
+import useUpdatesFrom from "../../pages/LogInPage/useUpdatesFrom";
 
 export interface AddTaskModalViewProps {
     viewModel: AddTaskViewModel;
 }
 
-const AddTaskModalView = ({ viewModel }: AddTaskModalViewProps) => {
-    const vm = useViewModelBinding(viewModel);
+const AddTaskModalView = ({ viewModel: vm }: AddTaskModalViewProps) => {
+    useUpdatesFrom(
+        vm.show,
+        vm.title,
+        vm.priority,
+        vm.description,
+        vm.highlightTitleAsError,
+        vm.isProcessing
+    );
+
     return (
-        <Modal show={vm.show} onHide={vm.onHide}>
+        <Modal show={vm.show.value} onHide={vm.onHide} onExited={vm.onUnMount}>
             <Modal.Header closeButton>
                 <Modal.Title>Add a new task</Modal.Title>
             </Modal.Header>
@@ -22,8 +30,8 @@ const AddTaskModalView = ({ viewModel }: AddTaskModalViewProps) => {
                             type="text"
                             placeholder="Title"
                             required
-                            isInvalid={vm.highlightTitleAsError}
-                            disabled={vm.isProcessing}
+                            isInvalid={vm.highlightTitleAsError.value}
+                            disabled={vm.isProcessing.value}
                             onChange={vm.onChangeTitle}
                         />
                     </Form.Group>
@@ -33,8 +41,8 @@ const AddTaskModalView = ({ viewModel }: AddTaskModalViewProps) => {
                     >
                         <Form.Label>Priority</Form.Label>
                         <Form.Select
-                            value={vm.priority}
-                            disabled={vm.isProcessing}
+                            value={vm.priority.value}
+                            disabled={vm.isProcessing.value}
                             onChange={vm.onChangePriority}
                         >
                             <option>Select priority</option>
@@ -59,8 +67,8 @@ const AddTaskModalView = ({ viewModel }: AddTaskModalViewProps) => {
                         <Form.Control
                             as="textarea"
                             rows={5}
-                            disabled={vm.isProcessing}
-                            value={vm.description}
+                            disabled={vm.isProcessing.value}
+                            value={vm.description.value}
                             onChange={vm.onChangeDescription}
                         />
                     </Form.Group>
@@ -73,7 +81,7 @@ const AddTaskModalView = ({ viewModel }: AddTaskModalViewProps) => {
                 <Button
                     variant="primary"
                     onClick={vm.onSave}
-                    disabled={vm.isProcessing}
+                    disabled={vm.isProcessing.value}
                     style={{ position: "relative" }}
                 >
                     <div
@@ -91,10 +99,10 @@ const AddTaskModalView = ({ viewModel }: AddTaskModalViewProps) => {
                         <Spinner
                             animation="border"
                             size="sm"
-                            hidden={!vm.isProcessing}
+                            hidden={!vm.isProcessing.value}
                         />
                     </div>
-                    <span style={{ opacity: vm.isProcessing ? 0 : 1 }}>
+                    <span style={{ opacity: vm.isProcessing.value ? 0 : 1 }}>
                         Create
                     </span>
                 </Button>

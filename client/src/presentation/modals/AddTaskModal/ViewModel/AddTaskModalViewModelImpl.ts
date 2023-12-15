@@ -1,9 +1,10 @@
-import AddTaskViewModel from "./AddTaskModalViewModel";
-import AddNewTaskUseCase from "../../../../domain/usecases/AddNewTaskUseCase/AddNewTaskUseCase";
-import BacklogType from "../../../../domain/models/BacklogType";
+import AddTaskViewModel, {
+    AddTaskViewModelDelegate,
+} from "./AddTaskModalViewModel";
 import TaskPriority from "../../../../domain/models/TaskPriority";
 import Value from "../../../pages/LogInPage/Value";
 import { value } from "../../../pages/LogInPage/DefaultValue";
+import { ResultType } from "../../../../common/Result";
 
 export default class AddTaskViewModelImpl implements AddTaskViewModel {
     // Properties
@@ -20,11 +21,7 @@ export default class AddTaskViewModelImpl implements AddTaskViewModel {
         { value: TaskPriority.HIGH, label: "High" },
     ];
 
-    public constructor(
-        private backlogType: BacklogType,
-        private backlogDay: string,
-        private addNewTask: AddNewTaskUseCase
-    ) {}
+    public constructor(private delegate: AddTaskViewModelDelegate) {}
 
     // Methods
 
@@ -37,15 +34,20 @@ export default class AddTaskViewModelImpl implements AddTaskViewModel {
         this.description.set(e.target.value);
     };
 
+    onUnMount = () => {
+        this.delegate.didHide();
+    };
+
     onHide = () => {
         this.title.set("");
         this.description.set("");
+        this.show.set(false);
     };
 
     onCancel = (e: any) => {
         e.preventDefault();
         e.stopPropagation();
-        this.onHide();
+        this.show.set(false);
     };
 
     onSave = async (e: any) => {
@@ -61,11 +63,20 @@ export default class AddTaskViewModelImpl implements AddTaskViewModel {
             return;
         }
 
-        await this.addNewTask.execute(this.backlogType, this.backlogDay, {
+        const result = await this.delegate.createTask({
             title: cleanedTitle,
             description: this.description.value,
             priority: this.priority.value as any,
         });
+
+        this.isProcessing.set(false);
+
+        if (result.type === ResultType.Failure) {
+            return;
+        }
+
+        this.show.set(false);
+        this.delegate.didComplete();
     };
 
     onChangePriority = (e: any) => {

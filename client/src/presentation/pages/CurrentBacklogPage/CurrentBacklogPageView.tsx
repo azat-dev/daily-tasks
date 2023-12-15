@@ -4,14 +4,14 @@ import CurrentBacklogPageViewModel from "./ViewModel/CurrentBacklogPageViewModel
 
 import styles from "./styles.module.scss";
 import { Button } from "react-bootstrap";
-import { useViewModelBinding } from "../LogInPage/useBinding";
+import useUpdatesFrom from "../LogInPage/useUpdatesFrom";
 
 export interface CurrentBacklogPageProps {
     viewModel: CurrentBacklogPageViewModel;
 }
 
-const CurrentBacklogPage = (props: CurrentBacklogPageProps) => {
-    const vm = useViewModelBinding(props.viewModel);
+const CurrentBacklogPage = ({ viewModel: vm }: CurrentBacklogPageProps) => {
+    useUpdatesFrom(vm.isLoading, vm.tasks);
     return (
         <div className={`${styles.currentBacklogPage} ms-sm-auto px-md-4`}>
             <div

@@ -3,15 +3,22 @@ import { Form, Button, FloatingLabel, Spinner } from "react-bootstrap";
 
 import logo from "../../../logo.svg";
 import styles from "./styles.module.scss";
-import { useViewModelBinding } from "./useBinding";
 import LogInPageViewModel from "./ViewModel/LogInPageViewModel";
+import useUpdatesFrom from "./useUpdatesFrom";
 
 export interface LogInPageViewProps {
     viewModel: LogInPageViewModel;
 }
 
-const LogInPageView = ({ viewModel }: LogInPageViewProps) => {
-    const vm = useViewModelBinding(viewModel);
+const LogInPageView = ({ viewModel: vm }: LogInPageViewProps) => {
+    useUpdatesFrom(
+        vm.username,
+        vm.password,
+        vm.isProcessing,
+        vm.highlightAsErrorPasswordInput,
+        vm.highlightAsErrorUserNameInput,
+        vm.showWrongCredentialsErrorText
+    );
     return (
         <div className={styles.signInPage}>
             <main className={`${styles.formLogIn} w-100 m-auto`}>
@@ -34,10 +41,10 @@ const LogInPageView = ({ viewModel }: LogInPageViewProps) => {
                             id="username"
                             autoCapitalize="none"
                             spellCheck={false}
-                            value={vm.username}
-                            disabled={vm.isProcessing}
+                            value={vm.username.value}
+                            disabled={vm.isProcessing.value}
                             onChange={vm.onChangeUserName}
-                            isInvalid={vm.highlightAsErrorUserNameInput}
+                            isInvalid={vm.highlightAsErrorUserNameInput.value}
                         />
                     </FloatingLabel>
                     <FloatingLabel label="Password...">
@@ -48,11 +55,11 @@ const LogInPageView = ({ viewModel }: LogInPageViewProps) => {
                             autoCapitalize="none"
                             spellCheck={false}
                             id="password"
-                            value={vm.password}
+                            value={vm.password.value}
                             placeholder="Password"
-                            disabled={vm.isProcessing}
+                            disabled={vm.isProcessing.value}
                             onChange={vm.onChangePassword}
-                            isInvalid={vm.highlightAsErrorPasswordInput}
+                            isInvalid={vm.highlightAsErrorPasswordInput.value}
                         />
                     </FloatingLabel>
 
@@ -62,7 +69,7 @@ const LogInPageView = ({ viewModel }: LogInPageViewProps) => {
                             type="checkbox"
                             label="Remember me"
                             style={{ display: "none" }}
-                            disabled={vm.isProcessing}
+                            disabled={vm.isProcessing.value}
                         />
                     </Form.Group>
 
@@ -70,7 +77,7 @@ const LogInPageView = ({ viewModel }: LogInPageViewProps) => {
                         variant="primary"
                         type="submit"
                         className="w-100 btn btn-lg btn-primary"
-                        disabled={vm.isProcessing}
+                        disabled={vm.isProcessing.value}
                         onClick={vm.onSubmit}
                     >
                         <Spinner
@@ -79,12 +86,12 @@ const LogInPageView = ({ viewModel }: LogInPageViewProps) => {
                             size="sm"
                             role="status"
                             aria-hidden="true"
-                            hidden={!vm.isProcessing}
+                            hidden={!vm.isProcessing.value}
                         />
-                        <span hidden={vm.isProcessing}>Sign in</span>
+                        <span hidden={vm.isProcessing.value}>Sign in</span>
                     </Button>
 
-                    {vm.showWrongCredentialsErrorText && (
+                    {vm.showWrongCredentialsErrorText.value && (
                         <div className="invalid-feedback">
                             You must agree before submitting.
                         </div>
