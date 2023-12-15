@@ -63,10 +63,7 @@ describe("ListTasksInBacklogUseCaseImpl", () => {
                 backlogType: BacklogType,
                 backlogDay: string
             ): Promise<Result<Task[], TasksRepositoryError>> => {
-                return {
-                    type: ResultType.Success,
-                    value: expectedTasks,
-                };
+                return Result.success(expectedTasks);
             }
         );
 
@@ -78,9 +75,6 @@ describe("ListTasksInBacklogUseCaseImpl", () => {
             backlogType,
             backlogDay
         );
-        expect(result).toEqual({
-            type: ResultType.Success,
-            value: expectedTasks,
-        });
+        expect(result).toEqual(Result.success(expectedTasks));
     });
 });

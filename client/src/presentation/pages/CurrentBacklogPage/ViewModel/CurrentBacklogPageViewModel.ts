@@ -1,6 +1,7 @@
 import Task from "../../../../domain/models/Task";
 import Value from "../../LogInPage/Value";
 
+export interface CurrentBacklogPageViewModelDelegate {}
 export interface CurrentBacklogPageViewModelOutput {
     isLoading: Value<boolean>;
     tasks: Value<Task[]>;

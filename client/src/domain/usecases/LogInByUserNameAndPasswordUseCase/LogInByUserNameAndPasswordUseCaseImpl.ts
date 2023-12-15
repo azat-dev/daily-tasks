@@ -48,23 +48,18 @@ export default class LogInByUserNameAndPasswordUseCaseImpl
 
                 this.authStateRepository.updateAuthState(AuthState.LOGGED_IN);
 
-                return {
-                    type: ResultType.Success,
-                    value: undefined,
-                };
+                return Result.success(undefined);
 
             case ResultType.Failure:
                 switch (result.error) {
                     case AuthenticationServiceError.InternalError:
-                        return {
-                            type: ResultType.Failure,
-                            error: LoginByUserNamedAndPasswordUseCaseError.InternalError,
-                        };
+                        return Result.failure(
+                            LoginByUserNamedAndPasswordUseCaseError.InternalError
+                        );
                     case AuthenticationServiceError.WrongCredentials:
-                        return {
-                            type: ResultType.Failure,
-                            error: LoginByUserNamedAndPasswordUseCaseError.WrongCredentials,
-                        };
+                        return Result.failure(
+                            LoginByUserNamedAndPasswordUseCaseError.WrongCredentials
+                        );
                 }
         }
     };

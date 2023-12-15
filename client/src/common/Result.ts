@@ -10,6 +10,12 @@ export type Result<SuccessValue, ErrorValue> =
     | { type: ResultType.Failure; error: ErrorValue };
 
 export namespace Result {
-    const failure = <T>(error: T) => ({ type: ResultType.Failure, error });
-    const success = <T>(value: T) => ({ type: ResultType.Success, value });
+    export const failure = <T>(error: T): Result<any, T> => ({
+        type: ResultType.Failure,
+        error,
+    });
+    export const success = <T>(value: T): Result<T, any> => ({
+        type: ResultType.Success,
+        value,
+    });
 }

@@ -1,11 +1,10 @@
-import ListTasksInBacklogUseCase from "../../../../domain/usecases/ListTasksInBacklogUseCase/ListTasksInBacklogUseCase";
 import { ResultType } from "../../../../common/Result";
-import DayPageViewModel, { DayPageViewViewModelRow } from "./DayPageViewModel";
+import DayPageViewModel, {
+    DayPageViewViewModelDelegate,
+    DayPageViewViewModelRow,
+} from "./DayPageViewModel";
 import TaskStatus from "../../../../domain/models/TaskStatus";
-import StartTaskUseCase from "../../../../domain/usecases/StartTaskUseCase/StartTaskUseCase";
-import Task from "../../../../domain/models/Task";
-import StopTaskUseCase from "../../../../domain/usecases/StopTaskUseCase/StopTaskUseCase";
-import DeleteTaskUseCase from "../../../../domain/usecases/DeleteTaskUseCase/DeleteTaskUseCase";
+import Task, { TaskId } from "../../../../domain/models/Task";
 import TaskPriority from "../../../../domain/models/TaskPriority";
 import Value from "../../LogInPage/Value";
 import { value } from "../../LogInPage/DefaultValue";
@@ -48,41 +47,10 @@ const formatCreatedAt = (createdAt: Date) => {
 
 const mapTaskToRow = (
     task: Task,
-    startTaskUseCase: StartTaskUseCase,
-    stopTaskUseCase: StopTaskUseCase,
-    deleteTaskUseCase: DeleteTaskUseCase,
-    reloadTasks: () => void
+    onStart: () => void,
+    onStop: () => void,
+    onDelete: () => void
 ): DayPageViewViewModelRow => {
-    const onStart = async () => {
-        try {
-            await startTaskUseCase.execute(task.id);
-        } catch (error) {
-            console.log(error);
-        } finally {
-            reloadTasks();
-        }
-    };
-
-    const onStop = async () => {
-        try {
-            await stopTaskUseCase.execute(task.id);
-        } catch (error) {
-            console.log(error);
-        } finally {
-            reloadTasks();
-        }
-    };
-
-    const onDelete = async () => {
-        try {
-            await deleteTaskUseCase.execute(task.id);
-        } catch (error) {
-            console.log(error);
-        } finally {
-            reloadTasks();
-        }
-    };
-
     return {
         key: String(task.id),
         title: task.title,
@@ -108,37 +76,49 @@ export default class DayPageViewModelImpl implements DayPageViewModel {
 
     // Constructor
 
-    constructor(
-        private backlogDay: string,
-        private listCurrentDayTasks: ListTasksInBacklogUseCase,
-        private startTaskUseCase: StartTaskUseCase,
-        private stopTaskUseCase: StopTaskUseCase,
-        private deleteTaskUseCase: DeleteTaskUseCase
-    ) {}
+    constructor(private delegate: DayPageViewViewModelDelegate) {}
 
     // Methods
 
-    public load = async () => {
-        this.isLoading.set(true);
-
-        const result = await this.listCurrentDayTasks.execute(this.backlogDay);
+    private loadTasksSilently = async () => {
+        const result = await this.delegate.loadTasks();
 
         if (result.type !== ResultType.Success) {
             return;
         }
 
+        const startTask = async (taskId: TaskId) => {
+            await this.delegate.startTask(taskId);
+        };
+
+        const stopTask = (taskId: TaskId) => {
+            this.delegate.stopTask(taskId);
+        };
+
+        const deleteTask = (taskId: TaskId) => {
+            this.delegate.deleteTask(taskId);
+            this.loadTasksSilently();
+        };
+
         const tasks = result.value;
-        const rows = tasks.map((task) =>
-            mapTaskToRow(
+
+        const rows = tasks.map((task) => {
+            const taskId = task.id;
+            return mapTaskToRow(
                 task,
-                this.startTaskUseCase,
-                this.stopTaskUseCase,
-                this.deleteTaskUseCase,
-                this.load
-            )
-        );
+                () => startTask(taskId),
+                () => stopTask(taskId),
+                () => deleteTask(taskId)
+            );
+        });
 
         this.rows.set(rows);
         this.isLoading.set(false);
+    };
+
+    public load = async () => {
+        this.isLoading.set(true);
+
+        this.loadTasksSilently();
     };
 }

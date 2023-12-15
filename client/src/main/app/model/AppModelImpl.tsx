@@ -37,6 +37,7 @@ import AppModel, { AppModelPageFactories, CurrentModalState } from "./AppModel";
 import AppSettings from "../AppSettings";
 import { Result, ResultType } from "../../../common/Result";
 import { TaskId } from "../../../domain/models/Task";
+import ListTasksInBacklogUseCase from "../../../domain/usecases/ListTasksInBacklogUseCase/ListTasksInBacklogUseCase";
 
 export default class AppModelImpl implements AppModel {
     // Properties
@@ -77,7 +78,11 @@ export default class AppModelImpl implements AppModel {
 
     // Methods
 
-    private runAddTaskFlow = (backlogType: BacklogType, backlogDay: string) => {
+    private runAddTaskFlow = (
+        backlogType: BacklogType,
+        backlogDay: string,
+        didAdd: () => void
+    ) => {
         const addNewTaskUseCase = new AddNewTaskUseCaseImpl(
             this.getTasksRepository()
         );
@@ -95,18 +100,14 @@ export default class AppModelImpl implements AppModel {
                     );
 
                     if (result.type === ResultType.Success) {
-                        return {
-                            type: ResultType.Success,
-                            value: result.value,
-                        };
+                        return Result.success(result.value);
                     }
-                    return {
-                        type: ResultType.Failure,
-                        error: undefined,
-                    };
+
+                    return Result.failure(undefined);
                 },
                 didComplete: () => {
                     this.currentModal.set(null);
+                    didAdd();
                 },
                 didHide: () => {
                     this.currentModal.set(null);
@@ -117,6 +118,15 @@ export default class AppModelImpl implements AppModel {
 
     private getTasksRepository = () => {
         return new TasksRepositoryImpl(this.apiClient, new TaskMapperImpl());
+    };
+
+    private getListTasksInBacklogUseCase = (
+        backlogType: BacklogType
+    ): ListTasksInBacklogUseCase => {
+        return new ListTasksInBacklogUseCaseImpl(
+            backlogType,
+            this.getTasksRepository()
+        );
     };
 
     private getStartTaskUseCase = (): StartTaskUseCase => {
@@ -156,25 +166,40 @@ export default class AppModelImpl implements AppModel {
         backlogDay: string
     ): CurrentBacklogPageViewModel => {
         return new CurrentBacklogPageViewModelImpl(() => {
-            this.runAddTaskFlow(backlogType, backlogDay);
+            this.runAddTaskFlow(backlogType, backlogDay, () => {});
         });
     };
 
     private makeBacklogDayPageViewModel = (
         backlogDay: string
     ): DayPageViewViewModel => {
-        const listCurrentDayTasksUseCase = new ListTasksInBacklogUseCaseImpl(
-            BacklogType.Day,
-            this.getTasksRepository()
-        );
+        const backlogType = BacklogType.Day;
 
-        return new DayPageViewModelImpl(
-            backlogDay,
-            listCurrentDayTasksUseCase,
-            this.getStartTaskUseCase(),
-            this.getStopTaskUseCase(),
-            this.getDeleteTaskUseCase()
-        );
+        return new DayPageViewModelImpl({
+            loadTasks: async () => {
+                const useCase = this.getListTasksInBacklogUseCase(backlogType);
+
+                const result = await useCase.execute(backlogDay);
+
+                if (result.type === ResultType.Success) {
+                    return Result.success(result.value);
+                }
+
+                return Result.failure(undefined);
+            },
+            startTask: async (taskId) => {
+                throw new Error("Not implemented");
+                // await this.getStartTaskUseCase().execute(taskId);
+            },
+            stopTask: (taskId) => {
+                throw new Error("Not implemented");
+                // this.getStopTaskUseCase().execute(taskId);
+            },
+            deleteTask: (taskId) => {
+                throw new Error("Not implemented");
+                this.getDeleteTaskUseCase().execute(taskId);
+            },
+        });
     };
 
     public start = () => {

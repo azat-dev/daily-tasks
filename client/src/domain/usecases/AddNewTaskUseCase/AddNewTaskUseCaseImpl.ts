@@ -27,10 +27,7 @@ export default class AddNewTaskUseCaseImpl implements AddNewTaskUseCase {
             case ResultType.Success:
                 return result;
             case ResultType.Failure:
-                return {
-                    type: ResultType.Failure,
-                    error: AddNewTaskUseCaseError.InternalError,
-                };
+                return Result.failure(AddNewTaskUseCaseError.InternalError);
         }
     };
 }

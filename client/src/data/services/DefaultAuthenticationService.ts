@@ -32,25 +32,18 @@ export default class DefaultAuthenticationService
                 },
             });
 
-            return {
-                type: ResultType.Success,
-                value: {
-                    accessToken: response.access,
-                    refreshToken: response.refresh,
-                },
-            };
+            return Result.success({
+                accessToken: response.access,
+                refreshToken: response.refresh,
+            });
         } catch (error: any) {
             if (error?.response?.status === 401) {
-                return {
-                    type: ResultType.Failure,
-                    error: AuthenticationServiceError.WrongCredentials,
-                };
+                return Result.failure(
+                    AuthenticationServiceError.WrongCredentials
+                );
             }
 
-            return {
-                type: ResultType.Failure,
-                error: AuthenticationServiceError.InternalError,
-            };
+            return Result.failure(AuthenticationServiceError.InternalError);
         }
     };
 
@@ -64,22 +57,14 @@ export default class DefaultAuthenticationService
                 },
             });
 
-            return {
-                type: ResultType.Success,
-                value: true,
-            };
+            return Result.success(true);
         } catch (error: any) {
             console.log(error);
             if (error?.response?.status === 401) {
-                return {
-                    type: ResultType.Success,
-                    value: false,
-                };
+                return Result.success(false);
             }
-            return {
-                type: ResultType.Failure,
-                error: AuthenticationServiceError.InternalError,
-            };
+
+            return Result.failure(AuthenticationServiceError.InternalError);
         }
     };
 }

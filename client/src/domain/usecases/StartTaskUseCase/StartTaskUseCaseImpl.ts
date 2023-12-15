@@ -20,15 +20,9 @@ export default class StartTaskUseCaseImpl implements StartTaskUseCase {
 
         switch (result.type) {
             case ResultType.Success:
-                return {
-                    type: ResultType.Success,
-                    value: undefined,
-                };
+                return Result.success(undefined);
             case ResultType.Failure:
-                return {
-                    type: ResultType.Failure,
-                    error: this.mapError(result.error),
-                };
+                return Result.failure(this.mapError(result.error));
         }
     };
 

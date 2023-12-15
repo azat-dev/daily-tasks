@@ -32,10 +32,9 @@ export default class ListCurrentTasksUseCaseImpl
             case ResultType.Success:
                 return result;
             case ResultType.Failure:
-                return {
-                    type: ResultType.Failure,
-                    error: ListTasksInBacklogUseCaseError.InternalError,
-                };
+                return Result.failure(
+                    ListTasksInBacklogUseCaseError.InternalError
+                );
         }
     };
 }

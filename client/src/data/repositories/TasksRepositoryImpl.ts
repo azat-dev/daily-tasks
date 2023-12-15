@@ -39,15 +39,9 @@ export default class TasksRepositoryImpl
                     day: backlogDay as any,
                 });
 
-            return {
-                type: ResultType.Success,
-                value: tasksDTO.map(this.taskMapper.toDomain),
-            };
+            return Result.success(tasksDTO.map(this.taskMapper.toDomain));
         } catch (error) {
-            return {
-                type: ResultType.Failure,
-                error: TasksRepositoryError.InternalError,
-            };
+            return Result.failure(TasksRepositoryError.InternalError);
         }
     };
 
@@ -60,10 +54,7 @@ export default class TasksRepositoryImpl
             //     taskId: taskId,
             // });
 
-            return {
-                type: ResultType.Success,
-                value: undefined,
-            };
+            return Result.success(undefined);
         } catch (error: any) {
             let err = TasksRepositoryError.InternalError;
 
@@ -73,10 +64,7 @@ export default class TasksRepositoryImpl
                 err = TasksRepositoryError.TaskIsNotInCurrentDayBacklog;
             }
 
-            return {
-                type: ResultType.Failure,
-                error: err,
-            };
+            return Result.failure(err);
         }
     };
 
@@ -89,10 +77,7 @@ export default class TasksRepositoryImpl
             //     taskId: taskId,
             // });
 
-            return {
-                type: ResultType.Success,
-                value: undefined,
-            };
+            return Result.success(undefined);
         } catch (error: any) {
             let err = TasksRepositoryError.InternalError;
 
@@ -102,10 +87,7 @@ export default class TasksRepositoryImpl
                 err = TasksRepositoryError.TaskIsNotInCurrentDayBacklog;
             }
 
-            return {
-                type: ResultType.Failure,
-                error: err,
-            };
+            return Result.failure(err);
         }
     };
 
@@ -118,10 +100,7 @@ export default class TasksRepositoryImpl
             //     taskId: taskId,
             // });
 
-            return {
-                type: ResultType.Success,
-                value: undefined,
-            };
+            return Result.success(undefined);
         } catch (error: any) {
             let err = TasksRepositoryError.InternalError;
 
@@ -129,10 +108,7 @@ export default class TasksRepositoryImpl
                 err = TasksRepositoryError.TaskNotFound;
             }
 
-            return {
-                type: ResultType.Failure,
-                error: err,
-            };
+            return Result.failure(err);
         }
     };
 
@@ -161,15 +137,9 @@ export default class TasksRepositoryImpl
                     newTaskData,
                 });
 
-            return {
-                type: ResultType.Success,
-                value: response.taskId,
-            };
+            return Result.success(response.taskId);
         } catch (e) {
-            return {
-                type: ResultType.Failure,
-                error: TasksRepositoryError.InternalError,
-            };
+            return Result.failure(TasksRepositoryError.InternalError);
         }
     };
 }
