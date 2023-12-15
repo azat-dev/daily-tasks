@@ -14,6 +14,7 @@ export interface DayPageViewViewModelRow {
 interface DayPageViewViewModel {
     isLoading: Value<boolean>;
     rows: Value<DayPageViewViewModelRow[]>;
+    load: () => Promise<void>;
 }
 
 export default DayPageViewViewModel;

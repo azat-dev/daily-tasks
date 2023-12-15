@@ -18,8 +18,8 @@
  * @export
  */
 export const BacklogType = {
-    Day: 'day',
-    Week: 'week'
+    Day: 'DAY',
+    Week: 'WEEK'
 } as const;
 export type BacklogType = typeof BacklogType[keyof typeof BacklogType];
 

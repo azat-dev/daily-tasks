@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button, ButtonGroup, Dropdown, Table } from "react-bootstrap";
 
 import styles from "./styles.module.scss";
 import DayPageViewViewModel from "./ViewModel/DayPageViewModel";
-import { Action } from "history";
 import ActionButtonView from "./ActionButton/ActionButtonView";
 import { useViewModelBinding } from "../LogInPage/useBinding";
 
@@ -13,6 +12,11 @@ export interface DayPageViewProps {
 
 const DayPageView = (props: DayPageViewProps) => {
     const vm = useViewModelBinding(props.viewModel);
+
+    useEffect(() => {
+        vm.load();
+    }, []);
+
     return (
         <div className={styles.dayPageView}>
             <Table responsive="sm">

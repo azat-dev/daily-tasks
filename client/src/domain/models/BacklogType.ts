@@ -1,6 +1,6 @@
 enum BacklogType {
-    Week = "week",
-    Day = "day",
+    Week = "WEEK",
+    Day = "DAY",
 }
 
 export default BacklogType;
