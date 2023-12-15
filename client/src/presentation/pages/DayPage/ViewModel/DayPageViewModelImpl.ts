@@ -76,27 +76,27 @@ export default class DayPageViewModelImpl implements DayPageViewModel {
 
     // Constructor
 
-    constructor(private delegate: DayPageViewViewModelDelegate) {}
+    constructor(public delegate: DayPageViewViewModelDelegate | null = null) {}
 
     // Methods
 
     private loadTasksSilently = async () => {
-        const result = await this.delegate.loadTasks();
+        const result = await this.delegate!.loadTasks();
 
         if (result.type !== ResultType.Success) {
             return;
         }
 
         const startTask = async (taskId: TaskId) => {
-            await this.delegate.startTask(taskId);
+            await this.delegate!.startTask(taskId);
         };
 
         const stopTask = (taskId: TaskId) => {
-            this.delegate.stopTask(taskId);
+            this.delegate!.stopTask(taskId);
         };
 
         const deleteTask = (taskId: TaskId) => {
-            this.delegate.deleteTask(taskId);
+            this.delegate!.deleteTask(taskId);
             this.loadTasksSilently();
         };
 
@@ -120,5 +120,17 @@ export default class DayPageViewModelImpl implements DayPageViewModel {
         this.isLoading.set(true);
 
         this.loadTasksSilently();
+    };
+
+    public onAddTask = () => {
+        this.delegate!.runAddTaskFlow();
+    };
+
+    public reloadTasks = (silent: boolean): void => {
+        if (silent) {
+            this.loadTasksSilently();
+        } else {
+            this.load();
+        }
     };
 }

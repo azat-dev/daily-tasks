@@ -9,8 +9,9 @@ import StartNewSessionUseCaseImpl, {
 } from "../../../domain/usecases/StartNewSessionUseCase/StartNewSessionUseCaseImpl";
 import AuthStateRepositoryImpl from "../../../data/repositories/AuthStateRepositoryImpl";
 import AuthState from "../../../domain/models/AuthState";
-import CurrentBacklogPageViewModel from "../../../presentation/pages/CurrentBacklogPage/ViewModel/CurrentBacklogPageViewModel";
-import DayPageViewViewModel from "../../../presentation/pages/DayPage/ViewModel/DayPageViewModel";
+import DayPageViewViewModel, {
+    DayPageViewViewModelDelegate,
+} from "../../../presentation/pages/DayPage/ViewModel/DayPageViewModel";
 import ListTasksInBacklogUseCaseImpl from "../../../domain/usecases/ListTasksInBacklogUseCase/ListTasksInBacklogUseCaseImpl";
 import TasksRepositoryImpl from "../../../data/repositories/TasksRepositoryImpl";
 import TaskMapperImpl from "../../../data/repositories/TaskMapper/TaskMapperImpl";
@@ -20,7 +21,6 @@ import DeleteTaskUseCaseImpl from "../../../domain/usecases/DeleteTaskUseCase/De
 import BacklogType from "../../../domain/models/BacklogType";
 import AddNewTaskUseCaseImpl from "../../../domain/usecases/AddNewTaskUseCase/AddNewTaskUseCaseImpl";
 import LogInPageViewModelImpl from "../../../presentation/pages/LogInPage/ViewModel/LogInPageViewModelImpl";
-import CurrentBacklogPageViewModelImpl from "../../../presentation/pages/CurrentBacklogPage/ViewModel/CurrentBacklogPageViewModelImpl";
 import DayPageViewModelImpl from "../../../presentation/pages/DayPage/ViewModel/DayPageViewModelImpl";
 import AddTaskViewModelImpl from "../../../presentation/modals/AddTaskModal/ViewModel/AddTaskModalViewModelImpl";
 import Value from "../../../presentation/pages/LogInPage/Value";
@@ -146,7 +146,6 @@ export default class AppModelImpl implements AppModel {
     public getPages = (): AppModelPageFactories => {
         return {
             makeLogInPageViewModel: this.makeLogInPageViewModel,
-            makeBacklogPageViewModel: this.makeBacklogPageViewModel,
             makeBacklogDayPageViewModel: this.makeBacklogDayPageViewModel,
         };
     };
@@ -161,21 +160,14 @@ export default class AppModelImpl implements AppModel {
         return new LogInPageViewModelImpl(logInUseCase);
     };
 
-    private makeBacklogPageViewModel = (
-        backlogType: BacklogType,
-        backlogDay: string
-    ): CurrentBacklogPageViewModel => {
-        return new CurrentBacklogPageViewModelImpl(() => {
-            this.runAddTaskFlow(backlogType, backlogDay, () => {});
-        });
-    };
-
     private makeBacklogDayPageViewModel = (
         backlogDay: string
     ): DayPageViewViewModel => {
         const backlogType = BacklogType.Day;
 
-        return new DayPageViewModelImpl({
+        const viewModel = new DayPageViewModelImpl();
+
+        const delegate: DayPageViewViewModelDelegate = {
             loadTasks: async () => {
                 const useCase = this.getListTasksInBacklogUseCase(backlogType);
 
@@ -199,7 +191,16 @@ export default class AppModelImpl implements AppModel {
                 throw new Error("Not implemented");
                 this.getDeleteTaskUseCase().execute(taskId);
             },
-        });
+            runAddTaskFlow: () => {
+                this.runAddTaskFlow(backlogType, backlogDay, () => {
+                    viewModel.reloadTasks(true);
+                });
+            },
+        };
+
+        viewModel.delegate = delegate;
+
+        return viewModel;
     };
 
     public start = () => {

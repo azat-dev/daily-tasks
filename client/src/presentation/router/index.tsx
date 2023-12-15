@@ -4,7 +4,6 @@ import {
     createBrowserRouter,
     Navigate,
     RouterProvider,
-    useParams,
 } from "react-router-dom";
 import AuthProcessingPage from "../pages/AuthProcessingPage";
 import { RequireAuth } from "./require-auth";
@@ -13,7 +12,6 @@ import PageWithSidebarView from "../components/Sidebar/PageWithSidebar/PageWithS
 
 export interface Pages {
     SignInPage: React.ComponentType;
-    BacklogPage: React.ComponentType;
     DayPage: React.ComponentType;
     WeekPage: React.ComponentType;
 }
@@ -24,27 +22,7 @@ interface AppRouterProps {
     pages: Pages;
 }
 
-const BacklogPageWithSidebar: React.FC = () => {
-    const params = useParams();
-    return (
-        <PageWithSidebarView
-            activeItemId={params.period?.toLowerCase() ?? ("day" as any)}
-        />
-    );
-};
-
 const AppRouter = ({ authState, signInPagePath, pages }: AppRouterProps) => {
-    const BacklogContent = () => {
-        const params = useParams();
-
-        switch (params.backlogType) {
-            case "day":
-                return <pages.DayPage />;
-            default:
-                return null;
-        }
-    };
-
     const routes = [
         {
             path: signInPagePath,
@@ -71,41 +49,21 @@ const AppRouter = ({ authState, signInPagePath, pages }: AppRouterProps) => {
             ),
         },
         {
-            path: "/",
+            path: "tasks/backlog/day",
             element: (
                 <RequireAuth.Component
                     authState={authState}
                     redirectTo={signInPagePath}
                     AuthProcessingComponent={AuthProcessingPage}
-                    Component={BacklogPageWithSidebar}
+                    Component={() => {
+                        return (
+                            <PageWithSidebarView activeItemId="day">
+                                <pages.DayPage />
+                            </PageWithSidebarView>
+                        );
+                    }}
                 />
             ),
-            children: [
-                {
-                    path: "tasks/backlog",
-                    element: (
-                        <RequireAuth.Component
-                            authState={authState}
-                            redirectTo={signInPagePath}
-                            AuthProcessingComponent={AuthProcessingPage}
-                            Component={pages.BacklogPage}
-                        />
-                    ),
-                    children: [
-                        {
-                            path: ":backlogType",
-                            element: (
-                                <RequireAuth.Component
-                                    authState={authState}
-                                    redirectTo={signInPagePath}
-                                    AuthProcessingComponent={AuthProcessingPage}
-                                    Component={BacklogContent}
-                                />
-                            ),
-                        },
-                    ],
-                },
-            ],
         },
     ];
 

@@ -5,6 +5,7 @@ import { ActionButtonViewProps } from "../ActionButton/ActionButtonView";
 
 export interface DayPageViewViewModelDelegate {
     loadTasks(): Promise<Result<Task[], undefined>>;
+    runAddTaskFlow(): void;
     startTask(taskId: TaskId): Promise<Result<undefined, undefined>>;
     stopTask(taskId: TaskId): Promise<Result<undefined, undefined>>;
     deleteTask(taskId: TaskId): Promise<Result<undefined, undefined>>;
@@ -20,10 +21,25 @@ export interface DayPageViewViewModelRow {
     actionButtonViewModel: ActionButtonViewProps;
 }
 
-interface DayPageViewViewModel {
+export interface DayPageViewViewModelOutput {
     isLoading: Value<boolean>;
     rows: Value<DayPageViewViewModelRow[]>;
+}
+
+export interface DayPageViewViewModelInput {
     load: () => Promise<void>;
+    onAddTask: () => void;
+}
+
+export interface DayPageViewViewModelUpdateProperties {
+    reloadTasks(silent: boolean): void;
+}
+
+interface DayPageViewViewModel
+    extends DayPageViewViewModelInput,
+        DayPageViewViewModelOutput,
+        DayPageViewViewModelUpdateProperties {
+    delegate: DayPageViewViewModelDelegate | null;
 }
 
 export default DayPageViewViewModel;

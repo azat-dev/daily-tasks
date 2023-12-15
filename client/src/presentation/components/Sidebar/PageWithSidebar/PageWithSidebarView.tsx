@@ -3,11 +3,11 @@ import React from "react";
 import styles from "./styles.module.scss";
 import { Col, Container, Row } from "react-bootstrap";
 import SidebarView from "../SidebarView";
-import { Outlet } from "react-router-dom";
 import SidebarViewModel from "../SidebarViewModel";
 
 export interface PageWithSidebarViewProps {
     activeItemId: "day" | "week" | "projects";
+    children?: any;
 }
 
 const PageWithSidebarView = (props: PageWithSidebarViewProps) => {
@@ -21,9 +21,7 @@ const PageWithSidebarView = (props: PageWithSidebarViewProps) => {
                 <Col md={3} lg={2} p={0}>
                     <SidebarView viewModel={sidebarViewModel} />
                 </Col>
-                <Col>
-                    <Outlet />
-                </Col>
+                <Col>{props.children ?? null}</Col>
             </Row>
         </Container>
     );
