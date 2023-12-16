@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -19,8 +20,12 @@ public class JpaUsersRepositoryTest {
     @Autowired
     private JpaUsersRepository jpaUsersRepository;
 
-    @Autowired
     TestEntityDataGenerator testData;
+
+    @BeforeEach
+    void setUp() {
+        testData = new TestEntityDataGenerator();
+    }
 
     @Test
     void saveAndFlush_givenUserWithUserNameExists_thenMustThrowException() {
