@@ -23,12 +23,12 @@ interface StartTaskUseCase {
 final class StartTaskUseCaseImpl implements StartTaskUseCase {
 
     private CurrentTimeProvider currentTimeProvider;
-    private GetCurrentActivitySessionDao getCurrentActivitySessionDao;
+    private GetRunningActivitySessionForTaskDao getCurrentActivitySessionDao;
     private AddNewActivitySessionDao addNewActivitySessionDao;
 
     public StartTaskUseCaseImpl(
         CurrentTimeProvider currentTimeProvider,
-        GetCurrentActivitySessionDao getCurrentActivitySessionDao,
+        GetRunningActivitySessionForTaskDao getCurrentActivitySessionDao,
         AddNewActivitySessionDao addNewActivitySessionDao
     ) {
         this.currentTimeProvider = currentTimeProvider;
@@ -75,7 +75,7 @@ record ActivitySession(
 }
 
 @FunctionalInterface
-interface GetCurrentActivitySessionDao {
+interface GetRunningActivitySessionForTaskDao {
     Optional<ActivitySession> execute(
         UUID userId,
         long taskId
@@ -102,7 +102,7 @@ class StartTaskUseCaseTest {
     private record SUT(
         StartTaskUseCase useCase,
         CurrentTimeProvider currentTimeProvider,
-        GetCurrentActivitySessionDao getCurrentActivitySessionDao,
+        GetRunningActivitySessionForTaskDao getCurrentRunningActivitySessionForTaskDao,
         AddNewActivitySessionDao addNewActivitySessionDao
     ) {
     }
@@ -111,19 +111,19 @@ class StartTaskUseCaseTest {
         final var currentTimeProvider = mock(CurrentTimeProvider.class);
         given(currentTimeProvider.execute()).willReturn(currentTime);
 
-        final var getCurrentActivitySessionDao = mock(GetCurrentActivitySessionDao.class);
+        final var getCurrentRunningActivitySessionDao = mock(GetRunningActivitySessionForTaskDao.class);
         final var addNewActivitySessionDao = mock(AddNewActivitySessionDao.class);
 
         final var useCase = new StartTaskUseCaseImpl(
             currentTimeProvider,
-            getCurrentActivitySessionDao,
+            getCurrentRunningActivitySessionDao,
             addNewActivitySessionDao
         );
 
         return new SUT(
             useCase,
             currentTimeProvider,
-            getCurrentActivitySessionDao,
+            getCurrentRunningActivitySessionDao,
             addNewActivitySessionDao
         );
     }
@@ -143,7 +143,7 @@ class StartTaskUseCaseTest {
         final var sut = createSUT(currentTime);
 
         given(
-            sut.getCurrentActivitySessionDao.execute(
+            sut.getCurrentRunningActivitySessionForTaskDao.execute(
                 userId,
                 taskId
             )
@@ -156,7 +156,7 @@ class StartTaskUseCaseTest {
         );
 
         // Then
-        then(sut.getCurrentActivitySessionDao).should(times(1))
+        then(sut.getCurrentRunningActivitySessionForTaskDao).should(times(1))
             .execute(
                 userId,
                 taskId
@@ -192,7 +192,7 @@ class StartTaskUseCaseTest {
         );
 
         given(
-            sut.getCurrentActivitySessionDao.execute(
+            sut.getCurrentRunningActivitySessionForTaskDao.execute(
                 userId,
                 taskId
             )
@@ -205,7 +205,7 @@ class StartTaskUseCaseTest {
         );
 
         // Then
-        then(sut.getCurrentActivitySessionDao).should(times(1))
+        then(sut.getCurrentRunningActivitySessionForTaskDao).should(times(1))
             .execute(
                 userId,
                 taskId
