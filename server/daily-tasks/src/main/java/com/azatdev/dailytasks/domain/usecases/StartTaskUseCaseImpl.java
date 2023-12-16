@@ -61,7 +61,8 @@ public final class StartTaskUseCaseImpl implements StartTaskUseCase {
             updateTaskStatusDao.execute(
                 userId,
                 taskId,
-                Task.Status.IN_PROGRESS
+                Task.Status.IN_PROGRESS,
+                Optional.of(transaction)
             );
 
             addNewActivitySessionDao.execute(
@@ -70,7 +71,8 @@ public final class StartTaskUseCaseImpl implements StartTaskUseCase {
                     taskId,
                     currentTime,
                     Optional.empty()
-                )
+                ),
+                Optional.of(transaction)
             );
 
             transaction.commit();

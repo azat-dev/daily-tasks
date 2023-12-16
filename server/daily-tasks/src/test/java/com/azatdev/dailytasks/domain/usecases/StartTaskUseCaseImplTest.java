@@ -103,7 +103,8 @@ class StartTaskUseCaseImplTest {
             .execute(
                 userId,
                 taskId,
-                Task.Status.IN_PROGRESS
+                Task.Status.IN_PROGRESS,
+                Optional.of(sut.transaction)
             );
 
         then(sut.getCurrentRunningActivitySessionForTaskDao).should(times(1))
@@ -119,14 +120,15 @@ class StartTaskUseCaseImplTest {
                     taskId,
                     startedAt,
                     Optional.empty()
-                )
+                ),
+                Optional.of(sut.transaction)
             );
 
         assertThat(startedAt).isEqualTo(currentTime);
     }
 
     @Test
-    void execute_givenTaskExistsAnStarted_thenReturnStartTimeFromExistingActivitySession() {
+    void execute_givenTaskExistsAndStarted_thenReturnStartTimeFromExistingActivitySession() {
 
         // Given
         final var userId = anyUserId();
@@ -168,6 +170,7 @@ class StartTaskUseCaseImplTest {
             .execute(
                 any(),
                 anyLong(),
+                any(),
                 any()
             );
 
@@ -178,15 +181,13 @@ class StartTaskUseCaseImplTest {
             );
 
         then(sut.addNewActivitySessionDao).should(never())
-            .execute(any());
+            .execute(any(), any());
+
         then(sut.getCurrentRunningActivitySessionForTaskDao).should(times(1))
             .execute(
                 userId,
                 taskId
             );
-
-        then(sut.addNewActivitySessionDao).should(never())
-            .execute(any());
 
         assertThat(startedAt).isEqualTo(existingActivitySession.startedAt());
     }
@@ -212,6 +213,7 @@ class StartTaskUseCaseImplTest {
             sut.updateTaskStatusDao.execute(
                 any(),
                 anyLong(),
+                any(),
                 any()
             )
         ).willThrow(new RuntimeException());

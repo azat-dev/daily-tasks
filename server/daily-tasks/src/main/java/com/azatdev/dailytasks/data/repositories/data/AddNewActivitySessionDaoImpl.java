@@ -1,7 +1,10 @@
 package com.azatdev.dailytasks.data.repositories.data;
 
+import java.util.Optional;
+
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaActivitySessionsRepository;
 import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
+import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transaction;
 import com.azatdev.dailytasks.domain.models.ActivitySession;
 import com.azatdev.dailytasks.domain.models.NewActivitySession;
 
@@ -22,7 +25,7 @@ public final class AddNewActivitySessionDaoImpl implements AddNewActivitySession
     }
 
     @Override
-    public ActivitySession execute(NewActivitySession newActivitySession) {
+    public ActivitySession execute(NewActivitySession newActivitySession, Optional<Transaction> transaction) {
 
         final var newActivitySessionData = mapActivitySessionToData.map(newActivitySession);
 
