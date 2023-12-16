@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,6 +35,7 @@ import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
+import com.azatdev.dailytasks.domain.usecases.StartTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
 import com.azatdev.dailytasks.presentation.config.presentation.PresentationConfig;
@@ -55,6 +57,9 @@ class TaskControllerTest {
 
     @MockBean
     private CreateTaskInBacklogUseCase createTaskInBacklogUseCase;
+
+    @MockBean
+    private StartTaskUseCase startTaskUseCase;
 
     @Test
     void findAllTasksInBacklog_givenExistingTasks_thenReturnAllTasksInBacklog() throws Exception {
@@ -169,11 +174,9 @@ class TaskControllerTest {
                 .with(user(userPrincipal))
                 .with(csrf())
                 .content(objectMapper.writeValueAsString(newTaskData))
-        )
-            .andDo(MockMvcResultHandlers.print());
+        );
 
         // Then
-        action.andDo(MockMvcResultHandlers.log());
         action.andExpect(status().isCreated());
 
         final var expectedNewTaskData = new NewTaskData(
@@ -191,5 +194,42 @@ class TaskControllerTest {
             );
 
         action.andExpect(jsonPath("$.id").value(createdTask.id()));
+    }
+
+    @Test
+    void startTask_givenExistingTask_thenStartTask() throws Exception {
+
+        // Given
+        final var userPrincipal = anyUserPrincipal();
+        final var userId = userPrincipal.getId();
+        final var taskId = 1L;
+
+        final var url = "/api/with-auth/tasks/" + taskId + "/start";
+        final var startedAt = ZonedDateTime.now();
+
+        given(
+            startTaskUseCase.execute(
+                userId,
+                taskId
+            )
+        ).willReturn(startedAt);
+
+        // When
+        final var action = mockMvc.perform(
+            post(url).contentType(MediaType.APPLICATION_JSON)
+                .with(user(userPrincipal))
+                .with(csrf())
+        );
+
+        // Then
+        action.andExpect(status().isOk());
+
+        then(startTaskUseCase).should(times(1))
+            .execute(
+                userId,
+                taskId
+            );
+
+        action.andExpect(jsonPath("$.startedAt").value(startedAt.toString()));
     }
 }
