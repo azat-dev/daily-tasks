@@ -1,0 +1,6 @@
+.row[data-active="true"] {
+    > td:nth-of-type(2) {
+        color: #00cc00;
+        font-weight: bold;
+    }
+}
