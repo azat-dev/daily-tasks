@@ -40,8 +40,25 @@ final class StartTaskUseCaseImpl implements StartTaskUseCase {
         UUID userId,
         Long taskId
     ) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+
+        final var currentActivitySession = getCurrentActivitySessionDao.execute(
+            userId,
+            taskId
+        );
+
+        if (currentActivitySession.isPresent()) {
+            throw new UnsupportedOperationException("Unimplemented method 'execute'");
+        }
+
+        final var currentTime = currentTimeProvider.execute();
+        addNewActivitySessionDao.execute(
+            userId,
+            taskId,
+            currentTime,
+            Optional.empty()
+        );
+
+        return currentTime;
     }
 
 }
@@ -90,6 +107,8 @@ class StartTaskUseCaseTest {
 
     private SUT createSUT(ZonedDateTime currentTime) {
         final var currentTimeProvider = mock(CurrentTimeProvider.class);
+        given(currentTimeProvider.execute()).willReturn(currentTime);
+
         final var getCurrentActivitySessionDao = mock(GetCurrentActivitySessionDao.class);
         final var addNewActivitySessionDao = mock(AddNewActivitySessionDao.class);
 
@@ -149,6 +168,6 @@ class StartTaskUseCaseTest {
                 Optional.empty()
             );
 
-        assertThat(startedAt).isEqualTo(null);
+        assertThat(startedAt).isEqualTo(currentTime);
     }
 }
