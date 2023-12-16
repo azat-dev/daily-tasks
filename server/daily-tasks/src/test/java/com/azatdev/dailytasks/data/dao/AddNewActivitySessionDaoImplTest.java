@@ -7,48 +7,18 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import com.azatdev.dailytasks.data.repositories.data.AddNewActivitySessionDaoImpl;
 import com.azatdev.dailytasks.data.repositories.data.MapActivitySessionToDomain;
+import com.azatdev.dailytasks.data.repositories.data.MapNewActivitySessionToData;
 import com.azatdev.dailytasks.data.repositories.persistence.entities.ActivitySessionData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaActivitySessionsRepository;
 import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
 import com.azatdev.dailytasks.domain.models.ActivitySession;
 import com.azatdev.dailytasks.domain.models.NewActivitySession;
-
-interface MapNewActivitySessionToData {
-    ActivitySessionData map(NewActivitySession activitySession);
-}
-
-final class AddNewActivitySessionDaoImpl implements AddNewActivitySessionDao {
-
-    private JpaActivitySessionsRepository activitySessionsRepository;
-    private MapNewActivitySessionToData mapActivitySessionToData;
-    private MapActivitySessionToDomain mapActivitySessionToDomain;
-
-    public AddNewActivitySessionDaoImpl(
-        JpaActivitySessionsRepository activitySessionsRepository,
-        MapNewActivitySessionToData mapActivitySessionToData,
-        MapActivitySessionToDomain mapActivitySessionToDomain
-    ) {
-        this.activitySessionsRepository = activitySessionsRepository;
-        this.mapActivitySessionToData = mapActivitySessionToData;
-        this.mapActivitySessionToDomain = mapActivitySessionToDomain;
-    }
-
-    @Override
-    public ActivitySession execute(NewActivitySession newActivitySession) {
-
-        final var newActivitySessionData = mapActivitySessionToData.map(newActivitySession);
-
-        final var savedActivitySessionData = activitySessionsRepository.saveAndFlush(newActivitySessionData);
-
-        return mapActivitySessionToDomain.map(savedActivitySessionData);
-    }
-}
 
 public class AddNewActivitySessionDaoImplTest {
 
