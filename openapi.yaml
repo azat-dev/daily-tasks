@@ -146,6 +146,10 @@ paths:
             responses:
                 "200":
                     description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/StartTaskResponse"
                 "404":
                     description: Task not found
                 "400":
@@ -246,6 +250,14 @@ components:
                     type: string
                 last_name:
                     type: string
+        StartTaskResponse:
+            type: object
+            required:
+                - startedAt
+            properties:
+                startedAt:
+                    type: string
+                    format: date-time
         GetTokenResponse:
             type: object
             required:
