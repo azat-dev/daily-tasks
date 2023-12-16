@@ -7,12 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 
-import com.azatdev.dailytasks.domain.models.Backlog;
-import com.azatdev.dailytasks.domain.models.Backlog.Duration;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
+import com.azatdev.dailytasks.presentation.api.rest.entities.BacklogDurationPresentation;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
+import com.azatdev.dailytasks.presentation.api.rest.entities.TaskPriorityPresentation;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.utils.MapTaskToResponse;
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
@@ -36,14 +36,14 @@ public class TaskController implements TaskResource {
 
     @Override
     public ResponseEntity<List<TaskResponse>> findAllTasksInBacklog(
-        Backlog.Duration backlogDuration,
+        BacklogDurationPresentation backlogDuration,
         LocalDate date,
         @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         final var tasksInBacklog = listTasksInBacklogUseCase.execute(
             userPrincipal.getId(),
             date,
-            backlogDuration
+            backlogDuration.toDomain()
         );
 
         final var ouputItems = tasksInBacklog.stream()
@@ -55,7 +55,7 @@ public class TaskController implements TaskResource {
 
     @Override
     public ResponseEntity<TaskResponse> createTaskInBacklog(
-        Duration backlogDuration,
+        BacklogDurationPresentation backlogDuration,
         LocalDate date,
         CreateTaskInBacklogRequest request,
         @AuthenticationPrincipal UserPrincipal userPrincipal
@@ -64,14 +64,14 @@ public class TaskController implements TaskResource {
         final var newTaskData = new NewTaskData(
             request.title(),
             request.priority()
-                .toDomain(),
+                .map(TaskPriorityPresentation::toDomain),
             request.description()
         );
 
         final var createdTask = createTaskInBacklogUseCase.execute(
             userPrincipal.getId(),
             date,
-            backlogDuration,
+            backlogDuration.toDomain(),
             newTaskData
         );
 

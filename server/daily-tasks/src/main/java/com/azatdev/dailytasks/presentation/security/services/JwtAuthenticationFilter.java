@@ -100,8 +100,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     protected boolean authenticationIsRequired(String token) {
-        JWTAuthenticationToken existingAuth = (JWTAuthenticationToken) this.securityContextHolderStrategy.getContext()
+
+        final var auth = this.securityContextHolderStrategy.getContext()
             .getAuthentication();
+
+        if (!(auth instanceof JWTAuthenticationToken)) {
+            return true;
+        }
+
+        JWTAuthenticationToken existingAuth = (JWTAuthenticationToken) auth;
 
         if (
             existingAuth == null || !existingAuth.getToken()

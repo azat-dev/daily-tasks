@@ -99,7 +99,9 @@ public class TasksRepositoryImpl implements TasksRepository {
             newTaskData.title(),
             newTaskData.description(),
             TaskData.Status.NOT_STARTED,
-            map(newTaskData.priority())
+            newTaskData.priority()
+                .map(p -> map(p))
+                .orElse(null)
         );
 
         final var savedTaskData = jpaTasksRepository.saveAndFlush(taskData);

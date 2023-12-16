@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.hamcrest.Matchers;
@@ -31,12 +32,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
-import com.azatdev.dailytasks.domain.models.Task;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
-import com.azatdev.dailytasks.presentation.api.rest.entities.TaskPriorityPresentation;
 import com.azatdev.dailytasks.presentation.config.presentation.PresentationConfig;
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 
@@ -149,7 +148,7 @@ class TaskControllerTest {
 
         final var newTaskData = new CreateTaskInBacklogRequest(
             "New task title",
-            TaskPriorityPresentation.HIGH,
+            Optional.empty(),
             "Description"
         );
 
@@ -179,7 +178,7 @@ class TaskControllerTest {
 
         final var expectedNewTaskData = new NewTaskData(
             newTaskData.title(),
-            Task.Priority.HIGH,
+            Optional.empty(),
             newTaskData.description()
         );
 

@@ -1,0 +1,60 @@
+@import "~bootstrap/scss/bootstrap.scss";
+
+.sidebar {
+    @extend .col-md-3;
+    @extend .col-lg-2;
+    @extend .p-3;
+    @extend .text-white;
+
+    min-height: 100vh;
+    width: 100%;
+    height: 100vh;
+
+    background: #1f1e25;
+
+    .nav-link {
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .sidebar-heading {
+        font-size: 0.75rem;
+    }
+
+    border-right: 1px solid 1f1e25;
+}
+
+$size: 1.2rem;
+
+.navGroupHeader {
+    display: flex;
+    align-items: center;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    font-weight: bold;
+}
+
+.navGroupTitle {
+    padding-left: 0.6rem;
+}
+
+.navGroupIcon {
+    width: $size;
+    height: $size;
+    object-fit: fill;
+}
+
+.sidebarGroup {
+    @extend .flex-column;
+    margin-bottom: 10px;
+
+    :global(.nav-link) {
+        border-bottom: none;
+    }
+
+    :global(.nav-item) {
+        border-left: 1px solid #444950;
+        padding-left: 1rem;
+        margin-left: $size/2;
+    }
+}

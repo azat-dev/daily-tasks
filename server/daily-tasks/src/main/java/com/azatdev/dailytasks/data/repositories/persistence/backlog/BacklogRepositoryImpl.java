@@ -4,8 +4,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.dao.DataIntegrityViolationException;
-
 import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaBacklogsRepository;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
@@ -66,33 +64,28 @@ public class BacklogRepositoryImpl implements BacklogRepository {
         Optional<Transaction> transaction
     ) throws BacklogAlreadyExistsException {
 
-        try {
+        final var mappedDuration = this.mapDuration(duration);
 
-            final var result = this.jpaBacklogRepository.saveAndFlush(
-                new BacklogData(
-                    jpaUsersRepository.getReferenceById(ownerId),
-                    startDate,
-                    this.mapDuration(duration)
-                )
-            );
-            return result.getId();
+        final var backlogIdProjection = jpaBacklogRepository.findByOwnerIdAndStartDateAndDuration(
+            ownerId,
+            startDate,
+            mappedDuration
+        );
 
-        } catch (DataIntegrityViolationException e) {
+        if (backlogIdProjection.isPresent()) {
+            final var backlogId = backlogIdProjection.get()
+                .getId();
 
-            final var backlogIdProjection = jpaBacklogRepository.findByOwnerIdAndStartDateAndDuration(
-                ownerId,
-                startDate,
-                this.mapDuration(duration)
-            );
-
-            if (backlogIdProjection.isEmpty()) {
-                throw new RuntimeException(e);
-            }
-
-            throw new BacklogAlreadyExistsException(
-                backlogIdProjection.get()
-                    .getId()
-            );
+            throw new BacklogAlreadyExistsException(backlogId);
         }
+
+        final var data = new BacklogData(
+            jpaUsersRepository.getReferenceById(ownerId),
+            startDate,
+            mappedDuration
+        );
+
+        final var result = this.jpaBacklogRepository.saveAndFlush(data);
+        return result.getId();
     }
 }

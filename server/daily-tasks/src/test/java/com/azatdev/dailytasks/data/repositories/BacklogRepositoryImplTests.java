@@ -14,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.DataIntegrityViolationException;
 
 import com.azatdev.dailytasks.data.repositories.data.user.UserData;
 import com.azatdev.dailytasks.data.repositories.persistence.backlog.BacklogRepositoryImpl;
@@ -126,8 +125,6 @@ class BacklogRepositoryImplTests {
         final var duration = Backlog.Duration.DAY;
         final var backlogId = 1L;
 
-        final var ownerReference = mock(UserData.class);
-
         final var backlogIdProjection = mock(JpaBacklogsRepository.BacklogIdProjection.class);
         given(backlogIdProjection.getId()).willReturn(backlogId);
 
@@ -138,11 +135,6 @@ class BacklogRepositoryImplTests {
                 BacklogData.Duration.DAY
             )
         ).willReturn(Optional.of(backlogIdProjection));
-
-        given(jpaUsersRepository.getReferenceById(ownerId)).willReturn(ownerReference);
-
-        given(jpaBacklogRepository.saveAndFlush(any(BacklogData.class)))
-            .willThrow(new DataIntegrityViolationException("Backlog exists"));
 
         // When
         final var exception = assertThrows(

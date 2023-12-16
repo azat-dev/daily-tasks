@@ -1,5 +1,6 @@
 package com.azatdev.dailytasks.domain.usecases;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import com.github.javafaker.Faker;
@@ -20,6 +21,8 @@ public class TestDomainDataGenerator {
             id,
             faker.lorem()
                 .sentence(),
+            ZonedDateTime.now(),
+            ZonedDateTime.now(),
             Task.Status.NOT_STARTED,
             Task.Priority.MEDIUM,
             faker.lorem()

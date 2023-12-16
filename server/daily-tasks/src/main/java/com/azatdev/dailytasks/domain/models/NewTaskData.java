@@ -1,10 +1,10 @@
 package com.azatdev.dailytasks.domain.models;
 
-import jakarta.annotation.Nonnull;
+import java.util.Optional;
 
 public record NewTaskData(
-    @Nonnull String title,
-    Task.Priority priority,
-    @Nonnull String description
+    String title,
+    Optional<Task.Priority> priority,
+    String description
 ) {
 }

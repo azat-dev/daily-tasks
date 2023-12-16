@@ -1,0 +1,343 @@
+openapi: "3.0.0"
+info:
+    version: "1.0.0"
+    title: "Daily Tasks API"
+    description: Describes the API of Daily Tasks
+
+paths:
+    /api/public/auth/token:
+        post:
+            summary: Get a new pair of tokens (access, refresh)
+            security: []
+            requestBody:
+                description: JSON payload
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            required:
+                                - username
+                                - password
+                            properties:
+                                username:
+                                    type: string
+                                password:
+                                    type: string
+            responses:
+                "200":
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GetTokenResponse"
+    /api/public/auth/token/refresh:
+        post:
+            summary: Refresh a token
+            security: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                refreshToken:
+                                    type: string
+                                    format: JWT
+                                    minLength: 1
+            responses:
+                "200":
+                    description: A refreshed token
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/RefreshTokenResponse"
+
+    /api/public/auth/sign-up:
+        post:
+            summary: Sign up a new user
+            security: []
+            responses:
+                "201":
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/SignUpResponse"
+                "401":
+                    description: Wrong credentials
+    /api/public/auth/token/verify:
+        post:
+            summary: Check if a token is valid
+            security: []
+            requestBody:
+                description: JSON payload
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            required:
+                                - token
+                            properties:
+                                token:
+                                    type: string
+            responses:
+                "200":
+                    description: Valid Token
+                "401":
+                    description: Not valid Token
+    /api/with-auth/tasks/backlog/{backlog_type}/for/{day}:
+        description: Get all tasks in backlog
+        parameters:
+            - name: backlog_type
+              in: path
+              required: true
+              schema:
+                  $ref: "#/components/schemas/BacklogType"
+            - name: day
+              in: path
+              required: true
+              schema:
+                  type: string
+                  format: date
+        get:
+            summary: Get a list of tasks in a specific backlog
+            responses:
+                "200":
+                    description: A list of tasks
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/Task"
+
+        post:
+            summary: Add a task in a backlog
+            requestBody:
+                description: JSON payload
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/NewTaskData"
+            responses:
+                "200":
+                    description: Created task data
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/AddNewTaskToBacklogResponse"
+                "401":
+                    description: Unathorized
+    /api/with-auth/tasks/{task_id}/start:
+        description: Start a task
+        parameters:
+            - name: task_id
+              in: path
+              required: true
+              schema:
+                  type: integer
+              description: Task id
+        post:
+            summary: Start
+            responses:
+                "200":
+                    description: Success
+                "404":
+                    description: Task not found
+                "400":
+                    description: Task is not in current day backlog
+    /api/with-auth/tasks/{task_id}/stop:
+        description: Stop a task
+        parameters:
+            - name: task_id
+              in: path
+              required: true
+              schema:
+                  type: integer
+              description: Task id
+        post:
+            summary: Stop a task
+            responses:
+                "200":
+                    description: Success
+                "404":
+                    description: Task not found
+    /api/with-auth/tasks/{task_id}/complete:
+        description: Complete a task
+        parameters:
+            - name: task_id
+              in: path
+              required: true
+              schema:
+                  type: integer
+              description: Task id
+        post:
+            summary: Complete a task
+            responses:
+                "200":
+                    description: Success
+                "404":
+                    description: Task not found
+                "407":
+                    description: Task is not in current day backlog
+    /api/with-auth/tasks/{task_id}/move_to_backlog:
+        description: Move a task to backlog
+        parameters:
+            - name: task_id
+              in: path
+              required: true
+              schema:
+                  type: integer
+              description: Task id
+        post:
+            summary: Move task to different backlog
+            responses:
+                "200":
+                    description: Success
+                "404":
+                    description: Task not found
+    /api/with-auth/tasks/{task_id}:
+        description: Tasks endpoint
+        parameters:
+            - name: task_id
+              in: path
+              required: true
+              schema:
+                  type: integer
+              description: Task id
+        delete:
+            summary: Delete a task
+            responses:
+                "200":
+                    description: Success
+components:
+    schemas:
+        SignUpResponse:
+            type: object
+            required:
+                - user
+                - tokens
+            properties:
+                user:
+                    $ref: "#/components/schemas/UserInfo"
+                tokens:
+                    type: object
+                    required:
+                        - refresh
+                        - access
+                    properties:
+                        refresh:
+                            type: string
+                        access:
+                            type: string
+        UserInfo:
+            description: Information about user
+            type: object
+            required:
+                - username
+            properties:
+                username:
+                    type: string
+                first_name:
+                    type: string
+                last_name:
+                    type: string
+        GetTokenResponse:
+            type: object
+            required:
+                - access
+                - refresh
+            properties:
+                access:
+                    type: string
+                refresh:
+                    type: string
+        RefreshTokenResponse:
+            type: object
+            required:
+                - access
+                - refresh
+            properties:
+                refresh:
+                    type: string
+                    format: JWT
+                    minLength: 1
+                access:
+                    type: string
+                    format: JWT
+                    minLength: 1
+        AddNewTaskToBacklogResponse:
+            type: object
+            required:
+                - taskId
+            properties:
+                taskId:
+                    type: integer
+        Task:
+            type: object
+            required:
+                - id
+                - title
+                - status
+                - createdAt
+                - updatedAt
+            properties:
+                id:
+                    type: integer
+                title:
+                    type: string
+                    minLength: 1
+                description:
+                    type: string
+                status:
+                    type: string
+                    enum:
+                        - not_started
+                        - in_progress
+                        - completed
+                        - archived
+                priority:
+                    type: string
+                    enum:
+                        - low
+                        - medium
+                        - high
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
+        NewTaskData:
+            type: object
+            required:
+                - title
+            properties:
+                title:
+                    type: string
+                    minLength: 1
+                description:
+                    type: string
+                priority:
+                    type: string
+                    enum:
+                        - low
+                        - medium
+                        - high
+
+        BacklogType:
+            type: string
+            enum:
+                - DAY
+                - WEEK
+    securitySchemes:
+        BearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+security:
+    - BearerAuth: []
