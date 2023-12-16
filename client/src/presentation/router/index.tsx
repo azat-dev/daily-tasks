@@ -42,14 +42,12 @@ const AppRouter = ({ authState, signInPagePath, pages }: AppRouterProps) => {
                     authState={authState}
                     redirectTo={signInPagePath}
                     AuthProcessingComponent={AuthProcessingPage}
-                    Component={() => (
-                        <Navigate replace to="/tasks/backlog/day" />
-                    )}
+                    Component={() => <Navigate replace to="/backlog/day" />}
                 />
             ),
         },
         {
-            path: "tasks/backlog/day",
+            path: "/backlog/day",
             element: (
                 <RequireAuth.Component
                     authState={authState}

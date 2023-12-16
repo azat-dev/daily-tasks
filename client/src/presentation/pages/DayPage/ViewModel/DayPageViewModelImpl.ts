@@ -11,8 +11,6 @@ import { value } from "../../LogInPage/DefaultValue";
 
 const mapPriority = (priority: TaskPriority | undefined) => {
     switch (priority) {
-        case undefined:
-            return "";
         case TaskPriority.LOW:
             return "Low";
         case TaskPriority.MEDIUM:
@@ -20,7 +18,7 @@ const mapPriority = (priority: TaskPriority | undefined) => {
         case TaskPriority.HIGH:
             return "High";
         default:
-            return "";
+            return "---";
     }
 };
 
@@ -34,6 +32,8 @@ const mapStatus = (status: TaskStatus) => {
             return "In Progress";
         case TaskStatus.NotStarted:
             return "Not Started";
+        default:
+            return "---";
     }
 };
 

@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { Button, Table } from "react-bootstrap";
 
-import styles from "./styles.module.scss";
 import DayPageViewViewModel from "./ViewModel/DayPageViewModel";
 import ActionButtonView from "./ActionButton/ActionButtonView";
 import useUpdatesFrom from "../LogInPage/useUpdatesFrom";
+
+import styles from "./styles.module.scss";
 
 export interface DayPageViewProps {
     viewModel: DayPageViewViewModel;
@@ -23,7 +24,7 @@ const DayPageView = ({ viewModel: vm }: DayPageViewProps) => {
                 className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 mb-0"
                 style={{ alignItems: "end" }}
             >
-                <h3>Tasks</h3>
+                <h3>Current tasks</h3>
                 <Button variant="primary" onClick={vm.onAddTask}>
                     Add Task
                 </Button>

@@ -19,7 +19,7 @@ const SidebarView = ({ viewModel }: SidebarProps) => {
         <div className={styles.sidebar}>
             <Link
                 to="/"
-                className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none pt-2 pb-5"
+                className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none pt-2 pb-4"
             >
                 <img
                     src={logo}
@@ -38,7 +38,7 @@ const SidebarView = ({ viewModel }: SidebarProps) => {
                 <Nav.Item>
                     <Nav.Item className={styles.navGroupHeader}>
                         <TasksIcon className={styles.navGroupIcon} />
-                        <span className={styles.navGroupTitle}>Tasks</span>
+                        <span className={styles.navGroupTitle}>Backlogs</span>
                     </Nav.Item>
                     <Nav
                         className={styles.sidebarGroup}
@@ -47,7 +47,7 @@ const SidebarView = ({ viewModel }: SidebarProps) => {
                         <Nav.Item>
                             <Nav.Link
                                 as={NavLink}
-                                to="/tasks/backlog/day"
+                                to="/backlog/day"
                                 eventKey="day"
                                 style={{ paddingLeft: 20, display: "block" }}
                             >
@@ -57,7 +57,7 @@ const SidebarView = ({ viewModel }: SidebarProps) => {
                         <Nav.Item>
                             <Nav.Link
                                 as={NavLink}
-                                to="/tasks/backlog/week"
+                                to="/backlog/week"
                                 eventKey="week"
                             >
                                 Week
@@ -66,7 +66,7 @@ const SidebarView = ({ viewModel }: SidebarProps) => {
                         <Nav.Item>
                             <Nav.Link
                                 as={NavLink}
-                                to="/tasks/backlog/month"
+                                to="/backlog/month"
                                 eventKey="month"
                             >
                                 Month

@@ -283,8 +283,8 @@ components:
                 - id
                 - title
                 - status
-                - created_at
-                - updated_at
+                - createdAt
+                - updatedAt
             properties:
                 id:
                     type: integer
@@ -306,10 +306,10 @@ components:
                         - low
                         - medium
                         - high
-                created_at:
+                createdAt:
                     type: string
                     format: date-time
-                updated_at:
+                updatedAt:
                     type: string
                     format: date-time
         NewTaskData:

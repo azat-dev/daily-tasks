@@ -115,8 +115,8 @@ export function TaskFromJSONTyped(json: any, ignoreDiscriminator: boolean): Task
         'description': !exists(json, 'description') ? undefined : json['description'],
         'status': json['status'],
         'priority': !exists(json, 'priority') ? undefined : json['priority'],
-        'createdAt': (new Date(json['created_at'])),
-        'updatedAt': (new Date(json['updated_at'])),
+        'createdAt': (new Date(json['createdAt'])),
+        'updatedAt': (new Date(json['updatedAt'])),
     };
 }
 
@@ -134,8 +134,8 @@ export function TaskToJSON(value?: Task | null): any {
         'description': value.description,
         'status': value.status,
         'priority': value.priority,
-        'created_at': (value.createdAt.toISOString()),
-        'updated_at': (value.updatedAt.toISOString()),
+        'createdAt': (value.createdAt.toISOString()),
+        'updatedAt': (value.updatedAt.toISOString()),
     };
 }
 
