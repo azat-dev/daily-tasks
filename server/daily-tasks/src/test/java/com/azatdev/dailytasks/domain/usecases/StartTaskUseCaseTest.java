@@ -170,4 +170,53 @@ class StartTaskUseCaseTest {
 
         assertThat(startedAt).isEqualTo(currentTime);
     }
+
+    @Test
+    void execute_givenTaskExistsAnStarted_thenReturnStartTimeFromExistingActivitySession() {
+
+        // Given
+        final var userId = anyUserId();
+        final var taskId = 1L;
+        final var currentTime = ZonedDateTime.now();
+
+        final var sut = createSUT(currentTime);
+
+        final var existingActivitySession = new ActivitySession(
+            Optional.of(1L),
+            userId,
+            taskId,
+            currentTime.minusDays(2),
+            Optional.empty()
+        );
+
+        given(
+            sut.getCurrentActivitySessionDao.execute(
+                userId,
+                taskId
+            )
+        ).willReturn(Optional.of(existingActivitySession));
+
+        // When
+        final var startedAt = sut.useCase.execute(
+            userId,
+            taskId
+        );
+
+        // Then
+        then(sut.getCurrentActivitySessionDao).should(times(1))
+            .execute(
+                userId,
+                taskId
+            );
+
+        then(sut.addNewActivitySessionDao).should(never())
+            .execute(
+                any(),
+                any(),
+                any(),
+                any()
+            );
+
+        assertThat(startedAt).isEqualTo(existingActivitySession.startedAt());
+    }
 }
