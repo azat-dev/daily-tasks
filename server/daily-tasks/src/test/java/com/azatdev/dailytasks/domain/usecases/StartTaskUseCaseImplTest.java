@@ -11,93 +11,12 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-@FunctionalInterface
-interface StartTaskUseCase {
-    // Methods
-    ZonedDateTime execute(
-        UUID userId,
-        Long taskId
-    );
-}
+import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
+import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
+import com.azatdev.dailytasks.domain.interfaces.utils.CurrentTimeProvider;
+import com.azatdev.dailytasks.domain.models.ActivitySession;
 
-final class StartTaskUseCaseImpl implements StartTaskUseCase {
-
-    private CurrentTimeProvider currentTimeProvider;
-    private GetRunningActivitySessionForTaskDao getCurrentActivitySessionDao;
-    private AddNewActivitySessionDao addNewActivitySessionDao;
-
-    public StartTaskUseCaseImpl(
-        CurrentTimeProvider currentTimeProvider,
-        GetRunningActivitySessionForTaskDao getCurrentActivitySessionDao,
-        AddNewActivitySessionDao addNewActivitySessionDao
-    ) {
-        this.currentTimeProvider = currentTimeProvider;
-        this.getCurrentActivitySessionDao = getCurrentActivitySessionDao;
-        this.addNewActivitySessionDao = addNewActivitySessionDao;
-    }
-
-    @Override
-    public ZonedDateTime execute(
-        UUID userId,
-        Long taskId
-    ) {
-
-        final var currentActivitySession = getCurrentActivitySessionDao.execute(
-            userId,
-            taskId
-        );
-
-        if (currentActivitySession.isPresent()) {
-            return currentActivitySession.get()
-                .startedAt();
-        }
-
-        final var currentTime = currentTimeProvider.execute();
-        addNewActivitySessionDao.execute(
-            userId,
-            taskId,
-            currentTime,
-            Optional.empty()
-        );
-
-        return currentTime;
-    }
-
-}
-
-record ActivitySession(
-    Optional<Long> id,
-    UUID userId,
-    long taskId,
-    ZonedDateTime startedAt,
-    Optional<ZonedDateTime> finishedAt
-) {
-}
-
-@FunctionalInterface
-interface GetRunningActivitySessionForTaskDao {
-    Optional<ActivitySession> execute(
-        UUID userId,
-        long taskId
-    );
-}
-
-@FunctionalInterface
-interface AddNewActivitySessionDao {
-    Optional<ActivitySession> execute(
-        UUID userId,
-        long taskId,
-        ZonedDateTime startedAt,
-        Optional<ZonedDateTime> finishedAt
-    );
-}
-
-@FunctionalInterface
-interface CurrentTimeProvider {
-    ZonedDateTime execute();
-}
-
-class StartTaskUseCaseTest {
+class StartTaskUseCaseImplTest {
 
     private record SUT(
         StartTaskUseCase useCase,
