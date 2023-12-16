@@ -1,4 +1,4 @@
-package com.azatdev.dailytasks.data.dao;
+package com.azatdev.dailytasks.data.repositories.persistence;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -8,7 +8,7 @@ import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaActivitySessi
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
 import com.azatdev.dailytasks.domain.models.ActivitySession;
 
-final class GetRunningActivitySessionForTaskDaoImpl implements GetRunningActivitySessionForTaskDao {
+public final class GetRunningActivitySessionForTaskDaoImpl implements GetRunningActivitySessionForTaskDao {
 
     private JpaActivitySessionsRepository repository;
     private MapActivitySessionToDomain mapper;
