@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.azatdev.dailytasks.presentation.api.rest.entities.BacklogDurationPresentation;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
+import com.azatdev.dailytasks.presentation.api.rest.entities.StartTaskResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskResponse;
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 
@@ -37,6 +38,12 @@ public interface TaskResource {
         @PathVariable BacklogDurationPresentation backlogDuration,
         @PathVariable LocalDate date,
         @Valid @RequestBody CreateTaskInBacklogRequest request,
+        @AuthenticationPrincipal UserPrincipal userPrincipal
+    );
+
+    @PostMapping("/{taskId}/start")
+    public ResponseEntity<StartTaskResponse> startTask(
+        @PathVariable(required = true) Long request,
         @AuthenticationPrincipal UserPrincipal userPrincipal
     );
 }

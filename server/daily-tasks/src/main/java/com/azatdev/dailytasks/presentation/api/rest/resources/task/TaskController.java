@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 
@@ -12,6 +13,7 @@ import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.presentation.api.rest.entities.BacklogDurationPresentation;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
+import com.azatdev.dailytasks.presentation.api.rest.entities.StartTaskResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskPriorityPresentation;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.utils.MapTaskToResponse;
@@ -79,5 +81,13 @@ public class TaskController implements TaskResource {
 
         return ResponseEntity.created(null)
             .body(mappedTask);
+    }
+
+    @Override
+    public  ResponseEntity<StartTaskResponse> startTask(
+        Long taskId,
+        @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        return ResponseEntity.badRequest().build();
     }
 }
