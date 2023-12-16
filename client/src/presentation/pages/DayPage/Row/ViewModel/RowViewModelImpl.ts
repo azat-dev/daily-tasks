@@ -4,6 +4,8 @@ import TaskStatus from "../../../../../domain/models/TaskStatus";
 import { value } from "../../../LogInPage/DefaultValue";
 import Value from "../../../LogInPage/Value";
 import { ActionButtonViewProps } from "../../ActionButton/ActionButtonView";
+import ActionButtonViewModel from "../../ActionButton/ActionButtonViewModel";
+import ActionButtonViewModelImpl from "../../ActionButton/ActionButtonViewModelImpl";
 import RowViewModel, { RowViewModelDelegate } from "./RowViewModel";
 
 const mapPriority = (priority: TaskPriority | undefined) => {
@@ -50,7 +52,7 @@ export default class RowViewModelImpl implements RowViewModel {
     public status: Value<string>;
     public priority: Value<string>;
     public isActive: Value<boolean>;
-    public actionButtonViewModel: ActionButtonViewProps;
+    public actionButtonViewModel: ActionButtonViewModel;
 
     public delegate: RowViewModelDelegate | null = null;
 
@@ -65,24 +67,23 @@ export default class RowViewModelImpl implements RowViewModel {
         this.status = value(mapStatus(task.status));
         this.priority = value(mapPriority(task.priority));
 
-        this.actionButtonViewModel = {
-            startedAt: null,
-            onStart: () => {
+        this.actionButtonViewModel = new ActionButtonViewModelImpl(null, {
+            start: () => {
                 this.delegate!.onStart(taskId);
             },
-            onStop: () => {
+            stop: () => {
                 this.delegate!.onStop(taskId);
             },
-            onDelete: () => {
+            delete: () => {
                 this.delegate!.onDelete(taskId);
             },
-            onDoLaterWeek: () => {
+            doLaterWeek: () => {
                 this.delegate!.onDoLaterWeek(taskId);
             },
-            onDoLaterMonth: () => {
+            doLaterMonth: () => {
                 this.delegate!.onDoLaterMonth(taskId);
             },
-        };
+        });
     }
 
     updateStatus = (status: TaskStatus): void => {

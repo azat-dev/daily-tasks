@@ -6,9 +6,7 @@ import { TaskId } from "../../../../domain/models/Task";
 import Value from "../../LogInPage/Value";
 import { value } from "../../LogInPage/DefaultValue";
 import RowViewModelImpl from "../Row/ViewModel/RowViewModelImpl";
-import RowViewModel, {
-    RowViewModelDelegate,
-} from "../Row/ViewModel/RowViewModel";
+import RowViewModel from "../Row/ViewModel/RowViewModel";
 import TaskStatus from "../../../../domain/models/TaskStatus";
 
 export default class DayPageViewModelImpl implements DayPageViewModel {

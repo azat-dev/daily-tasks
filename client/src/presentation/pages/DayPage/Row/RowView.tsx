@@ -17,7 +17,7 @@ const RowView = ({ viewModel: vm }: RowViewProps) => {
             <td>{vm.priority.value}</td>
             <td>{`${vm.createdAt.value}`}</td>
             <td>
-                <ActionButtonView {...vm.actionButtonViewModel} />
+                <ActionButtonView vm={vm.actionButtonViewModel} />
             </td>
         </tr>
     );

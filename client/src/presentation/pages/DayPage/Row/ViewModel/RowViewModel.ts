@@ -1,7 +1,7 @@
 import { TaskId } from "../../../../../domain/models/Task";
 import TaskStatus from "../../../../../domain/models/TaskStatus";
 import Value from "../../../LogInPage/Value";
-import { ActionButtonViewProps } from "../../ActionButton/ActionButtonView";
+import ActionButtonViewModel from "../../ActionButton/ActionButtonViewModel";
 
 export interface RowViewModelDelegate {
     onStart(taskId: TaskId): void;
@@ -18,7 +18,7 @@ export interface RowViewModelOutput {
     status: Value<string>;
     priority: Value<string>;
     isActive: Value<boolean>;
-    actionButtonViewModel: ActionButtonViewProps;
+    actionButtonViewModel: ActionButtonViewModel;
 }
 
 export interface RowViewModelUpdateProperties {

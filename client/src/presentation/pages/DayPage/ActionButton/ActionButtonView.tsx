@@ -1,29 +1,24 @@
 import { Button, ButtonGroup, Dropdown } from "react-bootstrap";
 import ActionButtonViewModel from "./ActionButtonViewModel";
 import React from "react";
-import useActionButtonViewModel from "./useActionButtonViewModel";
+import useUpdatesFrom from "../../LogInPage/useUpdatesFrom";
 
 export interface ActionButtonViewProps {
-    startedAt: Date | null;
-    onStart: () => void;
-    onStop: () => void;
-    onDoLaterWeek: () => void;
-    onDoLaterMonth: () => void;
-    onDelete: () => void;
+    vm: ActionButtonViewModel;
 }
 
-const ActionButtonView = (props: ActionButtonViewProps) => {
-    const viewModel = useActionButtonViewModel(props);
+const ActionButtonView = ({ vm }: ActionButtonViewProps) => {
+    useUpdatesFrom(vm.state);
 
     let button = (
-        <Button variant="secondary" onClick={viewModel.onClickStop}>
+        <Button variant="secondary" onClick={vm.onClickStop}>
             Stop
         </Button>
     );
 
-    if (viewModel.state.type !== "active") {
+    if (vm.state.value.type !== "active") {
         button = (
-            <Button variant="secondary" onClick={viewModel.onClickStart}>
+            <Button variant="secondary" onClick={vm.onClickStart}>
                 Start
             </Button>
         );
@@ -40,16 +35,14 @@ const ActionButtonView = (props: ActionButtonViewProps) => {
             />
 
             <Dropdown.Menu variant="secondary">
-                <Dropdown.Item onClick={viewModel.onClickDoLaterWeek}>
+                <Dropdown.Item onClick={vm.onClickDoLaterWeek}>
                     Do Later (Week)
                 </Dropdown.Item>
-                <Dropdown.Item onClick={viewModel.onClickDoLaterMonth}>
+                <Dropdown.Item onClick={vm.onClickDoLaterMonth}>
                     Do Later (Month)
                 </Dropdown.Item>
                 <hr />
-                <Dropdown.Item onClick={viewModel.onClickDelete}>
-                    Delete
-                </Dropdown.Item>
+                <Dropdown.Item onClick={vm.onClickDelete}>Delete</Dropdown.Item>
             </Dropdown.Menu>
         </Dropdown>
     );
