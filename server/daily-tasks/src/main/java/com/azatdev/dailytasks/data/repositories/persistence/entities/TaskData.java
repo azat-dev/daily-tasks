@@ -108,4 +108,8 @@ public class TaskData {
     void preUpdate() {
         updatedAt = ZonedDateTime.now();
     }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 }

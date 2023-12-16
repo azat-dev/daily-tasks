@@ -14,6 +14,7 @@ import com.azatdev.dailytasks.data.repositories.data.MapNewActivitySessionToData
 import com.azatdev.dailytasks.data.repositories.data.MapNewActivitySessionToDataImpl;
 import com.azatdev.dailytasks.data.repositories.data.MapTaskDataToDomainImpl;
 import com.azatdev.dailytasks.data.repositories.data.TasksRepositoryImpl;
+import com.azatdev.dailytasks.data.repositories.data.UpdateTaskStatusDaoImpl;
 import com.azatdev.dailytasks.data.repositories.data.transaction.TransactionImplFactory;
 import com.azatdev.dailytasks.data.repositories.persistence.GetRunningActivitySessionForTaskDaoImpl;
 import com.azatdev.dailytasks.data.repositories.persistence.backlog.BacklogRepositoryImpl;
@@ -23,6 +24,7 @@ import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaTasksReposito
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
 import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
+import com.azatdev.dailytasks.domain.interfaces.dao.UpdateTaskStatusDao;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.TransactionFactory;
@@ -113,5 +115,10 @@ public class DataConfig {
             mapActivitySessionToData,
             mapActivitySessionToDomain
         );
+    }
+
+    @Bean
+    public UpdateTaskStatusDao updateTaskStatusDao(JpaTasksRepository jpaTasksRepository) {
+        return new UpdateTaskStatusDaoImpl(jpaTasksRepository);
     }
 }

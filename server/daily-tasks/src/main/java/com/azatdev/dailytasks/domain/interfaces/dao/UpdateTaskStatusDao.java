@@ -14,5 +14,18 @@ public interface UpdateTaskStatusDao {
         Long taskId,
         Task.Status newStatus,
         Optional<Transaction> transaction
-    );
+    ) throws TaskNotFoundException;
+
+    class TaskNotFoundException extends RuntimeException {
+        private long taskId;
+
+        public TaskNotFoundException(long taskId) {
+            super("Task not found: " + taskId);
+            this.taskId = taskId;
+        }
+
+        public long getTaskId() {
+            return taskId;
+        }
+    }
 }

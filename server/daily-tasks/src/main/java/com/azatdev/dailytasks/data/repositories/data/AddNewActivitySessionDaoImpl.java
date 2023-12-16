@@ -25,7 +25,10 @@ public final class AddNewActivitySessionDaoImpl implements AddNewActivitySession
     }
 
     @Override
-    public ActivitySession execute(NewActivitySession newActivitySession, Optional<Transaction> transaction) {
+    public ActivitySession execute(
+        NewActivitySession newActivitySession,
+        Optional<Transaction> transaction
+    ) {
 
         final var newActivitySessionData = mapActivitySessionToData.map(newActivitySession);
 

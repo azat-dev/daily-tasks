@@ -1,10 +1,14 @@
 import { Result } from "../../../../common/Result";
 import Task, { TaskId } from "../../../../domain/models/Task";
+import TaskStatus from "../../../../domain/models/TaskStatus";
 import Value from "../../LogInPage/Value";
 import { ActionButtonViewProps } from "../ActionButton/ActionButtonView";
 
 export interface DayPageViewViewModelDelegate {
     loadTasks(): Promise<Result<Task[], undefined>>;
+    loadStatuses(
+        tasksIds: TaskId[]
+    ): Promise<Result<Record<TaskId, TaskStatus>, undefined>>;
     runAddTaskFlow(): void;
     startTask(taskId: TaskId): Promise<Result<Date, undefined>>;
     stopTask(taskId: TaskId): Promise<Result<undefined, undefined>>;

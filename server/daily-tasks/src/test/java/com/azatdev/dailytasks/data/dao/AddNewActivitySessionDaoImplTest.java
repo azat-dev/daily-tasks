@@ -73,7 +73,10 @@ public class AddNewActivitySessionDaoImplTest {
         given(sut.repository.saveAndFlush(any())).willReturn(sut.sessionMappedToData);
 
         // When
-        final var createdActivitySession = sut.dao.execute(newActivitySession, Optional.empty());
+        final var createdActivitySession = sut.dao.execute(
+            newActivitySession,
+            Optional.empty()
+        );
 
         // Then
         then(sut.repository).should(times(1))

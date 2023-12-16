@@ -181,7 +181,10 @@ class StartTaskUseCaseImplTest {
             );
 
         then(sut.addNewActivitySessionDao).should(never())
-            .execute(any(), any());
+            .execute(
+                any(),
+                any()
+            );
 
         then(sut.getCurrentRunningActivitySessionForTaskDao).should(times(1))
             .execute(

@@ -179,6 +179,9 @@ export default class AppModelImpl implements AppModel {
 
                 return Result.failure(undefined);
             },
+            loadStatuses: async () => {
+                return Result.success({});
+            },
             startTask: async (taskId) => {
                 const result = await this.getStartTaskUseCase().execute(taskId);
 
