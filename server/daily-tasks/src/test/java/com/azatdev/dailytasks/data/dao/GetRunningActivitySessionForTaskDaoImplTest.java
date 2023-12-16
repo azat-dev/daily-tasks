@@ -182,4 +182,38 @@ class GetRunningActivitySessionForTaskDaoImplTest {
         assertThat(foundActivitySession).isNotEmpty();
         assertThat(foundActivitySession.get()).isSameAs(sut.mappedActivitySession);
     }
+
+    @Test
+    void execute_givenEmptyDb_thenReturnEmptyOmpitional() {
+
+        // Given
+        final var sut = createSUT();
+
+        final var userId = UUID.randomUUID();
+        final var taskId = 1L;
+
+        given(
+            sut.repository.findByOwnerIdAndTaskIdAndFinishedAt(
+                userId,
+                taskId,
+                Optional.empty()
+            )
+        ).willReturn(Optional.empty());
+
+        // When
+        final var foundActivitySession = sut.dao.execute(
+            userId,
+            taskId
+        );
+
+        // Then
+        then(sut.repository).should(times(1))
+            .findByOwnerIdAndTaskIdAndFinishedAt(
+                userId,
+                taskId,
+                Optional.empty()
+            );
+
+        assertThat(foundActivitySession).isEmpty();
+    }
 }
