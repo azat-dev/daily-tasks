@@ -1,6 +1,7 @@
 package com.azatdev.dailytasks.domain.usecases;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.mock;
 
@@ -47,7 +48,8 @@ final class StartTaskUseCaseImpl implements StartTaskUseCase {
         );
 
         if (currentActivitySession.isPresent()) {
-            throw new UnsupportedOperationException("Unimplemented method 'execute'");
+            return currentActivitySession.get()
+                .startedAt();
         }
 
         final var currentTime = currentTimeProvider.execute();
@@ -212,7 +214,7 @@ class StartTaskUseCaseTest {
         then(sut.addNewActivitySessionDao).should(never())
             .execute(
                 any(),
-                any(),
+                anyLong(),
                 any(),
                 any()
             );
