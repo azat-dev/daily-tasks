@@ -24,6 +24,7 @@ import type {
   NewTaskData,
   RefreshTokenResponse,
   SignUpResponse,
+  StartTaskResponse,
   Task,
 } from '../models/index';
 import {
@@ -45,6 +46,8 @@ import {
     RefreshTokenResponseToJSON,
     SignUpResponseFromJSON,
     SignUpResponseToJSON,
+    StartTaskResponseFromJSON,
+    StartTaskResponseToJSON,
     TaskFromJSON,
     TaskToJSON,
 } from '../models/index';
@@ -426,7 +429,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Start
      */
-    async apiWithAuthTasksTaskIdStartPostRaw(requestParameters: ApiWithAuthTasksTaskIdStartPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async apiWithAuthTasksTaskIdStartPostRaw(requestParameters: ApiWithAuthTasksTaskIdStartPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StartTaskResponse>> {
         if (requestParameters.taskId === null || requestParameters.taskId === undefined) {
             throw new runtime.RequiredError('taskId','Required parameter requestParameters.taskId was null or undefined when calling apiWithAuthTasksTaskIdStartPost.');
         }
@@ -450,14 +453,15 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => StartTaskResponseFromJSON(jsonValue));
     }
 
     /**
      * Start
      */
-    async apiWithAuthTasksTaskIdStartPost(requestParameters: ApiWithAuthTasksTaskIdStartPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiWithAuthTasksTaskIdStartPostRaw(requestParameters, initOverrides);
+    async apiWithAuthTasksTaskIdStartPost(requestParameters: ApiWithAuthTasksTaskIdStartPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StartTaskResponse> {
+        const response = await this.apiWithAuthTasksTaskIdStartPostRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**

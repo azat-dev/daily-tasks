@@ -1,4 +1,4 @@
-import { Result, ResultType } from "../../common/Result";
+import { Result } from "../../common/Result";
 import BacklogType from "../../domain/models/BacklogType";
 import Task, { TaskId } from "../../domain/models/Task";
 import {
@@ -47,14 +47,13 @@ export default class TasksRepositoryImpl
 
     start = async (
         taskId: TaskId
-    ): Promise<Result<undefined, TasksRepositoryError>> => {
+    ): Promise<Result<Date, TasksRepositoryError>> => {
         try {
-            throw new Error("Not implemented");
-            // await this.api.apiTasksTaskIdStartPost({
-            //     taskId: taskId,
-            // });
+            const response = await this.api.apiWithAuthTasksTaskIdStartPost({
+                taskId: taskId,
+            });
 
-            return Result.success(undefined);
+            return Result.success(response.startedAt);
         } catch (error: any) {
             let err = TasksRepositoryError.InternalError;
 

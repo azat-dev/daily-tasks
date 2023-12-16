@@ -8,7 +8,7 @@ export enum StartTaskUseCaseError {
 }
 
 interface StartTaskUseCase {
-    execute(taskId: TaskId): Promise<Result<undefined, StartTaskUseCaseError>>;
+    execute(taskId: TaskId): Promise<Result<Date, StartTaskUseCaseError>>;
 }
 
 export default StartTaskUseCase;

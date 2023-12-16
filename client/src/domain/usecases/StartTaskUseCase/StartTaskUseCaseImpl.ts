@@ -1,4 +1,4 @@
-import { Result, ResultType } from "../../../common/Result";
+import { Result } from "../../../common/Result";
 import { TaskId } from "../../models/Task";
 import {
     TasksRepositoryError,
@@ -15,15 +15,9 @@ export default class StartTaskUseCaseImpl implements StartTaskUseCase {
 
     execute = async (
         taskId: TaskId
-    ): Promise<Result<undefined, StartTaskUseCaseError>> => {
+    ): Promise<Result<Date, StartTaskUseCaseError>> => {
         const result = await this.tasksRepository.start(taskId);
-
-        switch (result.type) {
-            case ResultType.Success:
-                return Result.success(undefined);
-            case ResultType.Failure:
-                return Result.failure(this.mapError(result.error));
-        }
+        return Result.mapError(result, this.mapError);
     };
 
     private mapError = (error: TasksRepositoryError): StartTaskUseCaseError => {

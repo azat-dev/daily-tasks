@@ -1,5 +1,3 @@
-import { error } from "console";
-
 export enum ResultType {
     Success = "Success",
     Failure = "Failure",
@@ -18,4 +16,16 @@ export namespace Result {
         type: ResultType.Success,
         value,
     });
+
+    export const mapError = <Value, OriginalError, MappedError>(
+        result: Result<Value, OriginalError>,
+        map: (error: OriginalError) => MappedError
+    ): Result<Value, MappedError> => {
+        switch (result.type) {
+            case ResultType.Success:
+                return Result.success(result.value);
+            case ResultType.Failure:
+                return Result.failure(map(result.error));
+        }
+    };
 }

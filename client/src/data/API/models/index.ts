@@ -10,5 +10,6 @@ export * from './NewTaskData';
 export * from './RefreshTokenResponse';
 export * from './SignUpResponse';
 export * from './SignUpResponseTokens';
+export * from './StartTaskResponse';
 export * from './Task';
 export * from './UserInfo';

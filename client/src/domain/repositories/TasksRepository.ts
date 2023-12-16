@@ -1,5 +1,4 @@
 import { Result } from "../../common/Result";
-import BacklogId from "../models/BacklogId";
 import BacklogType from "../models/BacklogType";
 import NewTaskData from "../models/NewTaskData";
 import Task, { TaskId } from "../models/Task";
@@ -18,7 +17,7 @@ export interface TasksRepositoryList {
 }
 
 export interface TasksRepositoryStart {
-    start(taskId: TaskId): Promise<Result<undefined, TasksRepositoryError>>;
+    start(taskId: TaskId): Promise<Result<Date, TasksRepositoryError>>;
 }
 
 export interface TasksRepositoryStop {

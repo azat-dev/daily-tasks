@@ -180,8 +180,13 @@ export default class AppModelImpl implements AppModel {
                 return Result.failure(undefined);
             },
             startTask: async (taskId) => {
-                throw new Error("Not implemented");
-                // await this.getStartTaskUseCase().execute(taskId);
+                const result = await this.getStartTaskUseCase().execute(taskId);
+
+                if (result.type === ResultType.Success) {
+                    return Result.success(result.value);
+                }
+
+                return Result.failure(undefined);
             },
             stopTask: (taskId) => {
                 throw new Error("Not implemented");

@@ -6,7 +6,7 @@ import { ActionButtonViewProps } from "../ActionButton/ActionButtonView";
 export interface DayPageViewViewModelDelegate {
     loadTasks(): Promise<Result<Task[], undefined>>;
     runAddTaskFlow(): void;
-    startTask(taskId: TaskId): Promise<Result<undefined, undefined>>;
+    startTask(taskId: TaskId): Promise<Result<Date, undefined>>;
     stopTask(taskId: TaskId): Promise<Result<undefined, undefined>>;
     deleteTask(taskId: TaskId): Promise<Result<undefined, undefined>>;
 }
