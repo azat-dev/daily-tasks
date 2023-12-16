@@ -10,6 +10,7 @@ import com.azatdev.dailytasks.domain.interfaces.dao.UpdateTaskStatusDao;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.TransactionFactory;
 import com.azatdev.dailytasks.domain.interfaces.utils.CurrentTimeProvider;
 import com.azatdev.dailytasks.domain.models.NewActivitySession;
+import com.azatdev.dailytasks.domain.models.Task;
 
 public final class StartTaskUseCaseImpl implements StartTaskUseCase {
 
@@ -39,26 +40,45 @@ public final class StartTaskUseCaseImpl implements StartTaskUseCase {
         Long taskId
     ) {
 
-        final var currentActivitySession = getCurrentActivitySessionDao.execute(
-            userId,
-            taskId
-        );
+        final var transaction = transactionFactory.make();
 
-        if (currentActivitySession.isPresent()) {
-            return currentActivitySession.get()
-                .startedAt();
-        }
+        try {
+            transaction.begin();
+            
+            final var currentActivitySession = getCurrentActivitySessionDao.execute(
+                userId,
+                taskId
+            );
 
-        final var currentTime = currentTimeProvider.execute();
-        addNewActivitySessionDao.execute(
-            new NewActivitySession(
+            if (currentActivitySession.isPresent()) {
+                transaction.commit();
+                return currentActivitySession.get()
+                    .startedAt();
+            }
+
+            final var currentTime = currentTimeProvider.execute();
+
+            updateTaskStatusDao.execute(
                 userId,
                 taskId,
-                currentTime,
-                Optional.empty()
-            )
-        );
+                Task.Status.IN_PROGRESS
+            );
 
-        return currentTime;
+            addNewActivitySessionDao.execute(
+                new NewActivitySession(
+                    userId,
+                    taskId,
+                    currentTime,
+                    Optional.empty()
+                )
+            );
+
+            transaction.commit();
+
+            return currentTime;
+        } catch (Exception e) {
+            transaction.rollback();
+            throw e;
+        }
     }
 }
