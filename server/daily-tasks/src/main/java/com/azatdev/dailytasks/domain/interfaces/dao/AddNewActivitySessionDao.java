@@ -8,7 +8,7 @@ import com.azatdev.dailytasks.domain.models.ActivitySession;
 
 @FunctionalInterface
 public interface AddNewActivitySessionDao {
-    Optional<ActivitySession> execute(
+    ActivitySession execute(
         UUID userId,
         long taskId,
         ZonedDateTime startedAt,

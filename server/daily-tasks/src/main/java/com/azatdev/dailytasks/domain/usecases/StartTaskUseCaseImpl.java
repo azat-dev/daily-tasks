@@ -50,5 +50,4 @@ public final class StartTaskUseCaseImpl implements StartTaskUseCase {
 
         return currentTime;
     }
-
 }
