@@ -208,8 +208,13 @@ class StartTaskUseCaseImplTest {
             )
         ).willReturn(Optional.empty());
 
-        given(sut.updateTaskStatusDao.execute(any(), anyLong(), any()))
-            .willThrow(new RuntimeException());
+        given(
+            sut.updateTaskStatusDao.execute(
+                any(),
+                anyLong(),
+                any()
+            )
+        ).willThrow(new RuntimeException());
 
         // When
         assertThrows(
