@@ -14,7 +14,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -205,7 +208,19 @@ class TaskControllerTest {
         final var taskId = 1L;
 
         final var url = "/api/with-auth/tasks/" + taskId + "/start";
-        final var startedAt = ZonedDateTime.now();
+        final var startedAt = ZonedDateTime.of(
+            2023,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            ZoneId.ofOffset(
+                "UTC",
+                ZoneOffset.ofHours(3)
+            )
+        );
 
         given(
             startTaskUseCase.execute(
@@ -230,6 +245,7 @@ class TaskControllerTest {
                 taskId
             );
 
-        action.andExpect(jsonPath("$.startedAt").value(startedAt.toString()));
+        final var expectedTime = "2023-01-02T03:04:05.000000006+03:00";
+        action.andExpect(jsonPath("$.startedAt").value(expectedTime));
     }
 }

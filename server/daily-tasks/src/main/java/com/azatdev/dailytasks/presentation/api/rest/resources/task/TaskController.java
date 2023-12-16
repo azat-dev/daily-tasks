@@ -3,14 +3,15 @@ package com.azatdev.dailytasks.presentation.api.rest.resources.task;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
+import com.azatdev.dailytasks.domain.usecases.StartTaskUseCase;
 import com.azatdev.dailytasks.presentation.api.rest.entities.BacklogDurationPresentation;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.StartTaskResponse;
@@ -22,19 +23,17 @@ import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 @Controller
 public class TaskController implements TaskResource {
 
-    private final ListTasksInBacklogUseCase listTasksInBacklogUseCase;
-    private final CreateTaskInBacklogUseCase createTaskInBacklogUseCase;
-    private final MapTaskToResponse mapTaskToResponse;
+    @Autowired
+    private ListTasksInBacklogUseCase listTasksInBacklogUseCase;
 
-    public TaskController(
-        ListTasksInBacklogUseCase listTasksInBacklogUseCase,
-        CreateTaskInBacklogUseCase createTaskInBacklogUseCase,
-        MapTaskToResponse mapTaskToResponse
-    ) {
-        this.listTasksInBacklogUseCase = listTasksInBacklogUseCase;
-        this.createTaskInBacklogUseCase = createTaskInBacklogUseCase;
-        this.mapTaskToResponse = mapTaskToResponse;
-    }
+    @Autowired
+    private CreateTaskInBacklogUseCase createTaskInBacklogUseCase;
+
+    @Autowired
+    private MapTaskToResponse mapTaskToResponse;
+
+    @Autowired
+    private StartTaskUseCase startTaskUseCase;
 
     @Override
     public ResponseEntity<List<TaskResponse>> findAllTasksInBacklog(
@@ -84,10 +83,15 @@ public class TaskController implements TaskResource {
     }
 
     @Override
-    public  ResponseEntity<StartTaskResponse> startTask(
+    public ResponseEntity<StartTaskResponse> startTask(
         Long taskId,
         @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-        return ResponseEntity.badRequest().build();
+        final var startedAt = this.startTaskUseCase.execute(
+            userPrincipal.getId(),
+            taskId
+        );
+
+        return ResponseEntity.ok(new StartTaskResponse(startedAt));
     }
 }
