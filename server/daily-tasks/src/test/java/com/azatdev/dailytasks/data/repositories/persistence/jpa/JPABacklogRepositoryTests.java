@@ -5,30 +5,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import com.azatdev.dailytasks.data.repositories.TestEntityDataGenerator;
 import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
 
-import jakarta.persistence.EntityManager;
-
 @DataJpaTest
 @Import(TestEntityDataGenerator.class)
 class JPABacklogRepositoryTests {
-
-    @Autowired
-    private PlatformTransactionManager transactionManager;
-
-    @Autowired
-    private EntityManager entityManager;
-
-    private TransactionTemplate transactionTemplate;
 
     @Autowired
     TestEntityDataGenerator testData;
@@ -50,11 +37,6 @@ class JPABacklogRepositoryTests {
 
     private UUID anyUserId() {
         return UUID.randomUUID();
-    }
-
-    @BeforeEach
-    void setUp() {
-        transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
     @Test

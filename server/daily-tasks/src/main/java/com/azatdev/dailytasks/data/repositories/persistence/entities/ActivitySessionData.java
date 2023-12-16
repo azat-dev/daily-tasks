@@ -12,6 +12,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -45,6 +47,18 @@ public class ActivitySessionData {
 
     @Column(name = "updated_at", nullable = false)
     private ZonedDateTime updatedAt;
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = ZonedDateTime.now();
+    }
+
+    @PrePersist
+    public void preCreate() {
+        final var now = ZonedDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = this.createdAt;
+    }
 
     public ActivitySessionData(
         @Nonnull UserData owner,

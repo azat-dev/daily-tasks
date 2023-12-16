@@ -1,6 +1,7 @@
 package com.azatdev.dailytasks.data.repositories;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import com.github.javafaker.Faker;
 
 import com.azatdev.dailytasks.data.repositories.data.user.UserData;
+import com.azatdev.dailytasks.data.repositories.persistence.entities.ActivitySessionData;
 import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
 import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
 
@@ -32,7 +34,7 @@ public class TestEntityDataGenerator {
     }
 
     public UserData givenExistingUser() {
-        return anyUserDataWithUserName("anyUserName");
+        return givenExistingUser("anyUserName");
     }
 
     public UserData givenExistingUser(String userName) {
@@ -112,6 +114,22 @@ public class TestEntityDataGenerator {
                 owner,
                 backlog,
                 orderInBacklog
+            )
+        );
+    }
+
+    public ActivitySessionData givenExistingActivitySession(
+        UserData owner,
+        TaskData task,
+        ZonedDateTime startedAt,
+        ZonedDateTime finishedAt
+    ) {
+        return entityManager.persistAndFlush(
+            new ActivitySessionData(
+                owner,
+                task,
+                startedAt,
+                finishedAt
             )
         );
     }

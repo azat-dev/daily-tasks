@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import com.azatdev.dailytasks.data.repositories.TestEntityDataGenerator;
 import com.azatdev.dailytasks.data.repositories.data.user.UserData;
 
 @DataJpaTest
@@ -17,6 +18,9 @@ public class JpaUsersRepositoryTest {
 
     @Autowired
     private JpaUsersRepository jpaUsersRepository;
+
+    @Autowired
+    TestEntityDataGenerator testData;
 
     @Test
     void saveAndFlush_givenUserWithUserNameExists_thenMustThrowException() {
