@@ -1,6 +1,8 @@
 package com.azatdev.dailytasks.data.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -14,7 +16,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.azatdev.dailytasks.data.repositories.data.user.UserData;
 import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
-import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
+import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
 import com.azatdev.dailytasks.domain.models.ActivitySession;
 
 import jakarta.annotation.Nonnull;
@@ -74,7 +76,7 @@ class ActivitySessionData {
 
 interface JpaActivitySessionsRepository extends JpaRepository<ActivitySessionData, Long> {
 
-    Optional<UserData> findByOwneIdAndTaskIdAndFinishedAt(
+    Optional<ActivitySessionData> findByOwnerIdAndTaskIdAndFinishedAt(
         UUID ownerId,
         long taskId,
         Optional<ZonedDateTime> finishedAt
@@ -86,12 +88,12 @@ interface MapActivitySessionToDomain {
     ActivitySession map(ActivitySessionData data);
 }
 
-final class AddNewActivitySessionDaoImpl implements AddNewActivitySessionDao {
+final class GetRunningActivitySessionForTaskDaoImpl implements GetRunningActivitySessionForTaskDao {
 
     private JpaActivitySessionsRepository repository;
     private MapActivitySessionToDomain mapper;
 
-    public AddNewActivitySessionDaoImpl(
+    public GetRunningActivitySessionForTaskDaoImpl(
         JpaActivitySessionsRepository repository,
         MapActivitySessionToDomain mapper
     ) {
@@ -100,20 +102,24 @@ final class AddNewActivitySessionDaoImpl implements AddNewActivitySessionDao {
     }
 
     @Override
-    public ActivitySession execute(
+    public Optional<ActivitySession> execute(
         UUID userId,
-        long taskId,
-        ZonedDateTime startedAt,
-        Optional<ZonedDateTime> finishedAt
+        long taskId
     ) {
-        throw new UnsupportedOperationException();
+        final var existingActivitySession = repository.findByOwnerIdAndTaskIdAndFinishedAt(
+            userId,
+            taskId,
+            Optional.empty()
+        );
+
+        return existingActivitySession.map(mapper::map);
     }
 }
 
-class AddNewActivitySessionDaoImplTest {
+class GetRunningActivitySessionForTaskDaoImplTest {
 
     private record SUT(
-        AddNewActivitySessionDao dao,
+        GetRunningActivitySessionForTaskDao dao,
         JpaActivitySessionsRepository repository,
         MapActivitySessionToDomain mapper,
         ActivitySession mappedActivitySession
@@ -123,10 +129,12 @@ class AddNewActivitySessionDaoImplTest {
     private SUT createSUT() {
         final var repository = mock(JpaActivitySessionsRepository.class);
         final var mapper = mock(MapActivitySessionToDomain.class);
+
         final var mappedActivitySession = mock(ActivitySession.class);
+        given(mapper.map(any())).willReturn(mappedActivitySession);
 
         return new SUT(
-            new AddNewActivitySessionDaoImpl(
+            new GetRunningActivitySessionForTaskDaoImpl(
                 repository,
                 mapper
             ),
@@ -137,30 +145,32 @@ class AddNewActivitySessionDaoImplTest {
     }
 
     @Test
-    void execute_givenEmptyDb_thenCreateNewActivitySession() {
+    void execute_givenExistingSession_thenMapAndReturnIt() {
 
         // Given
         final var sut = createSUT();
 
         final var userId = UUID.randomUUID();
         final var taskId = 1L;
-        final var startedAt = ZonedDateTime.now();
-        final var finishedAt = ZonedDateTime.now()
-            .plusDays(1);
-
         final var existingActivitySession = mock(ActivitySessionData.class);
 
+        given(
+            sut.repository.findByOwnerIdAndTaskIdAndFinishedAt(
+                userId,
+                taskId,
+                Optional.empty()
+            )
+        ).willReturn(Optional.of(existingActivitySession));
+
         // When
-        final var createdActivitySession = sut.dao.execute(
+        final var foundActivitySession = sut.dao.execute(
             userId,
-            taskId,
-            startedAt,
-            Optional.of(finishedAt)
+            taskId
         );
 
         // Then
         then(sut.repository).should(times(1))
-            .findByOwneIdAndTaskIdAndFinishedAt(
+            .findByOwnerIdAndTaskIdAndFinishedAt(
                 userId,
                 taskId,
                 Optional.empty()
@@ -169,6 +179,7 @@ class AddNewActivitySessionDaoImplTest {
         then(sut.mapper).should(times(1))
             .map(existingActivitySession);
 
-        assertThat(createdActivitySession).isSameAs(sut.mappedActivitySession);
+        assertThat(foundActivitySession).isNotEmpty();
+        assertThat(foundActivitySession.get()).isSameAs(sut.mappedActivitySession);
     }
 }
