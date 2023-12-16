@@ -1,7 +1,6 @@
 package com.azatdev.dailytasks.domain.usecases;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.mock;
 
@@ -15,6 +14,7 @@ import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.utils.CurrentTimeProvider;
 import com.azatdev.dailytasks.domain.models.ActivitySession;
+import com.azatdev.dailytasks.domain.models.NewActivitySession;
 
 class StartTaskUseCaseImplTest {
 
@@ -83,10 +83,12 @@ class StartTaskUseCaseImplTest {
 
         then(sut.addNewActivitySessionDao).should(times(1))
             .execute(
-                userId,
-                taskId,
-                startedAt,
-                Optional.empty()
+                new NewActivitySession(
+                    userId,
+                    taskId,
+                    startedAt,
+                    Optional.empty()
+                )
             );
 
         assertThat(startedAt).isEqualTo(currentTime);
@@ -131,12 +133,7 @@ class StartTaskUseCaseImplTest {
             );
 
         then(sut.addNewActivitySessionDao).should(never())
-            .execute(
-                any(),
-                anyLong(),
-                any(),
-                any()
-            );
+            .execute(any());
 
         assertThat(startedAt).isEqualTo(existingActivitySession.startedAt());
     }

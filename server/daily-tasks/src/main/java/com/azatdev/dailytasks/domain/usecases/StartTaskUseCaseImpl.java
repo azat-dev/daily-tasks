@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.utils.CurrentTimeProvider;
+import com.azatdev.dailytasks.domain.models.NewActivitySession;
 
 public final class StartTaskUseCaseImpl implements StartTaskUseCase {
 
@@ -42,10 +43,12 @@ public final class StartTaskUseCaseImpl implements StartTaskUseCase {
 
         final var currentTime = currentTimeProvider.execute();
         addNewActivitySessionDao.execute(
-            userId,
-            taskId,
-            currentTime,
-            Optional.empty()
+            new NewActivitySession(
+                userId,
+                taskId,
+                currentTime,
+                Optional.empty()
+            )
         );
 
         return currentTime;
