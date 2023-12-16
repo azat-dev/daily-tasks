@@ -44,7 +44,7 @@ public final class StartTaskUseCaseImpl implements StartTaskUseCase {
 
         try {
             transaction.begin();
-            
+
             final var currentActivitySession = getCurrentActivitySessionDao.execute(
                 userId,
                 taskId

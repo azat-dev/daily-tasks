@@ -1,6 +1,7 @@
 package com.azatdev.dailytasks.domain.usecases;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.mock;
 
@@ -20,9 +21,7 @@ import com.azatdev.dailytasks.domain.models.ActivitySession;
 import com.azatdev.dailytasks.domain.models.NewActivitySession;
 import com.azatdev.dailytasks.domain.models.Task;
 
-
 class StartTaskUseCaseImplTest {
-
     private record SUT(
         StartTaskUseCase useCase,
         CurrentTimeProvider currentTimeProvider,
@@ -42,7 +41,7 @@ class StartTaskUseCaseImplTest {
         final var transaction = mock(Transaction.class);
 
         given(transactionFactory.make()).willReturn(transaction);
-        
+
         final var getCurrentRunningActivitySessionDao = mock(GetRunningActivitySessionForTaskDao.class);
         final var addNewActivitySessionDao = mock(AddNewActivitySessionDao.class);
         final var updateTaskStatusDao = mock(UpdateTaskStatusDao.class);
@@ -190,5 +189,45 @@ class StartTaskUseCaseImplTest {
             .execute(any());
 
         assertThat(startedAt).isEqualTo(existingActivitySession.startedAt());
+    }
+
+    @Test
+    void execute_givenExceptionDuringExecution_thenRollback() {
+
+        // Given
+        final var userId = anyUserId();
+        final var taskId = 1L;
+        final var currentTime = ZonedDateTime.now();
+
+        final var sut = createSUT(currentTime);
+
+        given(
+            sut.getCurrentRunningActivitySessionForTaskDao.execute(
+                userId,
+                taskId
+            )
+        ).willReturn(Optional.empty());
+
+        given(sut.updateTaskStatusDao.execute(any(), anyLong(), any()))
+            .willThrow(new RuntimeException());
+
+        // When
+        assertThrows(
+            RuntimeException.class,
+            () -> sut.useCase.execute(
+                userId,
+                taskId
+            )
+        );
+
+        // Then
+        then(sut.transaction).should(times(1))
+            .begin();
+
+        then(sut.transaction).should(never())
+            .commit();
+
+        then(sut.transaction).should(times(1))
+            .rollback();
     }
 }

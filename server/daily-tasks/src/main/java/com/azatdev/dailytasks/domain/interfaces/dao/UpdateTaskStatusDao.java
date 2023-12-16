@@ -7,7 +7,7 @@ import com.azatdev.dailytasks.domain.models.Task;
 @FunctionalInterface
 public interface UpdateTaskStatusDao {
 
-    void execute(
+    Void execute(
         UUID userId,
         Long taskId,
         Task.Status newStatus
