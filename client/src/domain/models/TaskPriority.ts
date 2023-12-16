@@ -1,7 +1,7 @@
 enum TaskPriority {
-    LOW = "low",
-    MEDIUM = "medium",
-    HIGH = "high",
+    LOW = "LOW",
+    MEDIUM = "MEDIUM",
+    HIGH = "HIGH",
 }
 
 export default TaskPriority;

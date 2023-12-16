@@ -6,6 +6,7 @@ import ActionButtonView from "./ActionButton/ActionButtonView";
 import useUpdatesFrom from "../LogInPage/useUpdatesFrom";
 
 import styles from "./styles.module.scss";
+import RowView from "./Row/RowView";
 
 export interface DayPageViewProps {
     viewModel: DayPageViewViewModel;
@@ -42,21 +43,12 @@ const DayPageView = ({ viewModel: vm }: DayPageViewProps) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {vm.rows.value.map((row) => {
-                                const actionButtonViewModel =
-                                    row.actionButtonViewModel;
+                            {vm.rows.value.map((viewModel) => {
                                 return (
-                                    <tr key={row.key}>
-                                        <td>{row.title}</td>
-                                        <td>{row.status}</td>
-                                        <td>{row.priority}</td>
-                                        <td>{`${row.createdAt}`}</td>
-                                        <td>
-                                            <ActionButtonView
-                                                {...actionButtonViewModel}
-                                            />
-                                        </td>
-                                    </tr>
+                                    <RowView
+                                        key={viewModel.key}
+                                        viewModel={viewModel}
+                                    />
                                 );
                             })}
                         </tbody>

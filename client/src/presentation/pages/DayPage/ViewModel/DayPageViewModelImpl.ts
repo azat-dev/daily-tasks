@@ -1,84 +1,36 @@
 import { ResultType } from "../../../../common/Result";
 import DayPageViewModel, {
     DayPageViewViewModelDelegate,
-    DayPageViewViewModelRow,
 } from "./DayPageViewModel";
-import TaskStatus from "../../../../domain/models/TaskStatus";
-import Task, { TaskId } from "../../../../domain/models/Task";
-import TaskPriority from "../../../../domain/models/TaskPriority";
+import { TaskId } from "../../../../domain/models/Task";
 import Value from "../../LogInPage/Value";
 import { value } from "../../LogInPage/DefaultValue";
-
-const mapPriority = (priority: TaskPriority | undefined) => {
-    switch (priority) {
-        case TaskPriority.LOW:
-            return "Low";
-        case TaskPriority.MEDIUM:
-            return "Medium";
-        case TaskPriority.HIGH:
-            return "High";
-        default:
-            return "---";
-    }
-};
-
-const mapStatus = (status: TaskStatus) => {
-    switch (status) {
-        case TaskStatus.Archived:
-            return "Archived";
-        case TaskStatus.Completed:
-            return "Completed";
-        case TaskStatus.InProgress:
-            return "In Progress";
-        case TaskStatus.NotStarted:
-            return "Not Started";
-        default:
-            return "---";
-    }
-};
-
-const formatCreatedAt = (createdAt: Date) => {
-    return createdAt.toLocaleDateString("ru-RU", {
-        year: "numeric",
-        month: "numeric",
-        day: "numeric",
-    });
-};
-
-const mapTaskToRow = (
-    task: Task,
-    onStart: () => void,
-    onStop: () => void,
-    onDelete: () => void
-): DayPageViewViewModelRow => {
-    return {
-        key: String(task.id),
-        title: task.title,
-        createdAt: formatCreatedAt(task.createdAt),
-        status: mapStatus(task.status),
-        priority: mapPriority(task.priority),
-        isActive: task.status === TaskStatus.InProgress,
-        actionButtonViewModel: {
-            startedAt: null,
-            onStart,
-            onStop,
-            onDelete,
-            onDoLaterWeek: () => {},
-            onDoLaterMonth: () => {},
-        },
-    };
-};
+import RowViewModelImpl from "../Row/ViewModel/RowViewModelImpl";
+import RowViewModel, {
+    RowViewModelDelegate,
+} from "../Row/ViewModel/RowViewModel";
+import TaskStatus from "../../../../domain/models/TaskStatus";
 
 export default class DayPageViewModelImpl implements DayPageViewModel {
     // Properties
     public isLoading: Value<boolean> = value(true);
-    public rows: Value<DayPageViewViewModelRow[]> = value([]);
+    public rows: Value<RowViewModel[]> = value([]);
 
     // Constructor
 
     constructor(public delegate: DayPageViewViewModelDelegate | null = null) {}
 
     // Methods
+
+    public updateTaskStatus = (taskId: TaskId, status: TaskStatus) => {
+        const row = this.rows.value.find((row) => row.key === String(taskId));
+
+        if (!row) {
+            return;
+        }
+
+        row.updateStatus(status);
+    };
 
     private loadTasksSilently = async () => {
         const result = await this.delegate!.loadTasks();
@@ -88,7 +40,13 @@ export default class DayPageViewModelImpl implements DayPageViewModel {
         }
 
         const startTask = async (taskId: TaskId) => {
-            await this.delegate!.startTask(taskId);
+            const result = await this.delegate!.startTask(taskId);
+
+            if (result.type !== ResultType.Success) {
+                return;
+            }
+
+            this.updateTaskStatus(taskId, TaskStatus.InProgress);
         };
 
         const stopTask = (taskId: TaskId) => {
@@ -100,16 +58,24 @@ export default class DayPageViewModelImpl implements DayPageViewModel {
             this.loadTasksSilently();
         };
 
+        const doLaterWeek = (taskId: TaskId) => {};
+
+        const doLaterMonth = (taskId: TaskId) => {};
+
         const tasks = result.value;
 
         const rows = tasks.map((task) => {
-            const taskId = task.id;
-            return mapTaskToRow(
-                task,
-                () => startTask(taskId),
-                () => stopTask(taskId),
-                () => deleteTask(taskId)
-            );
+            const vm = new RowViewModelImpl(task);
+
+            vm.delegate = {
+                onStart: startTask,
+                onStop: stopTask,
+                onDelete: deleteTask,
+                onDoLaterWeek: doLaterWeek,
+                onDoLaterMonth: doLaterMonth,
+            };
+
+            return vm;
         });
 
         this.rows.set(rows);

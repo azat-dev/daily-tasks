@@ -44,9 +44,9 @@ export interface NewTaskData {
  * @export
  */
 export const NewTaskDataPriorityEnum = {
-    Low: 'low',
-    Medium: 'medium',
-    High: 'high'
+    Low: 'LOW',
+    Medium: 'MEDIUM',
+    High: 'HIGH'
 } as const;
 export type NewTaskDataPriorityEnum = typeof NewTaskDataPriorityEnum[keyof typeof NewTaskDataPriorityEnum];
 

@@ -19,7 +19,7 @@ describe("TaskMapper", () => {
             updatedAt: new Date(),
             description: "description 1",
             status: TaskStatusEnum.NotStarted,
-            priority: "high",
+            priority: "HIGH",
         };
 
         // When
@@ -33,7 +33,7 @@ describe("TaskMapper", () => {
             updatedAt: task.updatedAt,
             description: task.description,
             status: TaskStatus.NotStarted,
-            priority: "high",
+            priority: "HIGH",
         });
     });
 

@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.azatdev.dailytasks.domain.models.Task;
 
 public enum TaskPriorityPresentation {
-    @JsonProperty("low")
+    @JsonProperty("LOW")
     LOW,
-    @JsonProperty("medium")
+    @JsonProperty("MEDIUM")
     MEDIUM,
-    @JsonProperty("high")
+    @JsonProperty("HIGH")
     HIGH;
 
     public Task.Priority toDomain() {

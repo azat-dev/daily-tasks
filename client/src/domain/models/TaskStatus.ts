@@ -1,8 +1,8 @@
 enum TaskStatus {
-    NotStarted = "not_started",
-    InProgress = "in_progress",
-    Completed = "completed",
-    Archived = "archived",
+    NotStarted = "NOT_STARTED",
+    InProgress = "IN_PROGRESS",
+    Completed = "COMPLETED",
+    Archived = "ARCHIVED",
 }
 
 export default TaskStatus;

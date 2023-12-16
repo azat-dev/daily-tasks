@@ -1,10 +1,12 @@
 package com.azatdev.dailytasks.presentation.config.domain;
 
+import org.h2.command.dml.Update;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
+import com.azatdev.dailytasks.domain.interfaces.dao.UpdateTaskStatusDao;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryCreate;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryGet;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryCreate;
@@ -80,14 +82,16 @@ public class DomainConfig {
     public StartTaskUseCase startTaskUseCase(
         CurrentTimeProvider currentTimeProvider,
         GetRunningActivitySessionForTaskDao getRunningActivitySessionForTaskDao,
-        AddNewActivitySessionDao addNewActivitySessionDao
+        AddNewActivitySessionDao addNewActivitySessionDao,
+        UpdateTaskStatusDao updateTaskStatusDao,
+        TransactionFactory transactionFactory
     ) {
         return new StartTaskUseCaseImpl(
             currentTimeProvider,
             getRunningActivitySessionForTaskDao,
             addNewActivitySessionDao,
-            null,
-            null
+            updateTaskStatusDao,
+            transactionFactory
         );
     }
 }
