@@ -41,8 +41,12 @@ final class AddNewActivitySessionDaoImpl implements AddNewActivitySessionDao {
 
     @Override
     public ActivitySession execute(NewActivitySession newActivitySession) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+
+        final var newActivitySessionData = mapActivitySessionToData.map(newActivitySession);
+
+        final var savedActivitySessionData = activitySessionsRepository.saveAndFlush(newActivitySessionData);
+
+        return mapActivitySessionToDomain.map(savedActivitySessionData);
     }
 }
 
@@ -62,12 +66,12 @@ public class AddNewActivitySessionDaoImplTest {
         final var repository = mock(JpaActivitySessionsRepository.class);
 
         final var sessionMappedToData = mock(ActivitySessionData.class);
-        final var sessionMappedToDomain = mock(ActivitySession.class);
-
         final var mapNewSessionToData = mock(MapNewActivitySessionToData.class);
-        final var mapActivitySessionToDomain = mock(MapActivitySessionToDomain.class);
-
         given(mapNewSessionToData.map(any())).willReturn(sessionMappedToData);
+
+        final var sessionMappedToDomain = mock(ActivitySession.class);
+        final var mapActivitySessionToDomain = mock(MapActivitySessionToDomain.class);
+        given(mapActivitySessionToDomain.map(any())).willReturn(sessionMappedToDomain);
 
         return new SUT(
             new AddNewActivitySessionDaoImpl(
@@ -95,7 +99,7 @@ public class AddNewActivitySessionDaoImplTest {
 
         final var sut = createSUT();
 
-        given(sut.repository.saveAndFlush(any())).willReturn(Optional.of(sut.sessionMappedToData));
+        given(sut.repository.saveAndFlush(any())).willReturn(sut.sessionMappedToData);
 
         // When
         final var createdActivitySession = sut.dao.execute(newActivitySession);
