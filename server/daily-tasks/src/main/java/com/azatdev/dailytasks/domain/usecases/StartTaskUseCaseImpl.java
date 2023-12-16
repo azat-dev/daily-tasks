@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
+import com.azatdev.dailytasks.domain.interfaces.dao.UpdateTaskStatusDao;
+import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.TransactionFactory;
 import com.azatdev.dailytasks.domain.interfaces.utils.CurrentTimeProvider;
 import com.azatdev.dailytasks.domain.models.NewActivitySession;
 
@@ -14,15 +16,21 @@ public final class StartTaskUseCaseImpl implements StartTaskUseCase {
     private CurrentTimeProvider currentTimeProvider;
     private GetRunningActivitySessionForTaskDao getCurrentActivitySessionDao;
     private AddNewActivitySessionDao addNewActivitySessionDao;
+    private UpdateTaskStatusDao updateTaskStatusDao;
+    private TransactionFactory transactionFactory;
 
     public StartTaskUseCaseImpl(
         CurrentTimeProvider currentTimeProvider,
         GetRunningActivitySessionForTaskDao getCurrentActivitySessionDao,
-        AddNewActivitySessionDao addNewActivitySessionDao
+        AddNewActivitySessionDao addNewActivitySessionDao,
+        UpdateTaskStatusDao updateTaskStatusDao,
+        TransactionFactory transactionFactory
     ) {
         this.currentTimeProvider = currentTimeProvider;
         this.getCurrentActivitySessionDao = getCurrentActivitySessionDao;
         this.addNewActivitySessionDao = addNewActivitySessionDao;
+        this.updateTaskStatusDao = updateTaskStatusDao;
+        this.transactionFactory = transactionFactory;
     }
 
     @Override

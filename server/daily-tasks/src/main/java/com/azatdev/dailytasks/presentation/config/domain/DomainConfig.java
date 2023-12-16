@@ -85,7 +85,9 @@ public class DomainConfig {
         return new StartTaskUseCaseImpl(
             currentTimeProvider,
             getRunningActivitySessionForTaskDao,
-            addNewActivitySessionDao
+            addNewActivitySessionDao,
+            null,
+            null
         );
     }
 }
