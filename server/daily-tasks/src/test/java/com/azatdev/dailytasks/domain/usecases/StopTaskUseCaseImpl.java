@@ -87,7 +87,40 @@ final class StopTaskUseCaseImpl implements StopTaskUseCase {
         UUID userId,
         long taskId
     ) {
-        return null;
+
+        final var currentTime = currentTimeProvider.execute();
+
+        final var transaction = transactionFactory.make();
+
+        transaction.begin();
+
+        final var existingActivitySessionResult = getCurrentRunningActivitySessionForTaskDao.execute(
+            userId,
+            taskId
+        );
+
+        if (existingActivitySessionResult.isEmpty()) {
+            transaction.commit();
+            throw new TaskAlreadyStoppedException(taskId);
+        }
+
+        final var existingActivitySession = existingActivitySessionResult.get();
+
+        stopActivitySessionDao.execute(
+            existingActivitySession.id().get(),
+            currentTime,
+            Optional.of(transaction)
+        );
+
+        markTaskAsStoppedDao.execute(
+            taskId,
+            currentTime,
+            Optional.of(transaction)
+        );
+
+        transaction.commit();
+
+        return currentTime;
     }
 
 }
