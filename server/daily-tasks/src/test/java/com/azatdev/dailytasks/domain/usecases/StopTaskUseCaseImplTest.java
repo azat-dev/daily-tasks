@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import com.azatdev.dailytasks.domain.exceptions.TaskAlreadyStoppedException;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.MarkTaskAsStoppedDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.StopActivitySessionDao;
@@ -148,7 +149,7 @@ class StopTaskUseCaseImplTest {
 
         // When
         final var exception = assertThrows(
-            StopTaskUseCase.TaskAlreadyStoppedException.class,
+            TaskAlreadyStoppedException.class,
             () -> sut.useCase.execute(
                 userId,
                 taskId

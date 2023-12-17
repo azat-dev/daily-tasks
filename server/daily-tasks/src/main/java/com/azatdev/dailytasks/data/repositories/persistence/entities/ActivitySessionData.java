@@ -1,6 +1,7 @@
 package com.azatdev.dailytasks.data.repositories.persistence.entities;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 import com.azatdev.dailytasks.data.repositories.data.user.UserData;
 
@@ -70,5 +71,9 @@ public class ActivitySessionData {
         this.task = task;
         this.startedAt = startedAt;
         this.finishedAt = finishedAt;
+    }
+
+    public void setFinishedAt(Optional<ZonedDateTime> finishedAt) {
+        this.finishedAt = finishedAt.orElse(null);
     }
 }
