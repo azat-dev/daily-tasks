@@ -278,6 +278,34 @@ class TaskControllerTest {
         action.andExpect(status().isNotFound());
     }
 
+    @Test
+    void getTask_givenExistingTask_thenReturnTask() throws Exception {
+
+        // Given
+        final var userPrincipal = anyUserPrincipal();
+        final var userId = userPrincipal.getId();
+        final var taskId = 1L;
+
+        final var existingTask = TestDomainDataGenerator.anyTask(taskId);
+
+        given(
+            getTaskDetailsUseCase.execute(
+                userId,
+                taskId
+            )
+        ).willReturn(Optional.of(existingTask));
+
+        // When
+        final var action = performGetTask(
+            userPrincipal,
+            taskId
+        );
+
+        // Then
+        action.andExpect(status().isOk());
+        action.andExpect(jsonPath("$.id").value(taskId));
+    }
+
     private ResultActions performGetTask(
         UserPrincipal userPrincipal,
         long taskId
