@@ -21,7 +21,7 @@ public final class StopTaskUseCaseImpl implements StopTaskUseCase {
 
     private final TransactionFactory transactionFactory;
 
-    StopTaskUseCaseImpl(
+    public StopTaskUseCaseImpl(
         CurrentTimeProvider currentTimeProvider,
         GetRunningActivitySessionForTaskDao getCurrentRunningActivitySessionForTaskDao,
         StopActivitySessionDao stopActivitySessionDao,

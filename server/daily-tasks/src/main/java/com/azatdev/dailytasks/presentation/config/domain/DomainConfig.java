@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetTaskDao;
+import com.azatdev.dailytasks.domain.interfaces.dao.MarkTaskAsStoppedDao;
+import com.azatdev.dailytasks.domain.interfaces.dao.StopActivitySessionDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.UpdateTaskStatusDao;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryCreate;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryGet;
@@ -26,6 +28,8 @@ import com.azatdev.dailytasks.domain.usecases.SignUpAppUserUseCase;
 import com.azatdev.dailytasks.domain.usecases.SignUpAppUserUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.StartTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.StartTaskUseCaseImpl;
+import com.azatdev.dailytasks.domain.usecases.StopTaskUseCase;
+import com.azatdev.dailytasks.domain.usecases.StopTaskUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.utils.AdjustDateToStartDateInBacklogImpl;
 import com.azatdev.dailytasks.domain.usecases.utils.AdjustDateToStartOfBacklog;
 
@@ -100,5 +104,22 @@ public class DomainConfig {
     @Bean
     public GetTaskDetailsUseCase getTaskDetailsUseCase(GetTaskDao getTaskDao) {
         return new GetTaskDetailsUseCaseImpl(getTaskDao);
+    }
+
+    @Bean
+    public StopTaskUseCase stopTaskUseCase(
+        CurrentTimeProvider currentTimeProvider,
+        GetRunningActivitySessionForTaskDao getCurrentRunningActivitySessionForTaskDao,
+        StopActivitySessionDao stopActivitySessionDao,
+        MarkTaskAsStoppedDao markTaskAsStoppedDao,
+        TransactionFactory transactionFactory
+    ) {
+        return new StopTaskUseCaseImpl(
+            currentTimeProvider,
+            getCurrentRunningActivitySessionForTaskDao,
+            stopActivitySessionDao,
+            markTaskAsStoppedDao,
+            transactionFactory
+        );
     }
 }
