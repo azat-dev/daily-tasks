@@ -152,9 +152,7 @@ public class DataConfig {
     }
 
     @Bean
-    public StopActivitySessionDao stopActivitySessionDao(
-        JpaActivitySessionsRepository activitySessionsRepository
-    ) {
+    public StopActivitySessionDao stopActivitySessionDao(JpaActivitySessionsRepository activitySessionsRepository) {
         return new StopActivitySessionDaoImpl(activitySessionsRepository);
     }
 }

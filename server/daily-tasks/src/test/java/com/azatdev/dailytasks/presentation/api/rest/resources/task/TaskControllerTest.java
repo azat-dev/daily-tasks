@@ -33,12 +33,14 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.GetTaskDetailsUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.StartTaskUseCase;
+import com.azatdev.dailytasks.domain.usecases.StopTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskResponse;
@@ -66,6 +68,9 @@ class TaskControllerTest {
 
     @MockBean
     private GetTaskDetailsUseCase getTaskDetailsUseCase;
+
+    @MockBean
+    private StopTaskUseCase stopTaskUseCase;
 
     @Test
     void findAllTasksInBacklog_givenExistingTasks_thenReturnAllTasksInBacklog() throws Exception {
@@ -313,6 +318,84 @@ class TaskControllerTest {
         action.andExpect(jsonPath("$.id").value(taskId));
     }
 
+    @Test
+    void stopTask_givenNotExistingTask_thenReturn404() throws Exception {
+
+        // Given
+        final var userPrincipal = anyUserPrincipal();
+        final var userId = userPrincipal.getId();
+        final var taskId = 1L;
+
+        given(
+            stopTaskUseCase.execute(
+                userId,
+                taskId
+            )
+        ).willThrow(new TaskNotFoundException(taskId));
+
+        // When
+        final var action = performStopTask(
+            userPrincipal,
+            taskId
+        );
+
+        // Then
+        action.andExpect(status().isNotFound());
+    }
+
+    @Test
+    void stopTask_givenExistingTask_thenReturnTask() throws Exception {
+
+        // Given
+        final var userPrincipal = anyUserPrincipal();
+        final var userId = userPrincipal.getId();
+        final var taskId = 1L;
+
+        final var mappedTask = mock(TaskResponse.class);
+
+        final var stoppedAt = ZonedDateTime.of(
+            2023,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            ZoneId.ofOffset(
+                "UTC",
+                ZoneOffset.ofHours(3)
+            )
+        );
+
+        given(
+            stopTaskUseCase.execute(
+                userId,
+                taskId
+            )
+        ).willReturn(stoppedAt);
+
+        given(mappedTask.id()).willReturn(taskId);
+
+        // When
+        final var action = performStopTask(
+            userPrincipal,
+            taskId
+        );
+
+        // Then
+
+        then(stopTaskUseCase).should(times(1))
+            .execute(
+                userId,
+                taskId
+            );
+
+        action.andExpect(status().isOk());
+
+        final var expectedTime = "2023-01-02T03:04:05.000000006+03:00";
+        action.andExpect(jsonPath("$.stoppedAt").value(expectedTime));
+    }
+
     private ResultActions performGetTask(
         UserPrincipal userPrincipal,
         long taskId
@@ -331,6 +414,28 @@ class TaskControllerTest {
     ) throws Exception {
         return mockMvc.perform(
             get(url).with(user(userPrincipal))
+                .with(csrf())
+        );
+    }
+
+    private ResultActions performStopTask(
+        UserPrincipal userPrincipal,
+        long taskId
+    ) throws Exception {
+        final var url = "/api/with-auth/tasks/" + taskId + "/stop";
+
+        return performPost(
+            url,
+            userPrincipal
+        );
+    }
+
+    private ResultActions performPost(
+        String url,
+        UserPrincipal userPrincipal
+    ) throws Exception {
+        return mockMvc.perform(
+            post(url).with(user(userPrincipal))
                 .with(csrf())
         );
     }

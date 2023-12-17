@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.azatdev.dailytasks.presentation.api.rest.entities.BacklogDurationPresentation;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.StartTaskResponse;
+import com.azatdev.dailytasks.presentation.api.rest.entities.StopTaskResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskResponse;
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 
@@ -49,6 +50,12 @@ public interface TaskResource {
 
     @GetMapping("/{taskId}")
     public ResponseEntity<TaskResponse> getTask(
+        @PathVariable(required = true) Long taskId,
+        @AuthenticationPrincipal UserPrincipal userPrincipal
+    );
+
+    @PostMapping("/{taskId}/stop")
+    public ResponseEntity<StopTaskResponse> stopTask(
         @PathVariable(required = true) Long taskId,
         @AuthenticationPrincipal UserPrincipal userPrincipal
     );

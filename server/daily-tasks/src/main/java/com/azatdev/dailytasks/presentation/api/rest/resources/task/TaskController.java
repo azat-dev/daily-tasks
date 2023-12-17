@@ -8,14 +8,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 
+import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.GetTaskDetailsUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.StartTaskUseCase;
+import com.azatdev.dailytasks.domain.usecases.StopTaskUseCase;
 import com.azatdev.dailytasks.presentation.api.rest.entities.BacklogDurationPresentation;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.StartTaskResponse;
+import com.azatdev.dailytasks.presentation.api.rest.entities.StopTaskResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskPriorityPresentation;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.utils.MapTaskToResponse;
@@ -35,6 +38,9 @@ public class TaskController implements TaskResource {
 
     @Autowired
     private StartTaskUseCase startTaskUseCase;
+
+    @Autowired
+    private StopTaskUseCase stopTaskUseCase;
 
     @Autowired
     private GetTaskDetailsUseCase getTaskDetailsUseCase;
@@ -116,5 +122,25 @@ public class TaskController implements TaskResource {
 
         final var mappedTask = mapTaskToResponse.map(foundTask.get());
         return ResponseEntity.ok(mappedTask);
+    }
+
+    @Override
+    public ResponseEntity<StopTaskResponse> stopTask(
+        Long taskId,
+        UserPrincipal userPrincipal
+    ) {
+
+        try {
+            final var stoppedAt = this.stopTaskUseCase.execute(
+                userPrincipal.getId(),
+                taskId
+            );
+
+            return ResponseEntity.ok(new StopTaskResponse(stoppedAt));
+
+        } catch (TaskNotFoundException e) {
+            return ResponseEntity.notFound()
+                .build();
+        }
     }
 }
