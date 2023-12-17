@@ -167,4 +167,44 @@ class JpaTasksRepositoryTests {
                 .getOrderInBacklog()
         ).isEqualTo(numberOfTasks - 1);
     }
+
+    @Test
+    void findByOwnerIdAndId_whenTaskExist_thenMustReturnCorrectTask() {
+
+        // Given
+        final var owner = dm.givenExistingUser("owner");
+        final var wrongOwner = dm.givenExistingUser("wrongOwner");
+
+        final var backlog = dm.givenExistingWeekBacklog(owner);
+
+        final var correctTask = dm.givenExistingTaskData(
+            owner,
+            backlog,
+            0
+        );
+        final var wrongOwnerTask = dm.givenExistingTaskData(
+            wrongOwner,
+            backlog,
+            0
+        );
+        final var wrongIdTask = dm.givenExistingTaskData(
+            owner,
+            backlog,
+            0
+        );
+
+        // When
+        final var result = jpaTasksRepository.findByOwnerIdAndId(
+            owner.getId(),
+            correctTask.getId()
+        );
+
+        // Then
+        assertThat(result.get()).isEqualTo(correctTask);
+        assertThat(result.get()).isNotIn(
+            wrongIdTask,
+            wrongOwnerTask
+        );
+
+    }
 }
