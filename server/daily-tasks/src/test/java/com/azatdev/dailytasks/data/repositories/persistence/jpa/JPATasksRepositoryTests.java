@@ -205,6 +205,5 @@ class JpaTasksRepositoryTests {
             wrongIdTask,
             wrongOwnerTask
         );
-
     }
 }

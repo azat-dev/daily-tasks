@@ -30,6 +30,10 @@ public class TestEntityDataGenerator {
             userName,
             faker.internet()
                 .password()
+                .substring(
+                    0,
+                    255
+                )
         );
     }
 
@@ -145,6 +149,10 @@ public class TestEntityDataGenerator {
             orderInBacklog,
             faker.lorem()
                 .sentence()
+                .substring(
+                    0,
+                    255
+                )
         );
     }
 

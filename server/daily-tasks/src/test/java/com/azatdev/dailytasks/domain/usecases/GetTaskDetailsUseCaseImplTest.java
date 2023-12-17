@@ -16,41 +16,6 @@ import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaTasksRepository;
 import com.azatdev.dailytasks.domain.models.Task;
 
-@FunctionalInterface
-interface GetTaskDetailsUseCase {
-
-    Optional<Task> execute(
-        UUID userId,
-        long taskId
-    );
-}
-
-final class GetTaskDetailsUseCaseImpl implements GetTaskDetailsUseCase {
-
-    private final MapTaskDataToDomain mapTaskDataToDomain;
-    private final JpaTasksRepository tasksRepository;
-
-    public GetTaskDetailsUseCaseImpl(
-        MapTaskDataToDomain mapper,
-        JpaTasksRepository tasksRepository
-    ) {
-        this.mapTaskDataToDomain = mapper;
-        this.tasksRepository = tasksRepository;
-    }
-
-    @Override
-    public Optional<Task> execute(
-        UUID userId,
-        long taskId
-    ) {
-        return tasksRepository.findByOwnerIdAndId(
-            userId,
-            taskId
-        )
-            .map(mapTaskDataToDomain::execute);
-    }
-}
-
 class GetTaskDetailsUseCaseImplTest {
 
     private record SUT(
