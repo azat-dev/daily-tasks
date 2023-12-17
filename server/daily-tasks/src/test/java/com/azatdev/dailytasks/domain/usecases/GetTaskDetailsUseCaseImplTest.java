@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -42,7 +43,10 @@ final class GetTaskDetailsUseCaseImpl implements GetTaskDetailsUseCase {
         UUID userId,
         long taskId
     ) {
-        return tasksRepository.findById(taskId)
+        return tasksRepository.findByOwnerIdAndId(
+            userId,
+            taskId
+        )
             .map(mapTaskDataToDomain::execute);
     }
 }
@@ -88,7 +92,12 @@ class GetTaskDetailsUseCaseImplTest {
         final var taskId = anyTaskId();
         final var sut = createSUT();
 
-        given(sut.tasksRepository.findById(any())).willReturn(Optional.empty());
+        given(
+            sut.tasksRepository.findByOwnerIdAndId(
+                any(),
+                any()
+            )
+        ).willReturn(Optional.empty());
 
         // When
         final var result = sut.useCase.execute(
@@ -97,6 +106,11 @@ class GetTaskDetailsUseCaseImplTest {
         );
 
         // Then
+        then(sut.tasksRepository).should(times(1))
+            .findByOwnerIdAndId(
+                userId,
+                taskId
+            );
         assertThat(result).isEmpty();
     }
 
@@ -111,7 +125,12 @@ class GetTaskDetailsUseCaseImplTest {
         final var existingTaskData = mock(TaskData.class);
         final var mappedTask = mock(Task.class);
 
-        given(sut.tasksRepository.findById(any())).willReturn(Optional.of(existingTaskData));
+        given(
+            sut.tasksRepository.findByOwnerIdAndId(
+                any(),
+                any()
+            )
+        ).willReturn(Optional.of(existingTaskData));
         given(sut.mapper.execute(any())).willReturn(mappedTask);
 
         // When
@@ -122,7 +141,10 @@ class GetTaskDetailsUseCaseImplTest {
 
         // Then
         then(sut.tasksRepository).should(times(1))
-            .findById(taskId);
+            .findByOwnerIdAndId(
+                userId,
+                taskId
+            );
 
         assertThat(result).isNotEmpty();
         assertThat(result.get()).isSameAs(mappedTask);

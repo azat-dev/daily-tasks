@@ -22,4 +22,9 @@ public interface JpaTasksRepository extends JpaRepository<TaskData, Long> {
         UUID ownerId,
         Long backlogId
     );
+
+    Optional<TaskData> findByOwnerIdAndId(
+        UUID ownerId,
+        Long id
+    );
 }
