@@ -25,14 +25,14 @@ interface GetTaskDetailsUseCase {
 
 final class GetTaskDetailsUseCaseImpl implements GetTaskDetailsUseCase {
 
-    private final MapTaskDataToDomain mapper;
+    private final MapTaskDataToDomain mapTaskDataToDomain;
     private final JpaTasksRepository tasksRepository;
 
     public GetTaskDetailsUseCaseImpl(
         MapTaskDataToDomain mapper,
         JpaTasksRepository tasksRepository
     ) {
-        this.mapper = mapper;
+        this.mapTaskDataToDomain = mapper;
         this.tasksRepository = tasksRepository;
     }
 
@@ -41,7 +41,8 @@ final class GetTaskDetailsUseCaseImpl implements GetTaskDetailsUseCase {
         UUID userId,
         long taskId
     ) {
-        return null;
+        return tasksRepository.findById(taskId)
+            .map(mapTaskDataToDomain::execute);
     }
 }
 
