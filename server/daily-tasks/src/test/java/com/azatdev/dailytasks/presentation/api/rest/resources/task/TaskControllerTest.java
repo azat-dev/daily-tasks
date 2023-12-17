@@ -42,6 +42,8 @@ import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.StartTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
+import com.azatdev.dailytasks.presentation.api.rest.entities.TaskResponse;
+import com.azatdev.dailytasks.presentation.api.rest.entities.utils.MapTaskToResponse;
 import com.azatdev.dailytasks.presentation.config.presentation.PresentationConfig;
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 
@@ -67,6 +69,9 @@ class TaskControllerTest {
 
     @MockBean
     private GetTaskDetailsUseCase getTaskDetailsUseCase;
+
+    @MockBean
+    private MapTaskToResponse mapTaskToResponse;
 
     @Test
     void findAllTasksInBacklog_givenExistingTasks_thenReturnAllTasksInBacklog() throws Exception {
@@ -287,6 +292,7 @@ class TaskControllerTest {
         final var taskId = 1L;
 
         final var existingTask = TestDomainDataGenerator.anyTask(taskId);
+        final var mappedTask = mock(TaskResponse.class);
 
         given(
             getTaskDetailsUseCase.execute(
@@ -295,6 +301,10 @@ class TaskControllerTest {
             )
         ).willReturn(Optional.of(existingTask));
 
+        given(mappedTask.id()).willReturn(taskId);
+
+        given(mapTaskToResponse.map(existingTask)).willReturn(mappedTask);
+
         // When
         final var action = performGetTask(
             userPrincipal,
@@ -302,6 +312,16 @@ class TaskControllerTest {
         );
 
         // Then
+
+        then(getTaskDetailsUseCase).should(times(1))
+            .execute(
+                userId,
+                taskId
+            );
+
+        then(mapTaskToResponse).should(times(1))
+            .map(existingTask);
+
         action.andExpect(status().isOk());
         action.andExpect(jsonPath("$.id").value(taskId));
     }

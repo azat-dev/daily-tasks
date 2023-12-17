@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
+import com.azatdev.dailytasks.domain.usecases.GetTaskDetailsUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.StartTaskUseCase;
 import com.azatdev.dailytasks.presentation.api.rest.entities.BacklogDurationPresentation;
@@ -34,6 +35,9 @@ public class TaskController implements TaskResource {
 
     @Autowired
     private StartTaskUseCase startTaskUseCase;
+
+    @Autowired
+    private GetTaskDetailsUseCase getTaskDetailsUseCase;
 
     @Override
     public ResponseEntity<List<TaskResponse>> findAllTasksInBacklog(
@@ -93,5 +97,24 @@ public class TaskController implements TaskResource {
         );
 
         return ResponseEntity.ok(new StartTaskResponse(startedAt));
+    }
+
+    @Override
+    public ResponseEntity<TaskResponse> getTask(
+        Long taskId,
+        UserPrincipal userPrincipal
+    ) {
+        final var foundTask = getTaskDetailsUseCase.execute(
+            userPrincipal.getId(),
+            taskId
+        );
+
+        if (foundTask.isEmpty()) {
+            return ResponseEntity.notFound()
+                .build();
+        }
+
+        final var mappedTask = mapTaskToResponse.map(foundTask.get());
+        return ResponseEntity.ok(mappedTask);
     }
 }

@@ -43,7 +43,13 @@ public interface TaskResource {
 
     @PostMapping("/{taskId}/start")
     public ResponseEntity<StartTaskResponse> startTask(
-        @PathVariable(required = true) Long request,
+        @PathVariable(required = true) Long taskId,
+        @AuthenticationPrincipal UserPrincipal userPrincipal
+    );
+
+    @GetMapping("/{taskId}")
+    public ResponseEntity<TaskResponse> getTask(
+        @PathVariable(required = true) Long taskId,
         @AuthenticationPrincipal UserPrincipal userPrincipal
     );
 }
