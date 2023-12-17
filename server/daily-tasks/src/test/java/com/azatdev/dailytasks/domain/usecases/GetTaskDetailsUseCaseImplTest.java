@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import com.azatdev.dailytasks.data.repositories.data.MapTaskDataToDomain;
+import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaTasksRepository;
 import com.azatdev.dailytasks.domain.models.Task;
 
@@ -97,5 +98,33 @@ class GetTaskDetailsUseCaseImplTest {
 
         // Then
         assertThat(result).isEmpty();
+    }
+
+    @Test
+    void execute_givenExistingTask_thenReturnMappedData() {
+
+        // Given
+        final var userId = anyUserId();
+        final var taskId = anyTaskId();
+        final var sut = createSUT();
+
+        final var existingTaskData = mock(TaskData.class);
+        final var mappedTask = mock(Task.class);
+
+        given(sut.tasksRepository.findById(any())).willReturn(Optional.of(existingTaskData));
+        given(sut.mapper.execute(any())).willReturn(mappedTask);
+
+        // When
+        final var result = sut.useCase.execute(
+            userId,
+            taskId
+        );
+
+        // Then
+        then(sut.tasksRepository).should(times(1))
+            .findById(taskId);
+
+        assertThat(result).isNotEmpty();
+        assertThat(result.get()).isSameAs(mappedTask);
     }
 }
