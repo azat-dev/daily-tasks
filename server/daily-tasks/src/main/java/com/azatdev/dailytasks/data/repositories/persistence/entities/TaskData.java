@@ -2,6 +2,8 @@ package com.azatdev.dailytasks.data.repositories.persistence.entities;
 
 import java.time.ZonedDateTime;
 
+import org.hibernate.validator.constraints.Length;
+
 import com.azatdev.dailytasks.data.repositories.data.user.UserData;
 
 import jakarta.persistence.Column;
@@ -67,7 +69,7 @@ public class TaskData {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10000)
     private String description;
 
     @Enumerated(EnumType.ORDINAL)
