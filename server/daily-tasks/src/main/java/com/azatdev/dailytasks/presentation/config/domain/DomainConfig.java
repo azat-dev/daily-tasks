@@ -1,6 +1,5 @@
 package com.azatdev.dailytasks.presentation.config.domain;
 
-import org.h2.command.dml.Update;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
