@@ -7,7 +7,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
@@ -47,37 +46,21 @@ class GetTaskDaoTest {
         return 111L;
     }
 
-    private UUID anyUserId() {
-        return UUID.randomUUID();
-    }
-
     @Test
     void execute_givenEmptyDb_thenReturnEmptyOptional() {
 
         // Given
-        final var userId = anyUserId();
         final var taskId = anyTaskId();
         final var sut = createSUT();
 
-        given(
-            sut.tasksRepository.findByOwnerIdAndId(
-                any(),
-                any()
-            )
-        ).willReturn(Optional.empty());
+        given(sut.tasksRepository.findById(any())).willReturn(Optional.empty());
 
         // When
-        final var result = sut.dao.execute(
-            userId,
-            taskId
-        );
+        final var result = sut.dao.execute(taskId);
 
         // Then
         then(sut.tasksRepository).should(times(1))
-            .findByOwnerIdAndId(
-                userId,
-                taskId
-            );
+            .findById(taskId);
         assertThat(result).isEmpty();
     }
 
@@ -85,33 +68,21 @@ class GetTaskDaoTest {
     void execute_givenExistingTask_thenReturnMappedData() {
 
         // Given
-        final var userId = anyUserId();
         final var taskId = anyTaskId();
         final var sut = createSUT();
 
         final var existingTaskData = mock(TaskData.class);
         final var mappedTask = mock(Task.class);
 
-        given(
-            sut.tasksRepository.findByOwnerIdAndId(
-                any(),
-                any()
-            )
-        ).willReturn(Optional.of(existingTaskData));
+        given(sut.tasksRepository.findById(any())).willReturn(Optional.of(existingTaskData));
         given(sut.mapper.execute(any())).willReturn(mappedTask);
 
         // When
-        final var result = sut.dao.execute(
-            userId,
-            taskId
-        );
+        final var result = sut.dao.execute(taskId);
 
         // Then
         then(sut.tasksRepository).should(times(1))
-            .findByOwnerIdAndId(
-                userId,
-                taskId
-            );
+            .findById(taskId);
 
         assertThat(result).isNotEmpty();
         assertThat(result.get()).isSameAs(mappedTask);

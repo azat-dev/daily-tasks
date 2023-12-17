@@ -3,10 +3,12 @@ package com.azatdev.dailytasks.domain.usecases;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.azatdev.dailytasks.domain.exceptions.AccessDeniedException;
+import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetTaskDao;
 import com.azatdev.dailytasks.domain.models.Task;
 
-public class GetTaskDetailsUseCaseImpl implements GetTaskDetailsUseCase {
+public final class GetTaskDetailsUseCaseImpl implements GetTaskDetailsUseCase {
 
     private GetTaskDao getTaskDao;
 
@@ -18,10 +20,23 @@ public class GetTaskDetailsUseCaseImpl implements GetTaskDetailsUseCase {
     public Optional<Task> execute(
         UUID userId,
         long taskId
-    ) {
-        return getTaskDao.execute(
+    ) throws AccessDeniedException, TaskNotFoundException {
+
+        final var taskResult = getTaskDao.execute(taskId);
+
+        if (taskResult.isEmpty()) {
+            throw new TaskNotFoundException(taskId);
+        }
+
+        final var task = taskResult.get();
+        if (task.ownerId() == userId) {
+            return taskResult;
+        }
+
+        throw new AccessDeniedException(
             userId,
-            taskId
+            "getTaskDetails",
+            String.valueOf(taskId)
         );
     }
 }

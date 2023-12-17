@@ -29,9 +29,13 @@ public class TestDomainDataGenerator {
         );
     }
 
-    public static Task anyTask(Long id) {
+    public static Task anyTask(
+        Long id,
+        UUID ownerId
+    ) {
         return new Task(
             id,
+            ownerId,
             limit(
                 faker.lorem()
                     .sentence(),

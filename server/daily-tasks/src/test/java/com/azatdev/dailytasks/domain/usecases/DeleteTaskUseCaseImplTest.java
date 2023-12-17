@@ -2,7 +2,12 @@ package com.azatdev.dailytasks.domain.usecases;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 import java.util.UUID;
 
@@ -12,7 +17,6 @@ import com.azatdev.dailytasks.domain.exceptions.AccessDeniedException;
 import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transaction;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.TransactionFactory;
-import com.azatdev.dailytasks.domain.models.Task;
 
 @FunctionalInterface
 interface DeleteTaskUseCase {
@@ -20,11 +24,6 @@ interface DeleteTaskUseCase {
         UUID userId,
         long taskId
     ) throws TaskNotFoundException;
-}
-
-@FunctionalInterface
-interface StopTaskUseCase {
-    void execute(long taskId) throws TaskNotFoundException;
 }
 
 @FunctionalInterface
@@ -36,7 +35,7 @@ interface DeleteTaskDao {
 interface DoesUserHavePermissionToDeleteTaskUseCase {
     boolean execute(
         UUID userId,
-        Task task
+        long taskId
     ) throws TaskNotFoundException, AccessDeniedException;
 }
 
@@ -63,8 +62,20 @@ final class DeleteTaskUseCaseImpl implements DeleteTaskUseCase {
     public void execute(
         UUID userId,
         long taskId
-    ) throws TaskNotFoundException {
+    ) throws TaskNotFoundException, AccessDeniedException {
 
+        final boolean hasPermission = doesUserHavePermissionToDeleteTaskUseCase.execute(
+            userId,
+            taskId
+        );
+
+        if (!hasPermission) {
+            throw new AccessDeniedException(
+                userId,
+                "deleteTask",
+                String.valueOf(taskId)
+            );
+        }
         return;
 
         // stopTaskUseCase.execute(
@@ -128,6 +139,13 @@ class DeleteTaskUseCaseImplTest {
 
         final var sut = createSUT();
 
+        given(
+            sut.doesUserHavePermissionToDeleteTaskUseCase.execute(
+                any(),
+                anyLong()
+            )
+        ).willReturn(false);
+
         // When
         final var exception = assertThrows(
             AccessDeniedException.class,
@@ -138,6 +156,12 @@ class DeleteTaskUseCaseImplTest {
         );
 
         // Then
+        then(sut.doesUserHavePermissionToDeleteTaskUseCase).should(times(1))
+            .execute(
+                userId,
+                taskId
+            );
+
         assertThat(exception.getOperation()).isEqualTo("deleteTask");
         assertThat(exception.getResource()).isEqualTo(String.valueOf(taskId));
         assertThat(exception.getUserId()).isEqualTo(userId);

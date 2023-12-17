@@ -72,7 +72,10 @@ class CreateTaskInBacklogUseCaseImplTests {
             "description"
         );
 
-        final var expectedTask = TestDomainDataGenerator.anyTask(1L);
+        final var expectedTask = TestDomainDataGenerator.anyTask(
+            1L,
+            ownerId
+        );
 
         final var sut = createSUT();
 

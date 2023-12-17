@@ -90,8 +90,14 @@ class TaskControllerTest {
         var backlogDuration = Backlog.Duration.WEEK;
 
         final var existingTasks = List.of(
-            TestDomainDataGenerator.anyTask(0L),
-            TestDomainDataGenerator.anyTask(1L)
+            TestDomainDataGenerator.anyTask(
+                0L,
+                userId
+            ),
+            TestDomainDataGenerator.anyTask(
+                1L,
+                userId
+            )
         );
 
         given(
@@ -166,7 +172,10 @@ class TaskControllerTest {
             "Description"
         );
 
-        final var createdTask = TestDomainDataGenerator.anyTask(1L);
+        final var createdTask = TestDomainDataGenerator.anyTask(
+            1L,
+            userId
+        );
 
         given(
             createTaskInBacklogUseCase.execute(
@@ -288,7 +297,10 @@ class TaskControllerTest {
         final var userId = userPrincipal.getId();
         final var taskId = 1L;
 
-        final var existingTask = TestDomainDataGenerator.anyTask(taskId);
+        final var existingTask = TestDomainDataGenerator.anyTask(
+            taskId,
+            userId
+        );
         final var mappedTask = mock(TaskResponse.class);
 
         given(

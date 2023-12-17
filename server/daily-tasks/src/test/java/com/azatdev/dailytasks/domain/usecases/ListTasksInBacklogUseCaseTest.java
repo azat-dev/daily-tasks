@@ -113,8 +113,14 @@ public class ListTasksInBacklogUseCaseTest {
         final var backlogDuration = Backlog.Duration.DAY;
         final var backlogStartDate = LocalDate.now();
         final var expectedTasks = List.of(
-            TestDomainDataGenerator.anyTask(1L),
-            TestDomainDataGenerator.anyTask(1L)
+            TestDomainDataGenerator.anyTask(
+                1L,
+                ownerId
+            ),
+            TestDomainDataGenerator.anyTask(
+                1L,
+                ownerId
+            )
         );
 
         final LocalDate adjustedBacklogStartDate = backlogStartDate;

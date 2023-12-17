@@ -9,9 +9,9 @@ public class AccessDeniedException extends RuntimeException {
     private UUID userId;
 
     public AccessDeniedException(
-        String resource,
+        UUID userId,
         String operation,
-        UUID userId
+        String resource
     ) {
         super("Access denied to " + resource + " for operation " + operation + " for user " + userId);
         this.resource = resource;

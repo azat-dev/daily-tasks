@@ -1,7 +1,6 @@
 package com.azatdev.dailytasks.data.repositories.data;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaTasksRepository;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetTaskDao;
@@ -21,14 +20,8 @@ public final class GetTaskDaoImpl implements GetTaskDao {
     }
 
     @Override
-    public Optional<Task> execute(
-        UUID userId,
-        long taskId
-    ) {
-        return tasksRepository.findByOwnerIdAndId(
-            userId,
-            taskId
-        )
+    public Optional<Task> execute(long taskId) {
+        return tasksRepository.findById(taskId)
             .map(mapTaskDataToDomain::execute);
     }
 }
