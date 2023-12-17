@@ -14,14 +14,10 @@ import {
 export default class LogInByUserNameAndPasswordUseCaseImpl
     implements ILogInByUserNameAndPasswordUseCase
 {
-    private readonly authService: IAuthenticationServiceByUserNameAndPassword;
-    private readonly localTokensRepository: IAuthTokensRepositoryUpdate;
-    private readonly authStateRepository: IAuthStateRepositoryUpdate;
-
     constructor(
-        authService: IAuthenticationServiceByUserNameAndPassword,
-        localTokensRepository: IAuthTokensRepositoryUpdate,
-        authStateRepository: IAuthStateRepositoryUpdate
+        private readonly authService: IAuthenticationServiceByUserNameAndPassword,
+        private readonly localTokensRepository: IAuthTokensRepositoryUpdate,
+        private readonly authStateRepository: IAuthStateRepositoryUpdate
     ) {
         this.authService = authService;
         this.localTokensRepository = localTokensRepository;

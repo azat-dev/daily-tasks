@@ -113,24 +113,6 @@ paths:
                                 type: array
                                 items:
                                     $ref: "#/components/schemas/Task"
-    /api/with-auth/tasks/{task_id}:
-        description: Get task
-        parameters:
-            - name: task_id
-              in: path
-              required: true
-              schema:
-                  type: integer
-        get:
-            summary: Get task data
-            responses:
-                "200":
-                    description: Task data
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/Task"
-
         post:
             summary: Add a task in a backlog
             requestBody:
@@ -235,6 +217,19 @@ paths:
             responses:
                 "200":
                     description: Success
+        get:
+            summary: Get task data
+            responses:
+                "200":
+                    description: Task data
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Task"
+                "401":
+                    description: Unathorized
+                "404":
+                    description: Unathorized
 components:
     schemas:
         SignUpResponse:

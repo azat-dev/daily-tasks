@@ -66,6 +66,7 @@ export default class DayPageViewModelImpl implements DayPageViewModel {
             const vm = new RowViewModelImpl(task);
 
             vm.delegate = {
+                onOpen: this.delegate!.openTask,
                 onStart: startTask,
                 onStop: stopTask,
                 onDelete: deleteTask,

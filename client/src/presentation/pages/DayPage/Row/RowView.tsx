@@ -13,7 +13,11 @@ const RowView = ({ viewModel: vm }: RowViewProps) => {
     useUpdatesFrom(vm.title, vm.status, vm.priority, vm.createdAt, vm.isActive);
 
     return (
-        <tr className={styles.row} data-active={!!vm.isActive.value}>
+        <tr
+            className={styles.row}
+            data-active={!!vm.isActive.value}
+            onClick={vm.onClick}
+        >
             <td>{vm.title.value}</td>
             <td>{vm.status.value}</td>
             <td>{vm.priority.value}</td>

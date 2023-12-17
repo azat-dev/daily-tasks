@@ -8,6 +8,7 @@ import {
     TasksRepositoryError,
     TasksRepositoryDelete,
     TasksRepositoryAddNewTask,
+    TasksRepositoryGet,
 } from "../../domain/repositories/TasksRepository";
 import { DefaultApi, NewTaskData } from "../API";
 import { TaskMapperDomain } from "./TaskMapper/TaskMapper";
@@ -18,7 +19,8 @@ export default class TasksRepositoryImpl
         TasksRepositoryStart,
         TasksRepositoryStop,
         TasksRepositoryDelete,
-        TasksRepositoryAddNewTask
+        TasksRepositoryAddNewTask,
+        TasksRepositoryGet
 {
     private api: DefaultApi;
     private taskMapper: TaskMapperDomain;
@@ -138,6 +140,24 @@ export default class TasksRepositoryImpl
 
             return Result.success(response.taskId);
         } catch (e) {
+            return Result.failure(TasksRepositoryError.InternalError);
+        }
+    };
+
+    public get = async (
+        taskId: number
+    ): Promise<Result<Task | null, TasksRepositoryError>> => {
+        try {
+            const response = await this.api.apiWithAuthTasksTaskIdGet({
+                taskId: taskId,
+            });
+
+            return Result.success(this.taskMapper.toDomain(response));
+        } catch (error: any) {
+            if (error?.response?.status === 404) {
+                return Result.success(null);
+            }
+
             return Result.failure(TasksRepositoryError.InternalError);
         }
     };

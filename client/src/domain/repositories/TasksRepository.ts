@@ -35,3 +35,6 @@ export interface TasksRepositoryAddNewTask {
         data: NewTaskData
     ): Promise<Result<TaskId, TasksRepositoryError>>;
 }
+export interface TasksRepositoryGet {
+    get(taskId: TaskId): Promise<Result<Task | null, TasksRepositoryError>>;
+}

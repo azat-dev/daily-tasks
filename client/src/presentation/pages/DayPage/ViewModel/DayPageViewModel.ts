@@ -10,6 +10,7 @@ export interface DayPageViewViewModelDelegate {
         tasksIds: TaskId[]
     ): Promise<Result<Record<TaskId, TaskStatus>, undefined>>;
     runAddTaskFlow(): void;
+    openTask(taskId: TaskId): void;
     startTask(taskId: TaskId): Promise<Result<Date, undefined>>;
     stopTask(taskId: TaskId): Promise<Result<undefined, undefined>>;
     deleteTask(taskId: TaskId): Promise<Result<undefined, undefined>>;

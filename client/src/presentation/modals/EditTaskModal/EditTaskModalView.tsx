@@ -1,13 +1,13 @@
 import React from "react";
-import AddTaskViewModel from "./ViewModel/AddTaskModalViewModel";
+import EditTaskModalViewModel from "./ViewModel/EditTaskModalViewModel";
 import { Button, Form, Modal, Spinner } from "react-bootstrap";
 import useUpdatesFrom from "../../pages/LogInPage/useUpdatesFrom";
 
-export interface AddTaskModalViewProps {
-    viewModel: AddTaskViewModel;
+export interface EditTaskModalViewProps {
+    viewModel: EditTaskModalViewModel;
 }
 
-const AddTaskModalView = ({ viewModel: vm }: AddTaskModalViewProps) => {
+const EditTaskModalView = ({ viewModel: vm }: EditTaskModalViewProps) => {
     useUpdatesFrom(
         vm.show,
         vm.title,
@@ -18,9 +18,14 @@ const AddTaskModalView = ({ viewModel: vm }: AddTaskModalViewProps) => {
     );
 
     return (
-        <Modal show={vm.show.value} onHide={vm.onHide} onExited={vm.onUnMount}>
+        <Modal
+            show={vm.show.value}
+            onHide={vm.onHide}
+            onExited={vm.onUnMount}
+            onEntered={() => vm.load()}
+        >
             <Modal.Header closeButton>
-                <Modal.Title>Add a new task</Modal.Title>
+                <Modal.Title>Edit task</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
@@ -104,7 +109,7 @@ const AddTaskModalView = ({ viewModel: vm }: AddTaskModalViewProps) => {
                         />
                     </div>
                     <span style={{ opacity: vm.isProcessing.value ? 0 : 1 }}>
-                        Create
+                        Save
                     </span>
                 </Button>
             </Modal.Footer>
@@ -112,4 +117,4 @@ const AddTaskModalView = ({ viewModel: vm }: AddTaskModalViewProps) => {
     );
 };
 
-export default React.memo(AddTaskModalView);
+export default React.memo(EditTaskModalView);

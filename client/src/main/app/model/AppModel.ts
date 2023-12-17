@@ -3,15 +3,20 @@ import AddTaskViewModel from "../../../presentation/modals/AddTaskModal/ViewMode
 import DayPageViewViewModel from "../../../presentation/pages/DayPage/ViewModel/DayPageViewModel";
 import AuthState from "../../../domain/models/AuthState";
 import Value from "../../../presentation/pages/LogInPage/Value";
+import EditTaskModalViewModel from "../../../presentation/modals/EditTaskModal/ViewModel/EditTaskModalViewModel";
 
-export type CurrentModalState = {
-    type: "addTask";
-    viewModel: AddTaskViewModel;
-};
+export type CurrentModalState =
+    | {
+          type: "addTask";
+          viewModel: AddTaskViewModel;
+      }
+    | {
+          type: "editTask";
+          viewModel: EditTaskModalViewModel;
+      };
 
 export interface AppModelPageFactories {
     makeLogInPageViewModel(): LogInPageViewModel;
-
     makeBacklogDayPageViewModel(backlogDay: string): DayPageViewViewModel;
 }
 

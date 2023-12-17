@@ -83,6 +83,10 @@ export interface ApiWithAuthTasksTaskIdDeleteRequest {
     taskId: number;
 }
 
+export interface ApiWithAuthTasksTaskIdGetRequest {
+    taskId: number;
+}
+
 export interface ApiWithAuthTasksTaskIdMoveToBacklogPostRequest {
     taskId: number;
 }
@@ -387,6 +391,44 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiWithAuthTasksTaskIdDelete(requestParameters: ApiWithAuthTasksTaskIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.apiWithAuthTasksTaskIdDeleteRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Get task data
+     */
+    async apiWithAuthTasksTaskIdGetRaw(requestParameters: ApiWithAuthTasksTaskIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Task>> {
+        if (requestParameters.taskId === null || requestParameters.taskId === undefined) {
+            throw new runtime.RequiredError('taskId','Required parameter requestParameters.taskId was null or undefined when calling apiWithAuthTasksTaskIdGet.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/with-auth/tasks/{task_id}`.replace(`{${"task_id"}}`, encodeURIComponent(String(requestParameters.taskId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => TaskFromJSON(jsonValue));
+    }
+
+    /**
+     * Get task data
+     */
+    async apiWithAuthTasksTaskIdGet(requestParameters: ApiWithAuthTasksTaskIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Task> {
+        const response = await this.apiWithAuthTasksTaskIdGetRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**

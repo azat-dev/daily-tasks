@@ -4,6 +4,7 @@ import Value from "../../../LogInPage/Value";
 import ActionButtonViewModel from "../../ActionButton/ActionButtonViewModel";
 
 export interface RowViewModelDelegate {
+    onOpen: (taskId: TaskId) => void;
     onStart(taskId: TaskId): void;
     onStop(taskId: TaskId): void;
     onDelete(taskId: TaskId): void;
@@ -21,12 +22,17 @@ export interface RowViewModelOutput {
     actionButtonViewModel: ActionButtonViewModel;
 }
 
+export interface RowViewModelInput {
+    onClick: (e: any) => void;
+}
+
 export interface RowViewModelUpdateProperties {
     updateStatus(status: TaskStatus): void;
 }
 
 export default interface RowViewModel
     extends RowViewModelOutput,
+        RowViewModelInput,
         RowViewModelUpdateProperties {
     delegate: RowViewModelDelegate | null;
 }

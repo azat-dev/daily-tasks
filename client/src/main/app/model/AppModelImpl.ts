@@ -10,7 +10,7 @@ import StartNewSessionUseCaseImpl, {
 import AuthStateRepositoryImpl from "../../../data/repositories/AuthStateRepositoryImpl";
 import AuthState from "../../../domain/models/AuthState";
 import DayPageViewViewModel, {
-    DayPageViewViewModelDelegate,
+    DayPageViewViewModelDelegate as DayPageViewModelDelegate,
 } from "../../../presentation/pages/DayPage/ViewModel/DayPageViewModel";
 import ListTasksInBacklogUseCaseImpl from "../../../domain/usecases/ListTasksInBacklogUseCase/ListTasksInBacklogUseCaseImpl";
 import TasksRepositoryImpl from "../../../data/repositories/TasksRepositoryImpl";
@@ -38,6 +38,10 @@ import AppSettings from "../AppSettings";
 import { Result, ResultType } from "../../../common/Result";
 import { TaskId } from "../../../domain/models/Task";
 import ListTasksInBacklogUseCase from "../../../domain/usecases/ListTasksInBacklogUseCase/ListTasksInBacklogUseCase";
+import EditTaskModalViewModel from "../../../presentation/modals/EditTaskModal/ViewModel/EditTaskModalViewModel";
+import EditTaskModalViewModelImpl from "../../../presentation/modals/EditTaskModal/ViewModel/EditTaskModalViewModelImpl";
+import { ILoadTaskUseCase } from "../../../domain/usecases/LoadTaskUseCase/LoadTaskUseCase";
+import LoadTaskUseCaseImpl from "../../../domain/usecases/LoadTaskUseCase/LoadTaskUseCaseImpl";
 
 export default class AppModelImpl implements AppModel {
     // Properties
@@ -160,6 +164,50 @@ export default class AppModelImpl implements AppModel {
         return new LogInPageViewModelImpl(logInUseCase);
     };
 
+    private getLoadTaskUseCase = (): ILoadTaskUseCase => {
+        return new LoadTaskUseCaseImpl(this.getTasksRepository());
+    };
+
+    private makeEditTaskPageViewModel = (
+        taskId: TaskId
+    ): EditTaskModalViewModel => {
+        return new EditTaskModalViewModelImpl(
+            taskId,
+            async () => {
+                const useCase = this.getLoadTaskUseCase();
+
+                const result = await useCase.execute(taskId);
+
+                switch (result.type) {
+                    case ResultType.Success:
+                        return Result.success(result.value);
+                    case ResultType.Failure:
+                        return Result.failure(undefined);
+                }
+            },
+            {
+                updateTask: async (taskId, task) => {
+                    return null as any;
+                },
+                didComplete: () => {
+                    this.currentModal.set(null);
+                },
+                didHide: () => {
+                    this.currentModal.set(null);
+                },
+            }
+        );
+    };
+
+    public runEditTaskFlow = (taskId: TaskId) => {
+        const vm = this.makeEditTaskPageViewModel(taskId);
+
+        this.currentModal.set({
+            type: "editTask",
+            viewModel: vm,
+        });
+    };
+
     private makeBacklogDayPageViewModel = (
         backlogDay: string
     ): DayPageViewViewModel => {
@@ -167,7 +215,7 @@ export default class AppModelImpl implements AppModel {
 
         const viewModel = new DayPageViewModelImpl();
 
-        const delegate: DayPageViewViewModelDelegate = {
+        const delegate: DayPageViewModelDelegate = {
             loadTasks: async () => {
                 const useCase = this.getListTasksInBacklogUseCase(backlogType);
 
@@ -203,6 +251,9 @@ export default class AppModelImpl implements AppModel {
                 this.runAddTaskFlow(backlogType, backlogDay, () => {
                     viewModel.reloadTasks(true);
                 });
+            },
+            openTask: (taskId) => {
+                this.runEditTaskFlow(taskId);
             },
         };
 

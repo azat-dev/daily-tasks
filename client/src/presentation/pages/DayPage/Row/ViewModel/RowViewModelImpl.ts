@@ -1,9 +1,8 @@
-import Task from "../../../../../domain/models/Task";
+import Task, { TaskId } from "../../../../../domain/models/Task";
 import TaskPriority from "../../../../../domain/models/TaskPriority";
 import TaskStatus from "../../../../../domain/models/TaskStatus";
 import { value } from "../../../LogInPage/DefaultValue";
 import Value from "../../../LogInPage/Value";
-import { ActionButtonViewProps } from "../../ActionButton/ActionButtonView";
 import ActionButtonViewModel from "../../ActionButton/ActionButtonViewModel";
 import ActionButtonViewModelImpl from "../../ActionButton/ActionButtonViewModelImpl";
 import RowViewModel, { RowViewModelDelegate } from "./RowViewModel";
@@ -56,6 +55,8 @@ export default class RowViewModelImpl implements RowViewModel {
 
     public delegate: RowViewModelDelegate | null = null;
 
+    private taskId: TaskId;
+
     constructor(task: Task, delegate: RowViewModelDelegate | null = null) {
         this.delegate = delegate;
         const taskId = task.id;
@@ -84,10 +85,17 @@ export default class RowViewModelImpl implements RowViewModel {
                 this.delegate!.onDoLaterMonth(taskId);
             },
         });
+
+        this.taskId = taskId;
     }
 
     updateStatus = (status: TaskStatus): void => {
         this.status.set(mapStatus(status));
         this.isActive.set(status === TaskStatus.InProgress);
+    };
+
+    public onClick = (e: any) => {
+        e.stopPropagation();
+        this.delegate!.onOpen(this.taskId);
     };
 }
