@@ -16,11 +16,27 @@ public class TestDomainDataGenerator {
 
     // Methods
 
+    private static String limit(
+        String text,
+        int maxLength
+    ) {
+        return text.substring(
+            0,
+            Math.min(
+                maxLength,
+                text.length()
+            )
+        );
+    }
+
     public static Task anyTask(Long id) {
         return new Task(
             id,
-            faker.lorem()
-                .sentence(),
+            limit(
+                faker.lorem()
+                    .sentence(),
+                255
+            ),
             ZonedDateTime.now(),
             ZonedDateTime.now(),
             Task.Status.NOT_STARTED,

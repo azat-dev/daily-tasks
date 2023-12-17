@@ -8,10 +8,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.azatdev.dailytasks.data.repositories.data.AddNewActivitySessionDaoImpl;
+import com.azatdev.dailytasks.data.repositories.data.GetTaskDaoImpl;
 import com.azatdev.dailytasks.data.repositories.data.MapActivitySessionToDomain;
 import com.azatdev.dailytasks.data.repositories.data.MapActivitySessionToDomainImpl;
 import com.azatdev.dailytasks.data.repositories.data.MapNewActivitySessionToData;
 import com.azatdev.dailytasks.data.repositories.data.MapNewActivitySessionToDataImpl;
+import com.azatdev.dailytasks.data.repositories.data.MapTaskDataToDomain;
 import com.azatdev.dailytasks.data.repositories.data.MapTaskDataToDomainImpl;
 import com.azatdev.dailytasks.data.repositories.data.TasksRepositoryImpl;
 import com.azatdev.dailytasks.data.repositories.data.UpdateTaskStatusDaoImpl;
@@ -24,6 +26,7 @@ import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaTasksReposito
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
 import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
+import com.azatdev.dailytasks.domain.interfaces.dao.GetTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.UpdateTaskStatusDao;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepository;
@@ -53,17 +56,23 @@ public class DataConfig {
     }
 
     @Bean
+    public MapTaskDataToDomain mapTaskDataToDomain() {
+        return new MapTaskDataToDomainImpl();
+    }
+
+    @Bean
     public TasksRepository tasksRepository(
         JpaUsersRepository jpaUsersRepository,
         JpaBacklogsRepository jpaBacklogsRepository,
-        JpaTasksRepository jpaTasksRepository
+        JpaTasksRepository jpaTasksRepository,
+        MapTaskDataToDomain mapTaskDataToDomain
     ) {
 
         return new TasksRepositoryImpl(
             jpaUsersRepository::getReferenceById,
             jpaBacklogsRepository::getReferenceById,
             jpaTasksRepository,
-            new MapTaskDataToDomainImpl()
+            mapTaskDataToDomain
         );
     }
 
@@ -120,5 +129,16 @@ public class DataConfig {
     @Bean
     public UpdateTaskStatusDao updateTaskStatusDao(JpaTasksRepository jpaTasksRepository) {
         return new UpdateTaskStatusDaoImpl(jpaTasksRepository);
+    }
+
+    @Bean
+    public GetTaskDao getTaskDao(
+        MapTaskDataToDomain mapTaskDataToDomain,
+        JpaTasksRepository jpaTasksRepository
+    ) {
+        return new GetTaskDaoImpl(
+            mapTaskDataToDomain,
+            jpaTasksRepository
+        );
     }
 }

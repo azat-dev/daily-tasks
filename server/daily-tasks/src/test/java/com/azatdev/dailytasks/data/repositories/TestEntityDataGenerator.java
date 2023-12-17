@@ -24,16 +24,28 @@ public class TestEntityDataGenerator {
 
     // Methods
 
+    private String limit(
+        String text,
+        int maxLength
+    ) {
+        return text.substring(
+            0,
+            Math.min(
+                maxLength,
+                text.length()
+            )
+        );
+    }
+
     public UserData anyUserDataWithUserName(String userName) {
         return new UserData(
             UUID.randomUUID(),
             userName,
-            faker.internet()
-                .password()
-                .substring(
-                    0,
-                    255
-                )
+            limit(
+                faker.internet()
+                    .password(),
+                255
+            )
         );
     }
 
@@ -147,12 +159,11 @@ public class TestEntityDataGenerator {
             owner,
             backlog,
             orderInBacklog,
-            faker.lorem()
-                .sentence()
-                .substring(
-                    0,
-                    255
-                )
+            limit(
+                faker.lorem()
+                    .sentence(),
+                255
+            )
         );
     }
 

@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
+import com.azatdev.dailytasks.domain.interfaces.dao.GetTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.UpdateTaskStatusDao;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryCreate;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryGet;
@@ -17,6 +18,8 @@ import com.azatdev.dailytasks.domain.usecases.CreateBacklogForDateIfDoesntExistU
 import com.azatdev.dailytasks.domain.usecases.CreateBacklogForDateIfDoesntExistUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCaseImpl;
+import com.azatdev.dailytasks.domain.usecases.GetTaskDetailsUseCase;
+import com.azatdev.dailytasks.domain.usecases.GetTaskDetailsUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.SignUpAppUserUseCase;
@@ -92,5 +95,10 @@ public class DomainConfig {
             updateTaskStatusDao,
             transactionFactory
         );
+    }
+
+    @Bean
+    public GetTaskDetailsUseCase getTaskDetailsUseCase(GetTaskDao getTaskDao) {
+        return new GetTaskDetailsUseCaseImpl(getTaskDao);
     }
 }

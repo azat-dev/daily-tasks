@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -43,12 +42,10 @@ import com.azatdev.dailytasks.domain.usecases.StartTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskResponse;
-import com.azatdev.dailytasks.presentation.api.rest.entities.utils.MapTaskToResponse;
 import com.azatdev.dailytasks.presentation.config.presentation.PresentationConfig;
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 
 @WebMvcTest(TaskController.class)
-// @AutoConfigureMockMvc(printOnlyOnFailure = false)
 @Import(PresentationConfig.class)
 class TaskControllerTest {
 
@@ -69,9 +66,6 @@ class TaskControllerTest {
 
     @MockBean
     private GetTaskDetailsUseCase getTaskDetailsUseCase;
-
-    @MockBean
-    private MapTaskToResponse mapTaskToResponse;
 
     @Test
     void findAllTasksInBacklog_givenExistingTasks_thenReturnAllTasksInBacklog() throws Exception {
@@ -104,12 +98,10 @@ class TaskControllerTest {
         ).willReturn(existingTasks);
 
         // When
-        final var action = mockMvc.perform(
-            get(url).contentType(MediaType.APPLICATION_JSON)
-                .with(user(userPrincipal))
-        )
-            .andDo(MockMvcResultHandlers.print());
-        ;
+        final var action = performGet(
+            url,
+            userPrincipal
+        );
 
         // Then
         action.andExpect(status().isOk());
@@ -303,8 +295,6 @@ class TaskControllerTest {
 
         given(mappedTask.id()).willReturn(taskId);
 
-        given(mapTaskToResponse.map(existingTask)).willReturn(mappedTask);
-
         // When
         final var action = performGetTask(
             userPrincipal,
@@ -318,9 +308,6 @@ class TaskControllerTest {
                 userId,
                 taskId
             );
-
-        then(mapTaskToResponse).should(times(1))
-            .map(existingTask);
 
         action.andExpect(status().isOk());
         action.andExpect(jsonPath("$.id").value(taskId));

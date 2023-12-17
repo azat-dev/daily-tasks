@@ -3,21 +3,15 @@ package com.azatdev.dailytasks.domain.usecases;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.azatdev.dailytasks.data.repositories.data.MapTaskDataToDomain;
-import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaTasksRepository;
+import com.azatdev.dailytasks.domain.interfaces.dao.GetTaskDao;
 import com.azatdev.dailytasks.domain.models.Task;
 
-public final class GetTaskDetailsUseCaseImpl implements GetTaskDetailsUseCase {
+public class GetTaskDetailsUseCaseImpl implements GetTaskDetailsUseCase {
 
-    private final MapTaskDataToDomain mapTaskDataToDomain;
-    private final JpaTasksRepository tasksRepository;
+    private GetTaskDao getTaskDao;
 
-    public GetTaskDetailsUseCaseImpl(
-        MapTaskDataToDomain mapper,
-        JpaTasksRepository tasksRepository
-    ) {
-        this.mapTaskDataToDomain = mapper;
-        this.tasksRepository = tasksRepository;
+    public GetTaskDetailsUseCaseImpl(GetTaskDao getTaskDao) {
+        this.getTaskDao = getTaskDao;
     }
 
     @Override
@@ -25,10 +19,9 @@ public final class GetTaskDetailsUseCaseImpl implements GetTaskDetailsUseCase {
         UUID userId,
         long taskId
     ) {
-        return tasksRepository.findByOwnerIdAndId(
+        return getTaskDao.execute(
             userId,
             taskId
-        )
-            .map(mapTaskDataToDomain::execute);
+        );
     }
 }
