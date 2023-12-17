@@ -29,6 +29,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
+import com.azatdev.dailytasks.domain.usecases.GetTaskDetailsUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.StartTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
@@ -62,6 +64,9 @@ class TaskControllerTest {
 
     @MockBean
     private StartTaskUseCase startTaskUseCase;
+
+    @MockBean
+    private GetTaskDetailsUseCase getTaskDetailsUseCase;
 
     @Test
     void findAllTasksInBacklog_givenExistingTasks_thenReturnAllTasksInBacklog() throws Exception {
@@ -246,5 +251,52 @@ class TaskControllerTest {
 
         final var expectedTime = "2023-01-02T03:04:05.000000006+03:00";
         action.andExpect(jsonPath("$.startedAt").value(expectedTime));
+    }
+
+    @Test
+    void getTask_givenNotExistingTask_thenReturn404() throws Exception {
+
+        // Given
+        final var userPrincipal = anyUserPrincipal();
+        final var userId = userPrincipal.getId();
+        final var taskId = 1L;
+
+        given(
+            getTaskDetailsUseCase.execute(
+                userId,
+                taskId
+            )
+        ).willReturn(Optional.empty());
+
+        // When
+        final var action = performGetTask(
+            userPrincipal,
+            taskId
+        );
+
+        // Then
+        action.andExpect(status().isNotFound());
+    }
+
+    private ResultActions performGetTask(
+        UserPrincipal userPrincipal,
+        long taskId
+    ) throws Exception {
+        final var url = "/api/with-auth/tasks/" + taskId;
+
+        return performGet(
+            url,
+            userPrincipal
+        );
+    }
+
+    private ResultActions performGet(
+        String url,
+        UserPrincipal userPrincipal
+    ) throws Exception {
+        return mockMvc.perform(
+            get(url).with(user(userPrincipal))
+                .with(csrf())
+        );
     }
 }
