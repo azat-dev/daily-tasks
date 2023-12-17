@@ -1,9 +1,11 @@
 package com.azatdev.dailytasks.domain.models;
 
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 public record Task(
     Long id,
+    UUID ownerId,
     String title,
     ZonedDateTime createdAt,
     ZonedDateTime updatedAt,

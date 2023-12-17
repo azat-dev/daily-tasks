@@ -50,6 +50,8 @@ public class MapTaskDataToDomainImpl implements MapTaskDataToDomain {
     public Task execute(TaskData taskData) {
         return new Task(
             taskData.getId(),
+            taskData.getOwner()
+                .getId(),
             taskData.getTitle(),
             taskData.getCreatedAt(),
             taskData.getUpdatedAt(),
