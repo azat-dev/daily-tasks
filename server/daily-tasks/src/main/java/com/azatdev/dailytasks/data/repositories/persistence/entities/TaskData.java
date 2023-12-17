@@ -2,8 +2,6 @@ package com.azatdev.dailytasks.data.repositories.persistence.entities;
 
 import java.time.ZonedDateTime;
 
-import org.hibernate.validator.constraints.Length;
-
 import com.azatdev.dailytasks.data.repositories.data.user.UserData;
 
 import jakarta.persistence.Column;

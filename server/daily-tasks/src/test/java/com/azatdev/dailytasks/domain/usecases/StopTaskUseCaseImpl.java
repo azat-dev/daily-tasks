@@ -89,40 +89,45 @@ final class StopTaskUseCaseImpl implements StopTaskUseCase {
     ) {
 
         final var currentTime = currentTimeProvider.execute();
-
         final var transaction = transactionFactory.make();
 
-        transaction.begin();
+        try {
+            transaction.begin();
 
-        final var existingActivitySessionResult = getCurrentRunningActivitySessionForTaskDao.execute(
-            userId,
-            taskId
-        );
+            final var existingActivitySessionResult = getCurrentRunningActivitySessionForTaskDao.execute(
+                userId,
+                taskId
+            );
 
-        if (existingActivitySessionResult.isEmpty()) {
+            if (existingActivitySessionResult.isEmpty()) {
+                transaction.commit();
+                throw new TaskAlreadyStoppedException(taskId);
+            }
+
+            final var existingActivitySession = existingActivitySessionResult.get();
+
+            stopActivitySessionDao.execute(
+                existingActivitySession.id()
+                    .get(),
+                currentTime,
+                Optional.of(transaction)
+            );
+
+            markTaskAsStoppedDao.execute(
+                taskId,
+                currentTime,
+                Optional.of(transaction)
+            );
+
             transaction.commit();
-            throw new TaskAlreadyStoppedException(taskId);
+            return currentTime;
+        } catch (TaskAlreadyStoppedException e) {
+            throw e;
+        }catch (Exception e) {
+            transaction.rollback();
+            throw e;
         }
-
-        final var existingActivitySession = existingActivitySessionResult.get();
-
-        stopActivitySessionDao.execute(
-            existingActivitySession.id().get(),
-            currentTime,
-            Optional.of(transaction)
-        );
-
-        markTaskAsStoppedDao.execute(
-            taskId,
-            currentTime,
-            Optional.of(transaction)
-        );
-
-        transaction.commit();
-
-        return currentTime;
     }
-
 }
 
 class StopTaskUseCaseImplTest {
@@ -303,16 +308,24 @@ class StopTaskUseCaseImplTest {
         // Given
         final var userId = anyUserId();
         final var taskId = 1L;
+        final var activeSessionId = 222L;
         final var currentTime = ZonedDateTime.now();
 
         final var sut = createSUT(currentTime);
 
+        final var existingActivitySession = new ActivitySession(
+            Optional.of(activeSessionId),
+            userId,
+            taskId,
+            currentTime.minusDays(2),
+            Optional.empty()
+        );
         given(
             sut.getCurrentRunningActivitySessionForTaskDao.execute(
                 userId,
                 taskId
             )
-        ).willReturn(Optional.empty());
+        ).willReturn(Optional.of(existingActivitySession));
 
         given(
             sut.markTaskAsStoppedDao.execute(
