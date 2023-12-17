@@ -9,7 +9,7 @@ import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
 import com.azatdev.dailytasks.domain.interfaces.dao.MarkTaskAsStoppedDao;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transaction;
 
-public class MarkTaskAsStoppedDaoImpl implements MarkTaskAsStoppedDao {
+public final class MarkTaskAsStoppedDaoImpl implements MarkTaskAsStoppedDao {
 
     private final JpaTasksRepository tasksRepository;
 
