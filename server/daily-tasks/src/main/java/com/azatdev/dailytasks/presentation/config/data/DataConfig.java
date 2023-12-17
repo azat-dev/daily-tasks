@@ -16,6 +16,7 @@ import com.azatdev.dailytasks.data.repositories.data.MapNewActivitySessionToData
 import com.azatdev.dailytasks.data.repositories.data.MapTaskDataToDomain;
 import com.azatdev.dailytasks.data.repositories.data.MapTaskDataToDomainImpl;
 import com.azatdev.dailytasks.data.repositories.data.MarkTaskAsStoppedDaoImpl;
+import com.azatdev.dailytasks.data.repositories.data.StopActivitySessionDaoImpl;
 import com.azatdev.dailytasks.data.repositories.data.TasksRepositoryImpl;
 import com.azatdev.dailytasks.data.repositories.data.UpdateTaskStatusDaoImpl;
 import com.azatdev.dailytasks.data.repositories.data.transaction.TransactionImplFactory;
@@ -29,6 +30,7 @@ import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.MarkTaskAsStoppedDao;
+import com.azatdev.dailytasks.domain.interfaces.dao.StopActivitySessionDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.UpdateTaskStatusDao;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepository;
@@ -147,5 +149,12 @@ public class DataConfig {
     @Bean
     public MarkTaskAsStoppedDao markTaskAsStoppedDao(JpaTasksRepository jpaTasksRepository) {
         return new MarkTaskAsStoppedDaoImpl(jpaTasksRepository);
+    }
+
+    @Bean
+    public StopActivitySessionDao stopActivitySessionDao(
+        JpaActivitySessionsRepository activitySessionsRepository
+    ) {
+        return new StopActivitySessionDaoImpl(activitySessionsRepository);
     }
 }
