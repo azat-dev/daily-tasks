@@ -218,30 +218,19 @@ export default class AppModelImpl implements AppModel {
         const delegate: DayPageViewModelDelegate = {
             loadTasks: async () => {
                 const useCase = this.getListTasksInBacklogUseCase(backlogType);
-
                 const result = await useCase.execute(backlogDay);
-
-                if (result.type === ResultType.Success) {
-                    return Result.success(result.value);
-                }
-
-                return Result.failure(undefined);
+                return Result.mapError(result, () => undefined);
             },
             loadStatuses: async () => {
                 return Result.success({});
             },
             startTask: async (taskId) => {
                 const result = await this.getStartTaskUseCase().execute(taskId);
-
-                if (result.type === ResultType.Success) {
-                    return Result.success(result.value);
-                }
-
-                return Result.failure(undefined);
+                return Result.mapError(result, () => undefined);
             },
-            stopTask: (taskId) => {
-                throw new Error("Not implemented");
-                // this.getStopTaskUseCase().execute(taskId);
+            stopTask: async (taskId) => {
+                const result = await this.getStopTaskUseCase().execute(taskId);
+                return Result.mapError(result, () => undefined);
             },
             deleteTask: (taskId) => {
                 throw new Error("Not implemented");

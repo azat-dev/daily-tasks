@@ -167,6 +167,10 @@ paths:
             responses:
                 "200":
                     description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/StopTaskResponse"
                 "404":
                     description: Task not found
     /api/with-auth/tasks/{task_id}/complete:
@@ -352,7 +356,14 @@ components:
                         - LOW
                         - MEDIUM
                         - HIGH
-
+        StopTaskResponse:
+            type: object
+            required:
+                - stoppedAt
+            properties:
+                stoppedAt:
+                    type: string
+                    format: date-time
         BacklogType:
             type: string
             enum:

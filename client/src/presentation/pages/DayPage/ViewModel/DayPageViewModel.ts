@@ -12,7 +12,7 @@ export interface DayPageViewViewModelDelegate {
     runAddTaskFlow(): void;
     openTask(taskId: TaskId): void;
     startTask(taskId: TaskId): Promise<Result<Date, undefined>>;
-    stopTask(taskId: TaskId): Promise<Result<undefined, undefined>>;
+    stopTask(taskId: TaskId): Promise<Result<Date, undefined>>;
     deleteTask(taskId: TaskId): Promise<Result<undefined, undefined>>;
 }
 

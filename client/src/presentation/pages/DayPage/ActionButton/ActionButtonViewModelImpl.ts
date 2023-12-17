@@ -1,18 +1,17 @@
 import ActionButtonViewModel, {
     ActionButtonViewModelDelegate,
-    ActionButtonViewModelState,
 } from "./ActionButtonViewModel";
 import Value from "../../LogInPage/Value";
 import { value } from "../../LogInPage/DefaultValue";
 
 class ActionButtonViewModelImpl implements ActionButtonViewModel {
-    public state: Value<ActionButtonViewModelState>;
+    public isActive: Value<boolean>;
 
     public constructor(
         public startedAt: Date | null = null,
         public delegate: ActionButtonViewModelDelegate | null = null
     ) {
-        this.state = value({ type: "notActive" });
+        this.isActive = value(!!startedAt);
     }
 
     onClickStart = (e: any) => {
@@ -44,6 +43,15 @@ class ActionButtonViewModelImpl implements ActionButtonViewModel {
         e.stopPropagation();
         e.preventDefault();
         this.delegate!.delete();
+    };
+
+    updateState = (startedAt: Date | null): void => {
+        if (startedAt) {
+            this.isActive.set(true);
+            return;
+        }
+
+        this.isActive.set(false);
     };
 }
 

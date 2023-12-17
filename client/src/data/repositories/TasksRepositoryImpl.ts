@@ -71,14 +71,13 @@ export default class TasksRepositoryImpl
 
     stop = async (
         taskId: TaskId
-    ): Promise<Result<undefined, TasksRepositoryError>> => {
+    ): Promise<Result<Date, TasksRepositoryError>> => {
         try {
-            throw new Error("Not implemented");
-            // await this.api.apiTasksTaskIdStopPost({
-            //     taskId: taskId,
-            // });
+            const result = await this.api.apiWithAuthTasksTaskIdStopPost({
+                taskId: taskId,
+            });
 
-            return Result.success(undefined);
+            return Result.success(result.stoppedAt);
         } catch (error: any) {
             let err = TasksRepositoryError.InternalError;
 

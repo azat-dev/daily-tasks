@@ -49,6 +49,11 @@ export default class DayPageViewModelImpl implements DayPageViewModel {
 
         const stopTask = (taskId: TaskId) => {
             this.delegate!.stopTask(taskId);
+
+            if (result.type !== ResultType.Success) {
+                return;
+            }
+            this.updateTaskStatus(taskId, TaskStatus.NotStarted);
         };
 
         const deleteTask = (taskId: TaskId) => {

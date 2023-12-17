@@ -1,14 +1,7 @@
 import Value from "../../LogInPage/Value";
 
-export type ActionButtonViewModelState =
-    | {
-          type: "active";
-          startedAt: Date;
-      }
-    | { type: "notActive" };
-
 export interface ActionButtonViewModelOutput {
-    state: Value<ActionButtonViewModelState>;
+    isActive: Value<boolean>;
 }
 
 export interface ActionButtonViewModelDelegate {
@@ -27,8 +20,13 @@ export interface ActionButtonViewModelInput {
     onClickDelete: (e: any) => void;
 }
 
+export interface ActionButtonViewModelUpdateProperties {
+    updateState(startedAt: Date | null): void;
+}
+
 export default interface ActionButtonViewModel
     extends ActionButtonViewModelInput,
-        ActionButtonViewModelOutput {
+        ActionButtonViewModelOutput,
+        ActionButtonViewModelUpdateProperties {
     delegate: ActionButtonViewModelDelegate | null;
 }

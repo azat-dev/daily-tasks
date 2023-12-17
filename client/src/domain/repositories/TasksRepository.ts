@@ -21,7 +21,7 @@ export interface TasksRepositoryStart {
 }
 
 export interface TasksRepositoryStop {
-    stop(taskId: TaskId): Promise<Result<undefined, TasksRepositoryError>>;
+    stop(taskId: TaskId): Promise<Result<Date, TasksRepositoryError>>;
 }
 
 export interface TasksRepositoryDelete {

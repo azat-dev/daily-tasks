@@ -12,6 +12,7 @@ models/RefreshTokenResponse.ts
 models/SignUpResponse.ts
 models/SignUpResponseTokens.ts
 models/StartTaskResponse.ts
+models/StopTaskResponse.ts
 models/Task.ts
 models/UserInfo.ts
 models/index.ts

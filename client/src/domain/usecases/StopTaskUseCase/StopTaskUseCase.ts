@@ -8,7 +8,7 @@ export enum StopTaskUseCaseError {
 }
 
 interface StopTaskUseCase {
-    execute(taskId: TaskId): Promise<Result<undefined, StopTaskUseCaseError>>;
+    execute(taskId: TaskId): Promise<Result<Date, StopTaskUseCaseError>>;
 }
 
 export default StopTaskUseCase;

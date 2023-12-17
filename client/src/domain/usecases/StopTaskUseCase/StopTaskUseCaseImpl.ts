@@ -15,15 +15,9 @@ export default class StopTaskUseCaseImpl implements StopTaskUseCase {
 
     execute = async (
         taskId: TaskId
-    ): Promise<Result<undefined, StopTaskUseCaseError>> => {
+    ): Promise<Result<Date, StopTaskUseCaseError>> => {
         const result = await this.tasksRepository.stop(taskId);
-
-        switch (result.type) {
-            case ResultType.Success:
-                return Result.success(undefined);
-            case ResultType.Failure:
-                return Result.failure(this.mapError(result.error));
-        }
+        return Result.mapError(result, this.mapError);
     };
 
     private mapError = (error: TasksRepositoryError): StopTaskUseCaseError => {

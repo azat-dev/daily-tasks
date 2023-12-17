@@ -25,6 +25,7 @@ import type {
   RefreshTokenResponse,
   SignUpResponse,
   StartTaskResponse,
+  StopTaskResponse,
   Task,
 } from '../models/index';
 import {
@@ -48,6 +49,8 @@ import {
     SignUpResponseToJSON,
     StartTaskResponseFromJSON,
     StartTaskResponseToJSON,
+    StopTaskResponseFromJSON,
+    StopTaskResponseToJSON,
     TaskFromJSON,
     TaskToJSON,
 } from '../models/index';
@@ -509,7 +512,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Stop a task
      */
-    async apiWithAuthTasksTaskIdStopPostRaw(requestParameters: ApiWithAuthTasksTaskIdStopPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async apiWithAuthTasksTaskIdStopPostRaw(requestParameters: ApiWithAuthTasksTaskIdStopPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StopTaskResponse>> {
         if (requestParameters.taskId === null || requestParameters.taskId === undefined) {
             throw new runtime.RequiredError('taskId','Required parameter requestParameters.taskId was null or undefined when calling apiWithAuthTasksTaskIdStopPost.');
         }
@@ -533,14 +536,15 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => StopTaskResponseFromJSON(jsonValue));
     }
 
     /**
      * Stop a task
      */
-    async apiWithAuthTasksTaskIdStopPost(requestParameters: ApiWithAuthTasksTaskIdStopPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiWithAuthTasksTaskIdStopPostRaw(requestParameters, initOverrides);
+    async apiWithAuthTasksTaskIdStopPost(requestParameters: ApiWithAuthTasksTaskIdStopPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StopTaskResponse> {
+        const response = await this.apiWithAuthTasksTaskIdStopPostRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
 }

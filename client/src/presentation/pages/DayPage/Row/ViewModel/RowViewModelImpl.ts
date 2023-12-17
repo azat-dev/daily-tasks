@@ -68,7 +68,11 @@ export default class RowViewModelImpl implements RowViewModel {
         this.status = value(mapStatus(task.status));
         this.priority = value(mapPriority(task.priority));
 
-        this.actionButtonViewModel = new ActionButtonViewModelImpl(null, {
+        // Hack
+        const startedAt =
+            task.status === TaskStatus.InProgress ? new Date() : null;
+
+        this.actionButtonViewModel = new ActionButtonViewModelImpl(startedAt, {
             start: () => {
                 this.delegate!.onStart(taskId);
             },
@@ -92,6 +96,10 @@ export default class RowViewModelImpl implements RowViewModel {
     updateStatus = (status: TaskStatus): void => {
         this.status.set(mapStatus(status));
         this.isActive.set(status === TaskStatus.InProgress);
+        // Hack
+        this.actionButtonViewModel.updateState(
+            status === TaskStatus.InProgress ? new Date() : null
+        );
     };
 
     public onClick = (e: any) => {

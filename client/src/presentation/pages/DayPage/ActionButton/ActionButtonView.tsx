@@ -8,15 +8,17 @@ export interface ActionButtonViewProps {
 }
 
 const ActionButtonView = ({ vm }: ActionButtonViewProps) => {
-    useUpdatesFrom(vm.state);
+    useUpdatesFrom(vm.isActive);
 
-    let button = (
-        <Button variant="secondary" onClick={vm.onClickStop}>
-            Stop
-        </Button>
-    );
+    let button;
 
-    if (vm.state.value.type !== "active") {
+    if (vm.isActive.value) {
+        button = (
+            <Button variant="secondary" onClick={vm.onClickStop}>
+                Stop
+            </Button>
+        );
+    } else {
         button = (
             <Button variant="secondary" onClick={vm.onClickStart}>
                 Start
