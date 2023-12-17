@@ -25,26 +25,30 @@ const ActionButtonView = ({ vm }: ActionButtonViewProps) => {
     }
 
     return (
-        <Dropdown as={ButtonGroup} size="sm">
-            {button}
+        <div onClick={(e) => e.stopPropagation()}>
+            <Dropdown as={ButtonGroup} size="sm">
+                {button}
 
-            <Dropdown.Toggle
-                split
-                id="dropdown-split-basic"
-                variant="secondary"
-            />
+                <Dropdown.Toggle
+                    split
+                    id="dropdown-split-basic"
+                    variant="secondary"
+                />
 
-            <Dropdown.Menu variant="secondary">
-                <Dropdown.Item onClick={vm.onClickDoLaterWeek}>
-                    Do Later (Week)
-                </Dropdown.Item>
-                <Dropdown.Item onClick={vm.onClickDoLaterMonth}>
-                    Do Later (Month)
-                </Dropdown.Item>
-                <hr />
-                <Dropdown.Item onClick={vm.onClickDelete}>Delete</Dropdown.Item>
-            </Dropdown.Menu>
-        </Dropdown>
+                <Dropdown.Menu variant="secondary">
+                    <Dropdown.Item onClick={vm.onClickDoLaterWeek}>
+                        Do Later (Week)
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={vm.onClickDoLaterMonth}>
+                        Do Later (Month)
+                    </Dropdown.Item>
+                    <hr />
+                    <Dropdown.Item onClick={vm.onClickDelete}>
+                        Delete
+                    </Dropdown.Item>
+                </Dropdown.Menu>
+            </Dropdown>
+        </div>
     );
 };
 
