@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.MarkTaskAsStoppedDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.StopActivitySessionDao;
@@ -37,7 +38,7 @@ public final class StopTaskUseCaseImpl implements StopTaskUseCase {
     public ZonedDateTime execute(
         UUID userId,
         long taskId
-    ) {
+    ) throws TaskNotFoundException, TaskAlreadyStoppedException {
 
         final var currentTime = currentTimeProvider.execute();
         final var transaction = transactionFactory.make();
