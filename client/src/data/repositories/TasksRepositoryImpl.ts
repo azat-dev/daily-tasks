@@ -95,10 +95,9 @@ export default class TasksRepositoryImpl
         taskId: TaskId
     ): Promise<Result<undefined, TasksRepositoryError>> => {
         try {
-            throw new Error("Not implemented");
-            // await this.api.apiTasksTaskIdDelete({
-            //     taskId: taskId,
-            // });
+            await this.api.apiWithAuthTasksTaskIdDelete({
+                taskId: taskId,
+            });
 
             return Result.success(undefined);
         } catch (error: any) {

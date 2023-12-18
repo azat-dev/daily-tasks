@@ -47,8 +47,8 @@ export default class DayPageViewModelImpl implements DayPageViewModel {
             this.updateTaskStatus(taskId, TaskStatus.InProgress);
         };
 
-        const stopTask = (taskId: TaskId) => {
-            this.delegate!.stopTask(taskId);
+        const stopTask = async (taskId: TaskId) => {
+            await this.delegate!.stopTask(taskId);
 
             if (result.type !== ResultType.Success) {
                 return;
@@ -56,8 +56,8 @@ export default class DayPageViewModelImpl implements DayPageViewModel {
             this.updateTaskStatus(taskId, TaskStatus.NotStarted);
         };
 
-        const deleteTask = (taskId: TaskId) => {
-            this.delegate!.deleteTask(taskId);
+        const deleteTask = async (taskId: TaskId) => {
+            await this.delegate!.deleteTask(taskId);
             this.loadTasksSilently();
         };
 

@@ -232,9 +232,11 @@ export default class AppModelImpl implements AppModel {
                 const result = await this.getStopTaskUseCase().execute(taskId);
                 return Result.mapError(result, () => undefined);
             },
-            deleteTask: (taskId) => {
-                throw new Error("Not implemented");
-                this.getDeleteTaskUseCase().execute(taskId);
+            deleteTask: async (taskId) => {
+                const result = await this.getDeleteTaskUseCase().execute(
+                    taskId
+                );
+                return Result.mapError(result, () => undefined);
             },
             runAddTaskFlow: () => {
                 this.runAddTaskFlow(backlogType, backlogDay, () => {
