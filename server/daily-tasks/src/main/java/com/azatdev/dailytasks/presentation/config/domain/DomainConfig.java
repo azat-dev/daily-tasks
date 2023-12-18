@@ -19,6 +19,8 @@ import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepositor
 import com.azatdev.dailytasks.domain.interfaces.utils.CurrentTimeProvider;
 import com.azatdev.dailytasks.domain.usecases.CanUserDeleteTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.CanUserDeleteTaskUseCaseImpl;
+import com.azatdev.dailytasks.domain.usecases.CanUserViewTaskUseCase;
+import com.azatdev.dailytasks.domain.usecases.CanUserViewTaskUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.CreateBacklogForDateIfDoesntExistUseCase;
 import com.azatdev.dailytasks.domain.usecases.CreateBacklogForDateIfDoesntExistUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
@@ -107,8 +109,19 @@ public class DomainConfig {
     }
 
     @Bean
-    public GetTaskDetailsUseCase getTaskDetailsUseCase(GetTaskDao getTaskDao) {
-        return new GetTaskDetailsUseCaseImpl(getTaskDao);
+    public CanUserViewTaskUseCase canUserViewTaskUseCase(GetTaskDao getTaskDao) {
+        return new CanUserViewTaskUseCaseImpl(getTaskDao);
+    }
+
+    @Bean
+    public GetTaskDetailsUseCase getTaskDetailsUseCase(
+        CanUserViewTaskUseCase canUserViewTaskUseCase,
+        GetTaskDao getTaskDao
+    ) {
+        return new GetTaskDetailsUseCaseImpl(
+            canUserViewTaskUseCase,
+            getTaskDao
+        );
     }
 
     @Bean

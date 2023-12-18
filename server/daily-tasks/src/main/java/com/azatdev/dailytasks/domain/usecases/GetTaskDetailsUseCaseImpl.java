@@ -4,14 +4,20 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.azatdev.dailytasks.domain.exceptions.AccessDeniedException;
+import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetTaskDao;
 import com.azatdev.dailytasks.domain.models.Task;
 
 public final class GetTaskDetailsUseCaseImpl implements GetTaskDetailsUseCase {
 
+    private final CanUserViewTaskUseCase canUserViewTaskUseCase;
     private GetTaskDao getTaskDao;
 
-    public GetTaskDetailsUseCaseImpl(GetTaskDao getTaskDao) {
+    public GetTaskDetailsUseCaseImpl(
+        CanUserViewTaskUseCase canUserViewTaskUseCase,
+        GetTaskDao getTaskDao
+    ) {
+        this.canUserViewTaskUseCase = canUserViewTaskUseCase;
         this.getTaskDao = getTaskDao;
     }
 
@@ -21,21 +27,24 @@ public final class GetTaskDetailsUseCaseImpl implements GetTaskDetailsUseCase {
         long taskId
     ) throws AccessDeniedException {
 
-        final var taskResult = getTaskDao.execute(taskId);
+        try {
+            final var canUserViewTask = canUserViewTaskUseCase.execute(
+                userId,
+                taskId
+            );
 
-        if (taskResult.isEmpty()) {
+            if (!canUserViewTask) {
+                throw new AccessDeniedException(
+                    userId,
+                    "getTaskDetails",
+                    String.valueOf(taskId)
+                );
+            }
+
+        } catch (TaskNotFoundException e) {
             return Optional.empty();
         }
 
-        final var task = taskResult.get();
-        if (task.ownerId() == userId) {
-            return taskResult;
-        }
-
-        throw new AccessDeniedException(
-            userId,
-            "getTaskDetails",
-            String.valueOf(taskId)
-        );
+        return getTaskDao.execute(taskId);
     }
 }
