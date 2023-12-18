@@ -19,6 +19,7 @@ import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepositor
 import com.azatdev.dailytasks.domain.interfaces.utils.CurrentTimeProvider;
 import com.azatdev.dailytasks.domain.usecases.CanUserDeleteTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.CanUserDeleteTaskUseCaseImpl;
+import com.azatdev.dailytasks.domain.usecases.CanUserViewBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.CanUserViewTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.CanUserViewTaskUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.CreateBacklogForDateIfDoesntExistUseCase;
@@ -49,12 +50,19 @@ public class DomainConfig {
     }
 
     @Bean
+    public CanUserViewBacklogUseCase canUserViewBacklogUseCase() {
+        return null;
+    }
+
+    @Bean
     public ListTasksInBacklogUseCase listTasksInBacklogUseCase(
+        CanUserViewBacklogUseCase canUserViewBacklogUseCase,
         BacklogRepositoryGet backlogRepository,
         TasksRepositoryList tasksRepository,
         AdjustDateToStartOfBacklog adjustDateToStartOfBacklog
     ) {
         return new ListTasksInBacklogUseCaseImpl(
+            canUserViewBacklogUseCase,
             backlogRepository,
             tasksRepository,
             adjustDateToStartOfBacklog

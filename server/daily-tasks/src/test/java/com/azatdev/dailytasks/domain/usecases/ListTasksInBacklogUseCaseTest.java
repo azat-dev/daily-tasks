@@ -21,14 +21,6 @@ import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksReposito
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.usecases.utils.AdjustDateToStartOfBacklog;
 
-interface CanUserViewBacklogUseCase {
-
-    boolean execute(
-        UUID userId,
-        long backlogId
-    );
-}
-
 public class ListTasksInBacklogUseCaseTest {
 
     private record SUT(
@@ -48,6 +40,7 @@ public class ListTasksInBacklogUseCaseTest {
         final var adjustBacklogTime = mock(AdjustDateToStartOfBacklog.class);
 
         final var useCase = new ListTasksInBacklogUseCaseImpl(
+            canUserViewBacklogUseCase,
             backlogRepository,
             tasksRepository,
             adjustBacklogTime
@@ -67,7 +60,7 @@ public class ListTasksInBacklogUseCaseTest {
     }
 
     @Test
-    void execute_givenNotExistingBacklog_thenReturnEmptyList() {
+    void execute_givenNotExistingBacklog_thenReturnEmptyList() throws Exception {
 
         // Given
         final var ownerId = anyUserId();
@@ -118,7 +111,7 @@ public class ListTasksInBacklogUseCaseTest {
     }
 
     @Test
-    void execute_givenExistingBacklog_thenReturnTasksInBacklog() {
+    void execute_givenExistingBacklog_thenReturnTasksInBacklog() throws Exception {
 
         // Given
         final var ownerId = anyUserId();

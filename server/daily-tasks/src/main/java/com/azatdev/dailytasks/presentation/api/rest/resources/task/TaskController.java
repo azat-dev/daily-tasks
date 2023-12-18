@@ -58,17 +58,23 @@ public class TaskController implements TaskResource {
         LocalDate date,
         @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-        final var tasksInBacklog = listTasksInBacklogUseCase.execute(
-            userPrincipal.getId(),
-            date,
-            backlogDuration.toDomain()
-        );
 
-        final var ouputItems = tasksInBacklog.stream()
-            .map(mapTaskToResponse::map)
-            .toList();
+        try {
+            final var tasksInBacklog = listTasksInBacklogUseCase.execute(
+                userPrincipal.getId(),
+                date,
+                backlogDuration.toDomain()
+            );
 
-        return ResponseEntity.ok(ouputItems);
+            final var ouputItems = tasksInBacklog.stream()
+                .map(mapTaskToResponse::map)
+                .toList();
+
+            return ResponseEntity.ok(ouputItems);
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .build();
+        }
     }
 
     @Override
