@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -37,6 +38,7 @@ import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
+import com.azatdev.dailytasks.domain.usecases.DeleteTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.GetTaskDetailsUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.StartTaskUseCase;
@@ -71,6 +73,9 @@ class TaskControllerTest {
 
     @MockBean
     private StopTaskUseCase stopTaskUseCase;
+
+    @MockBean
+    private DeleteTaskUseCase deleteTaskUseCase;
 
     @Test
     void findAllTasksInBacklog_givenExistingTasks_thenReturnAllTasksInBacklog() throws Exception {
@@ -408,6 +413,60 @@ class TaskControllerTest {
         action.andExpect(jsonPath("$.stoppedAt").value(expectedTime));
     }
 
+    @Test
+    void deleteTask_givenExistingTask_thenDeleteTask() throws Exception {
+
+        // Given
+        final var userPrincipal = anyUserPrincipal();
+        final var userId = userPrincipal.getId();
+        final var taskId = 1L;
+
+        // When
+        final var action = performDeleteTask(
+            userPrincipal,
+            taskId
+        );
+
+        // Then
+        then(deleteTaskUseCase).should(times(1))
+            .execute(
+                userId,
+                taskId
+            );
+
+        action.andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deleteTask_givenNotExistingTask_thenReturn404() throws Exception {
+
+        // Given
+        final var userPrincipal = anyUserPrincipal();
+        final var userId = userPrincipal.getId();
+        final var taskId = 1L;
+
+        willThrow(new TaskNotFoundException(taskId)).given(deleteTaskUseCase)
+            .execute(
+                userId,
+                taskId
+            );
+
+        // When
+        final var action = performDeleteTask(
+            userPrincipal,
+            taskId
+        );
+
+        // Then
+        then(deleteTaskUseCase).should(times(1))
+            .execute(
+                userId,
+                taskId
+            );
+
+        action.andExpect(status().isNotFound());
+    }
+
     private ResultActions performGetTask(
         UserPrincipal userPrincipal,
         long taskId
@@ -430,6 +489,16 @@ class TaskControllerTest {
         );
     }
 
+    private ResultActions performDelete(
+        String url,
+        UserPrincipal userPrincipal
+    ) throws Exception {
+        return mockMvc.perform(
+            delete(url).with(user(userPrincipal))
+                .with(csrf())
+        );
+    }
+
     private ResultActions performStopTask(
         UserPrincipal userPrincipal,
         long taskId
@@ -437,6 +506,18 @@ class TaskControllerTest {
         final var url = "/api/with-auth/tasks/" + taskId + "/stop";
 
         return performPost(
+            url,
+            userPrincipal
+        );
+    }
+
+    private ResultActions performDeleteTask(
+        UserPrincipal userPrincipal,
+        long taskId
+    ) throws Exception {
+        final var url = "/api/with-auth/tasks/" + taskId;
+
+        return performDelete(
             url,
             userPrincipal
         );
