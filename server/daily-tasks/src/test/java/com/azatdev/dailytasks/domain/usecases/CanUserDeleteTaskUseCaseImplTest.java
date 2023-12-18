@@ -28,8 +28,12 @@ final class CanUserDeleteTaskUseCaseImpl implements CanUserDeleteTaskUseCase {
         UUID userId,
         long taskId
     ) throws TaskNotFoundException, AccessDeniedException {
-        // TODO Auto-generated method stub
-        return false;
+
+        final var taskData = getTaskDao.execute(taskId)
+            .orElseThrow(() -> new TaskNotFoundException(taskId));
+
+        return taskData.ownerId()
+            .equals(userId);
     }
 }
 
@@ -129,7 +133,7 @@ class CanUserDeleteTaskUseCaseImplTest {
         test_execution(
             userId,
             ownerId,
-            true
+            false
         );
     }
 }
