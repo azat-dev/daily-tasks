@@ -1,6 +1,6 @@
 package com.azatdev.dailytasks.domain.exceptions;
 
-public class TaskNotFoundException extends RuntimeException {
+public class TaskNotFoundException extends Exception {
 
     private long taskId;
 

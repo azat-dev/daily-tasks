@@ -4,10 +4,13 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 
+import com.azatdev.dailytasks.domain.exceptions.AccessDeniedException;
+import com.azatdev.dailytasks.domain.exceptions.TaskAlreadyStoppedException;
 import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
@@ -101,12 +104,17 @@ public class TaskController implements TaskResource {
         Long taskId,
         @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-        final var startedAt = this.startTaskUseCase.execute(
-            userPrincipal.getId(),
-            taskId
-        );
+        try {
+            final var startedAt = this.startTaskUseCase.execute(
+                userPrincipal.getId(),
+                taskId
+            );
 
-        return ResponseEntity.ok(new StartTaskResponse(startedAt));
+            return ResponseEntity.ok(new StartTaskResponse(startedAt));
+        } catch (TaskNotFoundException e) {
+            return ResponseEntity.notFound()
+                .build();
+        }
     }
 
     @Override
@@ -114,18 +122,24 @@ public class TaskController implements TaskResource {
         Long taskId,
         UserPrincipal userPrincipal
     ) {
-        final var foundTask = getTaskDetailsUseCase.execute(
-            userPrincipal.getId(),
-            taskId
-        );
+        try {
+            final var foundTask = getTaskDetailsUseCase.execute(
+                userPrincipal.getId(),
+                taskId
+            );
 
-        if (foundTask.isEmpty()) {
-            return ResponseEntity.notFound()
+            if (foundTask.isEmpty()) {
+                return ResponseEntity.notFound()
+                    .build();
+            }
+
+            final var mappedTask = mapTaskToResponse.map(foundTask.get());
+            return ResponseEntity.ok(mappedTask);
+
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .build();
         }
-
-        final var mappedTask = mapTaskToResponse.map(foundTask.get());
-        return ResponseEntity.ok(mappedTask);
     }
 
     @Override
@@ -144,6 +158,12 @@ public class TaskController implements TaskResource {
 
         } catch (TaskNotFoundException e) {
             return ResponseEntity.notFound()
+                .build();
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .build();
+        } catch (TaskAlreadyStoppedException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
                 .build();
         }
     }
@@ -165,6 +185,9 @@ public class TaskController implements TaskResource {
 
         } catch (TaskNotFoundException e) {
             return ResponseEntity.notFound()
+                .build();
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .build();
         }
     }

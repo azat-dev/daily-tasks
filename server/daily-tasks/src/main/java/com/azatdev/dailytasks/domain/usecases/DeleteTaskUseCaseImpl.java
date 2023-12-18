@@ -3,6 +3,7 @@ package com.azatdev.dailytasks.domain.usecases;
 import java.util.UUID;
 
 import com.azatdev.dailytasks.domain.exceptions.AccessDeniedException;
+import com.azatdev.dailytasks.domain.exceptions.TaskAlreadyStoppedException;
 import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
 import com.azatdev.dailytasks.domain.interfaces.dao.DeleteTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.TransactionFactory;
@@ -49,10 +50,14 @@ public final class DeleteTaskUseCaseImpl implements DeleteTaskUseCase {
                 );
             }
 
-            stopTaskUseCase.execute(
-                null,
-                taskId
-            );
+            try {
+                stopTaskUseCase.execute(
+                    null,
+                    taskId
+                );
+            } catch (TaskAlreadyStoppedException e) {
+                // ignore
+            }
 
             deleteTaskDao.execute(taskId);
             transaction.commit();

@@ -2,8 +2,12 @@ package com.azatdev.dailytasks.domain.usecases;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 
 import java.time.ZonedDateTime;
 import java.util.Optional;
@@ -69,7 +73,7 @@ class StopTaskUseCaseImplTest {
     }
 
     @Test
-    void execute_givenTaskExistsAndNotStarted_thenStopActivitySessionAndMarkTaskAsStopped() {
+    void execute_givenTaskExistsAndNotStarted_thenStopActivitySessionAndMarkTaskAsStopped() throws Exception {
 
         // Given
         final var userId = anyUserId();
@@ -131,7 +135,7 @@ class StopTaskUseCaseImplTest {
     }
 
     @Test
-    void execute_givenTaskExistsAndStopped_thenReturnError() {
+    void execute_givenTaskExistsAndStopped_thenReturnError() throws Exception {
 
         // Given
         final var userId = anyUserId();
@@ -193,7 +197,7 @@ class StopTaskUseCaseImplTest {
     }
 
     @Test
-    void execute_givenExceptionDuringExecution_thenRollback() {
+    void execute_givenExceptionDuringExecution_thenRollback() throws Exception {
 
         // Given
         final var userId = anyUserId();

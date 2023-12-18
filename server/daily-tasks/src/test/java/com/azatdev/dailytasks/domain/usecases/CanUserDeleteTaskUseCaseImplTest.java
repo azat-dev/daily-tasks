@@ -65,7 +65,7 @@ class CanUserDeleteTaskUseCaseImplTest {
         UUID userId,
         UUID ownerId,
         boolean expectedResult
-    ) {
+    ) throws Exception {
 
         // Given
         final var sut = createSUT();
@@ -89,7 +89,7 @@ class CanUserDeleteTaskUseCaseImplTest {
     }
 
     @Test
-    void execute_givenUserIsOwnerOfTask_thenReturnTrue() {
+    void execute_givenUserIsOwnerOfTask_thenReturnTrue() throws Exception {
 
         final var userId = anyUserId();
         final var ownerId = userId;
@@ -102,7 +102,7 @@ class CanUserDeleteTaskUseCaseImplTest {
     }
 
     @Test
-    void execute_givenUserIsNotOwnerOfTask_thenReturnFalse() {
+    void execute_givenUserIsNotOwnerOfTask_thenReturnFalse() throws Exception {
 
         final var userId = anyUserId();
         final var ownerId = anyUserId();

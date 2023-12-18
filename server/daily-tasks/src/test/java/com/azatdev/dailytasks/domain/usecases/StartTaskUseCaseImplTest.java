@@ -70,7 +70,7 @@ class StartTaskUseCaseImplTest {
     }
 
     @Test
-    void execute_givenTaskExistsAndNotStarted_thenCreateNewActivitySession() {
+    void execute_givenTaskExistsAndNotStarted_thenCreateNewActivitySession() throws Exception {
 
         // Given
         final var userId = anyUserId();
@@ -128,7 +128,7 @@ class StartTaskUseCaseImplTest {
     }
 
     @Test
-    void execute_givenTaskExistsAndStarted_thenReturnStartTimeFromExistingActivitySession() {
+    void execute_givenTaskExistsAndStarted_thenReturnStartTimeFromExistingActivitySession() throws Exception {
 
         // Given
         final var userId = anyUserId();
@@ -196,7 +196,7 @@ class StartTaskUseCaseImplTest {
     }
 
     @Test
-    void execute_givenExceptionDuringExecution_thenRollback() {
+    void execute_givenExceptionDuringExecution_thenRollback() throws Exception {
 
         // Given
         final var userId = anyUserId();

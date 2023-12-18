@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
 import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.UpdateTaskStatusDao;
@@ -38,7 +39,7 @@ public final class StartTaskUseCaseImpl implements StartTaskUseCase {
     public ZonedDateTime execute(
         UUID userId,
         Long taskId
-    ) {
+    ) throws TaskNotFoundException {
 
         final var transaction = transactionFactory.make();
 

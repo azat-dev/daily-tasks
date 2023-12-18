@@ -1,6 +1,6 @@
 package com.azatdev.dailytasks.domain.exceptions;
 
-public class TaskAlreadyStoppedException extends RuntimeException {
+public class TaskAlreadyStoppedException extends Exception {
 
     private long taskId;
 

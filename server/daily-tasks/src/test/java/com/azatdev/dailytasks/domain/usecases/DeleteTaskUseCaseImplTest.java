@@ -65,7 +65,7 @@ class DeleteTaskUseCaseImplTest {
     }
 
     @Test
-    void execute_givenUserDoesntHavePermissionToDelete_thenThrowAccessDeniedException() {
+    void execute_givenUserDoesntHavePermissionToDelete_thenThrowAccessDeniedException() throws Exception {
 
         // Given
         final var userId = anyUserId();
@@ -102,7 +102,7 @@ class DeleteTaskUseCaseImplTest {
     }
 
     @Test
-    void execute_givenUserHasPermissionToDelete_thenStopTaskAndThenDelete() {
+    void execute_givenUserHasPermissionToDelete_thenStopTaskAndThenDelete() throws Exception {
 
         // Given
         final var userId = anyUserId();
@@ -148,7 +148,8 @@ class DeleteTaskUseCaseImplTest {
     }
 
     @Test
-    void execute_givenUserHasPermissionToDelete_whenExceptionDuringTransaction_thenRollbackThrowAnError() {
+    void execute_givenUserHasPermissionToDelete_whenExceptionDuringTransaction_thenRollbackThrowAnError()
+        throws Exception {
 
         // Given
         final var userId = anyUserId();

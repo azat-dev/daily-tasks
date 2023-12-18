@@ -2,7 +2,7 @@ package com.azatdev.dailytasks.domain.exceptions;
 
 import java.util.UUID;
 
-public class AccessDeniedException extends RuntimeException {
+public class AccessDeniedException extends Exception {
 
     private String resource;
     private String operation;

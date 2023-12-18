@@ -23,7 +23,7 @@ public final class UpdateTaskStatusDaoImpl implements UpdateTaskStatusDao {
         Long taskId,
         Task.Status newStatus,
         Optional<Transaction> transaction
-    ) {
+    ) throws TaskNotFoundException {
 
         final var taskResult = tasksRepository.findById(taskId);
 
