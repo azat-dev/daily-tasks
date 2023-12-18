@@ -36,11 +36,11 @@ final class CanUserViewTaskUseCaseImpl implements CanUserViewTaskUseCase {
         long taskId
     ) throws TaskNotFoundException {
 
-        throw new UnsupportedOperationException("Not implemented yet");
-        // final var taskData = taskDao.execute(taskId)
-        // .orElseThrow(() -> new TaskNotFoundException(taskId));
+        final var taskData = taskDao.execute(taskId)
+            .orElseThrow(() -> new TaskNotFoundException(taskId));
 
-        // return taskData.ownerId().equals(userId);
+        return taskData.ownerId()
+            .equals(userId);
     }
 }
 
