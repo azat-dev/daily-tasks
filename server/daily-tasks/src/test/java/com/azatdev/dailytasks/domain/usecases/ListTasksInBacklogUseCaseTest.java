@@ -1,6 +1,7 @@
 package com.azatdev.dailytasks.domain.usecases;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.mock;
@@ -14,15 +15,25 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import com.azatdev.dailytasks.domain.exceptions.AccessDeniedException;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryGet;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryList;
 import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.usecases.utils.AdjustDateToStartOfBacklog;
 
+interface CanUserViewBacklogUseCase {
+
+    boolean execute(
+        UUID userId,
+        long backlogId
+    );
+}
+
 public class ListTasksInBacklogUseCaseTest {
 
     private record SUT(
-        ListTasksInBacklogUseCase listTasksInBacklogUseCase,
+        ListTasksInBacklogUseCase useCase,
+        CanUserViewBacklogUseCase canUserViewBacklogUseCase,
         BacklogRepositoryGet backlogRepository,
         TasksRepositoryList tasksRepository,
         AdjustDateToStartOfBacklog adjustBacklogTime
@@ -30,11 +41,13 @@ public class ListTasksInBacklogUseCaseTest {
     }
 
     private SUT createSUT() {
-        BacklogRepositoryGet backlogRepository = mock(BacklogRepositoryGet.class);
-        TasksRepositoryList tasksRepository = mock(TasksRepositoryList.class);
-        AdjustDateToStartOfBacklog adjustBacklogTime = mock(AdjustDateToStartOfBacklog.class);
 
-        var useCase = new ListTasksInBacklogUseCaseImpl(
+        final var canUserViewBacklogUseCase = mock(CanUserViewBacklogUseCase.class);
+        final var backlogRepository = mock(BacklogRepositoryGet.class);
+        final var tasksRepository = mock(TasksRepositoryList.class);
+        final var adjustBacklogTime = mock(AdjustDateToStartOfBacklog.class);
+
+        final var useCase = new ListTasksInBacklogUseCaseImpl(
             backlogRepository,
             tasksRepository,
             adjustBacklogTime
@@ -42,6 +55,7 @@ public class ListTasksInBacklogUseCaseTest {
 
         return new SUT(
             useCase,
+            canUserViewBacklogUseCase,
             backlogRepository,
             tasksRepository,
             adjustBacklogTime
@@ -79,7 +93,7 @@ public class ListTasksInBacklogUseCaseTest {
         ).willReturn(Optional.empty());
 
         // When
-        var foundTasks = sut.listTasksInBacklogUseCase.execute(
+        var foundTasks = sut.useCase.execute(
             ownerId,
             backlogStartDate,
             backlogDuration
@@ -135,6 +149,13 @@ public class ListTasksInBacklogUseCaseTest {
         ).willReturn(adjustedBacklogStartDate);
 
         given(
+            sut.canUserViewBacklogUseCase.execute(
+                any(),
+                anyLong()
+            )
+        ).willReturn(true);
+
+        given(
             sut.backlogRepository.getBacklogId(
                 ownerId,
                 backlogStartDate,
@@ -150,7 +171,7 @@ public class ListTasksInBacklogUseCaseTest {
         ).willReturn(expectedTasks);
 
         // When
-        final var foundTasks = sut.listTasksInBacklogUseCase.execute(
+        final var foundTasks = sut.useCase.execute(
             ownerId,
             backlogStartDate,
             backlogDuration
@@ -172,6 +193,58 @@ public class ListTasksInBacklogUseCaseTest {
 
         assertThat(foundTasks).isNotNull();
         assertThat(foundTasks).isEqualTo(expectedTasks);
+    }
+
+    @Test
+    void execute_givenExistingBacklogAndUserDoesntHavePermissionsToSeeIt_thenThrowAccessDeniedException() {
+
+        // Given
+        final var ownerId = anyUserId();
+        final var backlogId = anyBacklogId();
+
+        final var backlogDuration = Backlog.Duration.DAY;
+        final var backlogStartDate = LocalDate.now();
+
+        final LocalDate adjustedBacklogStartDate = backlogStartDate;
+
+        final var sut = createSUT();
+
+        given(
+            sut.adjustBacklogTime.calculate(
+                backlogStartDate,
+                backlogDuration
+            )
+        ).willReturn(adjustedBacklogStartDate);
+
+        given(
+            sut.canUserViewBacklogUseCase.execute(
+                any(),
+                anyLong()
+            )
+        ).willReturn(true);
+
+        given(
+            sut.backlogRepository.getBacklogId(
+                ownerId,
+                backlogStartDate,
+                backlogDuration
+            )
+        ).willReturn(Optional.of(backlogId));
+
+        // When
+        final var exception = assertThrows(
+            AccessDeniedException.class,
+            () -> sut.useCase.execute(
+                ownerId,
+                backlogStartDate,
+                backlogDuration
+            )
+        );
+
+        // Then
+        assertThat(exception.getOperation()).isEqualTo("viewBacklog");
+        assertThat(exception.getResource()).isEqualTo(String.valueOf(backlogId));
+        assertThat(exception.getUserId()).isEqualTo(ownerId);
     }
 
     private Long anyBacklogId() {
