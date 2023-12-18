@@ -9,9 +9,11 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import com.azatdev.dailytasks.data.repositories.data.AddNewActivitySessionDaoImpl;
 import com.azatdev.dailytasks.data.repositories.data.DeleteTaskDaoImpl;
+import com.azatdev.dailytasks.data.repositories.data.GetBacklogByIdDaoImpl;
 import com.azatdev.dailytasks.data.repositories.data.GetTaskDaoImpl;
 import com.azatdev.dailytasks.data.repositories.data.MapActivitySessionToDomain;
 import com.azatdev.dailytasks.data.repositories.data.MapActivitySessionToDomainImpl;
+import com.azatdev.dailytasks.data.repositories.data.MapBacklogDataToDomain;
 import com.azatdev.dailytasks.data.repositories.data.MapNewActivitySessionToData;
 import com.azatdev.dailytasks.data.repositories.data.MapNewActivitySessionToDataImpl;
 import com.azatdev.dailytasks.data.repositories.data.MapTaskDataToDomain;
@@ -21,6 +23,7 @@ import com.azatdev.dailytasks.data.repositories.data.StopActivitySessionDaoImpl;
 import com.azatdev.dailytasks.data.repositories.data.TasksRepositoryImpl;
 import com.azatdev.dailytasks.data.repositories.data.UpdateTaskStatusDaoImpl;
 import com.azatdev.dailytasks.data.repositories.data.transaction.TransactionImplFactory;
+import com.azatdev.dailytasks.data.repositories.data.user.MapBacklogDataToDomainImpl;
 import com.azatdev.dailytasks.data.repositories.persistence.GetRunningActivitySessionForTaskDaoImpl;
 import com.azatdev.dailytasks.data.repositories.persistence.backlog.BacklogRepositoryImpl;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaActivitySessionsRepository;
@@ -29,6 +32,7 @@ import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaTasksReposito
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
 import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.DeleteTaskDao;
+import com.azatdev.dailytasks.domain.interfaces.dao.GetBacklogByIdDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.MarkTaskAsStoppedDao;
@@ -161,5 +165,21 @@ public class DataConfig {
     @Bean
     public DeleteTaskDao deleteTaskDao(JpaTasksRepository jpaTasksRepository) {
         return new DeleteTaskDaoImpl(jpaTasksRepository);
+    }
+
+    @Bean
+    public MapBacklogDataToDomain mapBacklogDataToDomain() {
+        return new MapBacklogDataToDomainImpl();
+    }
+
+    @Bean
+    public GetBacklogByIdDao getBacklogByIdDao(
+        JpaBacklogsRepository jpaBacklogsRepository,
+        MapBacklogDataToDomain mapBacklogDataToDomain
+    ) {
+        return new GetBacklogByIdDaoImpl(
+            jpaBacklogsRepository,
+            mapBacklogDataToDomain
+        );
     }
 }

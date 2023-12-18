@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.DeleteTaskDao;
+import com.azatdev.dailytasks.domain.interfaces.dao.GetBacklogByIdDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.MarkTaskAsStoppedDao;
@@ -20,6 +21,7 @@ import com.azatdev.dailytasks.domain.interfaces.utils.CurrentTimeProvider;
 import com.azatdev.dailytasks.domain.usecases.CanUserDeleteTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.CanUserDeleteTaskUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.CanUserViewBacklogUseCase;
+import com.azatdev.dailytasks.domain.usecases.CanUserViewBacklogUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.CanUserViewTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.CanUserViewTaskUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.CreateBacklogForDateIfDoesntExistUseCase;
@@ -50,8 +52,8 @@ public class DomainConfig {
     }
 
     @Bean
-    public CanUserViewBacklogUseCase canUserViewBacklogUseCase() {
-        return null;
+    public CanUserViewBacklogUseCase canUserViewBacklogUseCase(GetBacklogByIdDao getBacklogByIdDao) {
+        return new CanUserViewBacklogUseCaseImpl(getBacklogByIdDao);
     }
 
     @Bean
