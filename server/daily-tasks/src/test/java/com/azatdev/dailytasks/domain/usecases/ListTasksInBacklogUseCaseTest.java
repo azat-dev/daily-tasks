@@ -189,7 +189,8 @@ public class ListTasksInBacklogUseCaseTest {
     }
 
     @Test
-    void execute_givenExistingBacklogAndUserDoesntHavePermissionsToSeeIt_thenThrowAccessDeniedException() {
+    void execute_givenExistingBacklogAndUserDoesntHavePermissionsToSeeIt_thenThrowAccessDeniedException()
+        throws Exception {
 
         // Given
         final var ownerId = anyUserId();
@@ -214,7 +215,7 @@ public class ListTasksInBacklogUseCaseTest {
                 any(),
                 anyLong()
             )
-        ).willReturn(true);
+        ).willReturn(false);
 
         given(
             sut.backlogRepository.getBacklogId(

@@ -2,6 +2,7 @@ package com.azatdev.dailytasks.domain.usecases;
 
 import java.util.UUID;
 
+import com.azatdev.dailytasks.domain.exceptions.BacklogNotFoundException;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetBacklogByIdDao;
 
 public class CanUserViewBacklogUseCaseImpl implements CanUserViewBacklogUseCase {
@@ -16,7 +17,12 @@ public class CanUserViewBacklogUseCaseImpl implements CanUserViewBacklogUseCase 
     public boolean execute(
         UUID userId,
         long backlogId
-    ) {
-        return false;
+    ) throws BacklogNotFoundException {
+
+        final var backlog = getBacklogByIdDao.execute(backlogId)
+            .orElseThrow(() -> new BacklogNotFoundException(backlogId));
+
+        return backlog.ownerId()
+            .equals(userId);
     }
 }

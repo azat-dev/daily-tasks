@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.azatdev.dailytasks.domain.exceptions.AccessDeniedException;
+import com.azatdev.dailytasks.domain.exceptions.BacklogNotFoundException;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryGet;
 import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksRepositoryList;
 import com.azatdev.dailytasks.domain.models.Backlog;
@@ -35,7 +36,7 @@ public final class ListTasksInBacklogUseCaseImpl implements ListTasksInBacklogUs
         UUID userId,
         LocalDate forDate,
         Backlog.Duration duration
-    ) throws AccessDeniedException {
+    ) throws AccessDeniedException, BacklogNotFoundException {
 
         final var backlogStartDate = adjustDateToStart.calculate(
             forDate,

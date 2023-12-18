@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 
 import com.azatdev.dailytasks.domain.exceptions.AccessDeniedException;
+import com.azatdev.dailytasks.domain.exceptions.BacklogNotFoundException;
 import com.azatdev.dailytasks.domain.exceptions.TaskAlreadyStoppedException;
 import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
@@ -73,6 +74,9 @@ public class TaskController implements TaskResource {
             return ResponseEntity.ok(ouputItems);
         } catch (AccessDeniedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .build();
+        } catch (BacklogNotFoundException e) {
+            return ResponseEntity.notFound()
                 .build();
         }
     }
