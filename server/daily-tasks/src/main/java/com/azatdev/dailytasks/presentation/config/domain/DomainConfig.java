@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
+import com.azatdev.dailytasks.domain.interfaces.dao.DeleteTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.MarkTaskAsStoppedDao;
@@ -16,10 +17,14 @@ import com.azatdev.dailytasks.domain.interfaces.repositories.tasks.TasksReposito
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.TransactionFactory;
 import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepositoryCreate;
 import com.azatdev.dailytasks.domain.interfaces.utils.CurrentTimeProvider;
+import com.azatdev.dailytasks.domain.usecases.CanUserDeleteTaskUseCase;
+import com.azatdev.dailytasks.domain.usecases.CanUserDeleteTaskUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.CreateBacklogForDateIfDoesntExistUseCase;
 import com.azatdev.dailytasks.domain.usecases.CreateBacklogForDateIfDoesntExistUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCaseImpl;
+import com.azatdev.dailytasks.domain.usecases.DeleteTaskUseCase;
+import com.azatdev.dailytasks.domain.usecases.DeleteTaskUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.GetTaskDetailsUseCase;
 import com.azatdev.dailytasks.domain.usecases.GetTaskDetailsUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
@@ -121,5 +126,25 @@ public class DomainConfig {
             markTaskAsStoppedDao,
             transactionFactory
         );
+    }
+
+    @Bean
+    public DeleteTaskUseCase deleteTaskUseCase(
+        CanUserDeleteTaskUseCase canUserDeleteTaskUseCase,
+        StopTaskUseCase stopTaskUseCase,
+        DeleteTaskDao deleteTaskDao,
+        TransactionFactory transactionFactory
+    ) {
+        return new DeleteTaskUseCaseImpl(
+            canUserDeleteTaskUseCase,
+            stopTaskUseCase,
+            deleteTaskDao,
+            transactionFactory
+        );
+    }
+
+    @Bean
+    public CanUserDeleteTaskUseCase canUserDeleteTaskUseCase(GetTaskDao getTaskDao) {
+        return new CanUserDeleteTaskUseCaseImpl(getTaskDao);
     }
 }

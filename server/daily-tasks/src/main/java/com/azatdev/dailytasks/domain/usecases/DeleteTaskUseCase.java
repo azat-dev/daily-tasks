@@ -5,7 +5,7 @@ import java.util.UUID;
 import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
 
 @FunctionalInterface
-interface DeleteTaskUseCase {
+public interface DeleteTaskUseCase {
     void execute(
         UUID userId,
         long taskId

@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.azatdev.dailytasks.data.repositories.data.AddNewActivitySessionDaoImpl;
+import com.azatdev.dailytasks.data.repositories.data.DeleteTaskDaoImpl;
 import com.azatdev.dailytasks.data.repositories.data.GetTaskDaoImpl;
 import com.azatdev.dailytasks.data.repositories.data.MapActivitySessionToDomain;
 import com.azatdev.dailytasks.data.repositories.data.MapActivitySessionToDomainImpl;
@@ -27,6 +28,7 @@ import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaBacklogsRepos
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaTasksRepository;
 import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaUsersRepository;
 import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
+import com.azatdev.dailytasks.domain.interfaces.dao.DeleteTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.MarkTaskAsStoppedDao;
@@ -154,5 +156,10 @@ public class DataConfig {
     @Bean
     public StopActivitySessionDao stopActivitySessionDao(JpaActivitySessionsRepository activitySessionsRepository) {
         return new StopActivitySessionDaoImpl(activitySessionsRepository);
+    }
+
+    @Bean
+    public DeleteTaskDao deleteTaskDao(JpaTasksRepository jpaTasksRepository) {
+        return new DeleteTaskDaoImpl(jpaTasksRepository);
     }
 }
