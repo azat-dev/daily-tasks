@@ -6,7 +6,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
 import java.util.UUID;
@@ -181,6 +183,8 @@ class DeleteTaskUseCaseImplTest {
             )
         ).willReturn(true);
 
+        willThrow(new RuntimeException()).given(sut.deleteTaskDao);
+
         // When
         sut.useCase.execute(
             userId,
@@ -188,6 +192,13 @@ class DeleteTaskUseCaseImplTest {
         );
 
         // Then
+        then(sut.transaction).should(times(1))
+            .begin();
+        then(sut.transaction).should(never())
+            .rollback();
+        then(sut.transaction).should(times(1))
+            .commit();
+
         then(sut.canUserDeleteTaskUseCase).should(times(1))
             .execute(
                 userId,
@@ -202,5 +213,42 @@ class DeleteTaskUseCaseImplTest {
 
         then(sut.deleteTaskDao).should(times(1))
             .execute(taskId);
+    }
+
+    @Test
+    void execute_givenUserHasPermissionToDelete_whenExceptionDuringTransaction_thenRollbackThrowAnError() {
+
+        // Given
+        final var userId = anyUserId();
+        final var taskId = 1L;
+
+        final var sut = createSUT();
+
+        given(
+            sut.canUserDeleteTaskUseCase.execute(
+                any(),
+                anyLong()
+            )
+        ).willReturn(true);
+
+        // When
+        sut.useCase.execute(
+            userId,
+            taskId
+        );
+
+        // Then
+        then(sut.transaction).should(times(1))
+            .begin();
+        then(sut.transaction).should(times(1))
+            .rollback();
+        then(sut.transaction).should(never())
+            .commit();
+
+        then(sut.canUserDeleteTaskUseCase).should(times(1))
+            .execute(
+                userId,
+                taskId
+            );
     }
 }
