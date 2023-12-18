@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
+import com.azatdev.dailytasks.domain.usecases.DeleteTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.GetTaskDetailsUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.StartTaskUseCase;
@@ -44,6 +45,9 @@ public class TaskController implements TaskResource {
 
     @Autowired
     private GetTaskDetailsUseCase getTaskDetailsUseCase;
+
+    @Autowired
+    private DeleteTaskUseCase deleteTaskUseCase;
 
     @Override
     public ResponseEntity<List<TaskResponse>> findAllTasksInBacklog(
@@ -137,6 +141,27 @@ public class TaskController implements TaskResource {
             );
 
             return ResponseEntity.ok(new StopTaskResponse(stoppedAt));
+
+        } catch (TaskNotFoundException e) {
+            return ResponseEntity.notFound()
+                .build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteTask(
+        Long taskId,
+        UserPrincipal userPrincipal
+    ) {
+
+        try {
+            this.deleteTaskUseCase.execute(
+                userPrincipal.getId(),
+                taskId
+            );
+
+            return ResponseEntity.noContent()
+                .build();
 
         } catch (TaskNotFoundException e) {
             return ResponseEntity.notFound()
