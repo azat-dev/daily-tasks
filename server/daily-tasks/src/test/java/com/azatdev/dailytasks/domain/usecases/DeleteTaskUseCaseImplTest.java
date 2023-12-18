@@ -76,15 +76,13 @@ final class DeleteTaskUseCaseImpl implements DeleteTaskUseCase {
                 String.valueOf(taskId)
             );
         }
-        return;
 
-        // stopTaskUseCase.execute(
-        // taskId
-        // );
+        stopTaskUseCase.execute(
+            null,
+            taskId
+        );
 
-        // deleteTaskDao.execute(
-        // taskId
-        // );
+        deleteTaskDao.execute(taskId);
     }
 }
 
@@ -184,12 +182,9 @@ class DeleteTaskUseCaseImplTest {
         ).willReturn(true);
 
         // When
-        final var exception = assertThrows(
-            AccessDeniedException.class,
-            () -> sut.useCase.execute(
-                userId,
-                taskId
-            )
+        sut.useCase.execute(
+            userId,
+            taskId
         );
 
         // Then
@@ -207,9 +202,5 @@ class DeleteTaskUseCaseImplTest {
 
         then(sut.deleteTaskDao).should(times(1))
             .execute(taskId);
-
-        assertThat(exception.getOperation()).isEqualTo("deleteTask");
-        assertThat(exception.getResource()).isEqualTo(String.valueOf(taskId));
-        assertThat(exception.getUserId()).isEqualTo(userId);
     }
 }
