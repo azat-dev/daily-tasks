@@ -66,25 +66,35 @@ final class DeleteTaskUseCaseImpl implements DeleteTaskUseCase {
         long taskId
     ) throws TaskNotFoundException, AccessDeniedException {
 
-        final boolean hasPermission = canUserDeleteTaskUseCase.execute(
-            userId,
-            taskId
-        );
+        final var transaction = transactionFactory.make();
 
-        if (!hasPermission) {
-            throw new AccessDeniedException(
+        try {
+            transaction.begin();
+            final boolean hasPermission = canUserDeleteTaskUseCase.execute(
                 userId,
-                "deleteTask",
-                String.valueOf(taskId)
+                taskId
             );
+
+            if (!hasPermission) {
+                throw new AccessDeniedException(
+                    userId,
+                    "deleteTask",
+                    String.valueOf(taskId)
+                );
+            }
+
+            stopTaskUseCase.execute(
+                null,
+                taskId
+            );
+
+            deleteTaskDao.execute(taskId);
+            transaction.commit();
+
+        } catch (Exception e) {
+            transaction.rollback();
+            throw e;
         }
-
-        stopTaskUseCase.execute(
-            null,
-            taskId
-        );
-
-        deleteTaskDao.execute(taskId);
     }
 }
 
@@ -108,6 +118,8 @@ class DeleteTaskUseCaseImplTest {
 
         final var transaction = mock(Transaction.class);
         final var transactionFactory = mock(TransactionFactory.class);
+
+        given(transactionFactory.make()).willReturn(transaction);
 
         final var useCase = new DeleteTaskUseCaseImpl(
             canUserDeleteTaskUseCase,
@@ -183,8 +195,6 @@ class DeleteTaskUseCaseImplTest {
             )
         ).willReturn(true);
 
-        willThrow(new RuntimeException()).given(sut.deleteTaskDao);
-
         // When
         sut.useCase.execute(
             userId,
@@ -231,10 +241,16 @@ class DeleteTaskUseCaseImplTest {
             )
         ).willReturn(true);
 
+        willThrow(new RuntimeException()).given(sut.deleteTaskDao)
+            .execute(anyLong());
+
         // When
-        sut.useCase.execute(
-            userId,
-            taskId
+        assertThrows(
+            RuntimeException.class,
+            () -> sut.useCase.execute(
+                userId,
+                taskId
+            )
         );
 
         // Then
