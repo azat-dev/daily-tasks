@@ -1,6 +1,7 @@
 package com.azatdev.dailytasks.data.repositories.persistence.entities;
 
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 import com.azatdev.dailytasks.data.repositories.data.user.UserData;
 
@@ -111,5 +112,9 @@ public class TaskData {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public UUID getOwnerId() {
+        return owner.getId();
     }
 }
