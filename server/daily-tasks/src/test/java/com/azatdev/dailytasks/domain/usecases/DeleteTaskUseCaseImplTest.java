@@ -32,7 +32,7 @@ interface DeleteTaskDao {
 }
 
 @FunctionalInterface
-interface DoesUserHavePermissionToDeleteTaskUseCase {
+interface CanUserDeleteTaskUseCase {
     boolean execute(
         UUID userId,
         long taskId
@@ -41,18 +41,18 @@ interface DoesUserHavePermissionToDeleteTaskUseCase {
 
 final class DeleteTaskUseCaseImpl implements DeleteTaskUseCase {
 
-    private final DoesUserHavePermissionToDeleteTaskUseCase doesUserHavePermissionToDeleteTaskUseCase;
+    private final CanUserDeleteTaskUseCase canUserDeleteTaskUseCase;
     private final StopTaskUseCase stopTaskUseCase;
     private final DeleteTaskDao deleteTaskDao;
     private final TransactionFactory transactionFactory;
 
     public DeleteTaskUseCaseImpl(
-        DoesUserHavePermissionToDeleteTaskUseCase doesUserHavePermissionToDeleteTaskUseCase,
+        CanUserDeleteTaskUseCase canUserDeleteTaskUseCase,
         StopTaskUseCase stopTaskUseCase,
         DeleteTaskDao deleteTaskDao,
         TransactionFactory transactionFactory
     ) {
-        this.doesUserHavePermissionToDeleteTaskUseCase = doesUserHavePermissionToDeleteTaskUseCase;
+        this.canUserDeleteTaskUseCase = canUserDeleteTaskUseCase;
         this.stopTaskUseCase = stopTaskUseCase;
         this.deleteTaskDao = deleteTaskDao;
         this.transactionFactory = transactionFactory;
@@ -64,7 +64,7 @@ final class DeleteTaskUseCaseImpl implements DeleteTaskUseCase {
         long taskId
     ) throws TaskNotFoundException, AccessDeniedException {
 
-        final boolean hasPermission = doesUserHavePermissionToDeleteTaskUseCase.execute(
+        final boolean hasPermission = canUserDeleteTaskUseCase.execute(
             userId,
             taskId
         );
@@ -92,7 +92,7 @@ class DeleteTaskUseCaseImplTest {
 
     private record SUT(
         DeleteTaskUseCase useCase,
-        DoesUserHavePermissionToDeleteTaskUseCase doesUserHavePermissionToDeleteTaskUseCase,
+        CanUserDeleteTaskUseCase canUserDeleteTaskUseCase,
         StopTaskUseCase stopTaskUseCase,
         DeleteTaskDao deleteTaskDao,
         TransactionFactory transactionFactory,
@@ -102,7 +102,7 @@ class DeleteTaskUseCaseImplTest {
 
     private SUT createSUT() {
 
-        final var doesUserHavePermissionToDeleteTaskUseCase = mock(DoesUserHavePermissionToDeleteTaskUseCase.class);
+        final var canUserDeleteTaskUseCase = mock(CanUserDeleteTaskUseCase.class);
         final var stopTaskUseCase = mock(StopTaskUseCase.class);
         final var deleteTaskDao = mock(DeleteTaskDao.class);
 
@@ -110,7 +110,7 @@ class DeleteTaskUseCaseImplTest {
         final var transactionFactory = mock(TransactionFactory.class);
 
         final var useCase = new DeleteTaskUseCaseImpl(
-            doesUserHavePermissionToDeleteTaskUseCase,
+            canUserDeleteTaskUseCase,
             stopTaskUseCase,
             deleteTaskDao,
             transactionFactory
@@ -118,7 +118,7 @@ class DeleteTaskUseCaseImplTest {
 
         return new SUT(
             useCase,
-            doesUserHavePermissionToDeleteTaskUseCase,
+            canUserDeleteTaskUseCase,
             stopTaskUseCase,
             deleteTaskDao,
             transactionFactory,
@@ -140,7 +140,7 @@ class DeleteTaskUseCaseImplTest {
         final var sut = createSUT();
 
         given(
-            sut.doesUserHavePermissionToDeleteTaskUseCase.execute(
+            sut.canUserDeleteTaskUseCase.execute(
                 any(),
                 anyLong()
             )
@@ -156,11 +156,57 @@ class DeleteTaskUseCaseImplTest {
         );
 
         // Then
-        then(sut.doesUserHavePermissionToDeleteTaskUseCase).should(times(1))
+        then(sut.canUserDeleteTaskUseCase).should(times(1))
             .execute(
                 userId,
                 taskId
             );
+
+        assertThat(exception.getOperation()).isEqualTo("deleteTask");
+        assertThat(exception.getResource()).isEqualTo(String.valueOf(taskId));
+        assertThat(exception.getUserId()).isEqualTo(userId);
+    }
+
+    @Test
+    void execute_givenUserHasPermissionToDelete_thenStopTaskAndThenDelete() {
+
+        // Given
+        final var userId = anyUserId();
+        final var taskId = 1L;
+
+        final var sut = createSUT();
+
+        given(
+            sut.canUserDeleteTaskUseCase.execute(
+                any(),
+                anyLong()
+            )
+        ).willReturn(true);
+
+        // When
+        final var exception = assertThrows(
+            AccessDeniedException.class,
+            () -> sut.useCase.execute(
+                userId,
+                taskId
+            )
+        );
+
+        // Then
+        then(sut.canUserDeleteTaskUseCase).should(times(1))
+            .execute(
+                userId,
+                taskId
+            );
+
+        then(sut.stopTaskUseCase).should(times(1))
+            .execute(
+                null,
+                taskId
+            );
+
+        then(sut.deleteTaskDao).should(times(1))
+            .execute(taskId);
 
         assertThat(exception.getOperation()).isEqualTo("deleteTask");
         assertThat(exception.getResource()).isEqualTo(String.valueOf(taskId));
