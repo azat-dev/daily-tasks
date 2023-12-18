@@ -219,8 +219,11 @@ paths:
         delete:
             summary: Delete a task
             responses:
-                "200":
+                "204":
                     description: Success
+            responses:
+                "404":
+                    description: Task not found
         get:
             summary: Get task data
             responses:
