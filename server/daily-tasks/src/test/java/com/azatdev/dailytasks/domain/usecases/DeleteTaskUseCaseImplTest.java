@@ -16,6 +16,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import com.azatdev.dailytasks.domain.exceptions.AccessDeniedException;
+import com.azatdev.dailytasks.domain.interfaces.dao.DeleteAllActivitySessionsOfTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.DeleteTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transaction;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.TransactionFactory;
@@ -27,6 +28,7 @@ class DeleteTaskUseCaseImplTest {
         CanUserDeleteTaskUseCase canUserDeleteTaskUseCase,
         StopTaskUseCase stopTaskUseCase,
         DeleteTaskDao deleteTaskDao,
+        DeleteAllActivitySessionsOfTaskDao deleteAllActivitySessionsOfTaskDao,
         TransactionFactory transactionFactory,
         Transaction transaction
     ) {
@@ -37,6 +39,7 @@ class DeleteTaskUseCaseImplTest {
         final var canUserDeleteTaskUseCase = mock(CanUserDeleteTaskUseCase.class);
         final var stopTaskUseCase = mock(StopTaskUseCase.class);
         final var deleteTaskDao = mock(DeleteTaskDao.class);
+        final var deleteAllActivitySessionsOfTaskDao = mock(DeleteAllActivitySessionsOfTaskDao.class);
 
         final var transaction = mock(Transaction.class);
         final var transactionFactory = mock(TransactionFactory.class);
@@ -55,6 +58,7 @@ class DeleteTaskUseCaseImplTest {
             canUserDeleteTaskUseCase,
             stopTaskUseCase,
             deleteTaskDao,
+            deleteAllActivitySessionsOfTaskDao,
             transactionFactory,
             transaction
         );
@@ -126,10 +130,6 @@ class DeleteTaskUseCaseImplTest {
         // Then
         then(sut.transaction).should(times(1))
             .begin();
-        then(sut.transaction).should(never())
-            .rollback();
-        then(sut.transaction).should(times(1))
-            .commit();
 
         then(sut.canUserDeleteTaskUseCase).should(times(1))
             .execute(
@@ -143,8 +143,16 @@ class DeleteTaskUseCaseImplTest {
                 taskId
             );
 
+        then(sut.deleteAllActivitySessionsOfTaskDao).should(times(1))
+            .execute(taskId);
+
         then(sut.deleteTaskDao).should(times(1))
             .execute(taskId);
+
+        then(sut.transaction).should(never())
+            .rollback();
+        then(sut.transaction).should(times(1))
+            .commit();
     }
 
     @Test

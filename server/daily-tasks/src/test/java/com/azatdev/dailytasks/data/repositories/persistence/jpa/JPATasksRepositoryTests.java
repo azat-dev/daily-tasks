@@ -2,7 +2,6 @@ package com.azatdev.dailytasks.data.repositories.persistence.jpa;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -209,33 +208,5 @@ class JpaTasksRepositoryTests {
             wrongIdTask,
             wrongOwnerTask
         );
-    }
-
-    @Test
-    void delete_givenExistingTask_withSessions_thenDeleteTaskAndSessions() {
-
-        // Given
-        final var owner = dm.givenExistingUser("owner");
-        final var backlog = dm.givenExistingWeekBacklog(owner);
-
-        final var task = dm.givenExistingTaskData(
-            owner,
-            backlog,
-            0
-        );
-
-        dm.givenExistingActivitySession(
-            owner,
-            task,
-            ZonedDateTime.now(),
-            ZonedDateTime.now()
-        );
-
-        // When
-        jpaTasksRepository.delete(task);
-
-        // Then
-        assertThat(jpaTasksRepository.findById(task.getId())).isEmpty();
-        assertThat(jpaActivitySessionsRepository.findAll()).isEmpty();
     }
 }
