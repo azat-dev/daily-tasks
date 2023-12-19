@@ -12,105 +12,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import com.azatdev.dailytasks.data.dao.task.UpdateTaskDao;
 import com.azatdev.dailytasks.domain.exceptions.AccessDeniedException;
-import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transaction;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.TransactionFactory;
-import com.azatdev.dailytasks.domain.models.Task;
-
-record EditTaskData(
-    Optional<String> title,
-    Optional<Task.Priority> priority,
-    Optional<String> description
-) {
-}
-
-@FunctionalInterface
-interface EditTaskUseCase {
-
-    void execute(
-        UUID userId,
-        long taskId,
-        EditTaskData data
-    ) throws AccessDeniedException, TaskNotFoundException;
-}
-
-@FunctionalInterface
-interface CanUserEditTaskUseCase {
-
-    boolean execute(
-        UUID userId,
-        long taskId
-    ) throws TaskNotFoundException;
-}
-
-@FunctionalInterface
-interface UpdateTaskDao {
-
-    void execute(
-        long taskId,
-        EditTaskData data
-    ) throws TaskNotFoundException;
-}
-
-final class EditTaskUseCaseImpl implements EditTaskUseCase {
-
-    private final CanUserEditTaskUseCase canUserEditTaskUseCase;
-    private final UpdateTaskDao updateTaskDao;
-    private final TransactionFactory transactionFactory;
-
-    public EditTaskUseCaseImpl(
-        CanUserEditTaskUseCase canUserEditTaskUseCase,
-        UpdateTaskDao updateTaskDao,
-        TransactionFactory transactionFactory
-    ) {
-        this.canUserEditTaskUseCase = canUserEditTaskUseCase;
-        this.updateTaskDao = updateTaskDao;
-        this.transactionFactory = transactionFactory;
-    }
-
-    @Override
-    public void execute(
-        UUID userId,
-        long taskId,
-        EditTaskData data
-    ) throws AccessDeniedException, TaskNotFoundException {
-
-        final var canUserEdit = canUserEditTaskUseCase.execute(
-            userId,
-            taskId
-        );
-
-        if (!canUserEdit) {
-            throw new AccessDeniedException(
-                userId,
-                "editTask",
-                String.valueOf(taskId)
-            );
-        }
-
-        final var transaction = transactionFactory.make();
-
-        try {
-            transaction.begin();
-
-            updateTaskDao.execute(
-                taskId,
-                data
-            );
-
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            throw e;
-        }
-    }
-}
+import com.azatdev.dailytasks.domain.models.EditTaskData;
 
 class EditTaskUseCaseImplTest {
 
