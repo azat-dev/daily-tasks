@@ -125,11 +125,7 @@ class EditTaskUseCaseImplTest {
         // Given
         final var userId = anyUserId();
         final var taskId = 111L;
-        final var data = new EditTaskData(
-            Optional.empty(),
-            Optional.empty(),
-            Optional.empty()
-        );
+        final var data = mock(EditTaskData.class);
         final var sut = createSUT();
 
         given(
@@ -162,5 +158,44 @@ class EditTaskUseCaseImplTest {
         assertThat(exception.getUserId()).isEqualTo(userId);
         assertThat(exception.getOperation()).isEqualTo("editTask");
         assertThat(exception.getResource()).isEqualTo(String.valueOf(taskId));
+    }
+
+    @Test
+    void execute_givenTaskExistsAndUserCanEditIt_thenUpdateTask() throws Exception {
+
+        // Given
+        final var userId = anyUserId();
+        final var taskId = 111L;
+
+        final var data = mock(EditTaskData.class);
+        final var sut = createSUT();
+
+        given(
+            sut.canUserEditTaskUseCase.execute(
+                any(),
+                anyLong()
+            )
+        ).willReturn(true);
+
+        // When
+        sut.useCase.execute(
+            userId,
+            taskId,
+            data
+        );
+
+        // Then
+
+        then(sut.canUserEditTaskUseCase).should((times(1)))
+            .execute(
+                userId,
+                taskId
+            );
+
+        then(sut.updateTaskDao).should((times(1)))
+            .execute(
+                taskId,
+                data
+            );
     }
 }
