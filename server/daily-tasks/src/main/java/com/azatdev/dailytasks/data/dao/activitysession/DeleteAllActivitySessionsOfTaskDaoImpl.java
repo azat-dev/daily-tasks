@@ -13,6 +13,6 @@ public final class DeleteAllActivitySessionsOfTaskDaoImpl implements DeleteAllAc
 
     @Override
     public void execute(long taskId) {
-        throw new UnsupportedOperationException();
+        jpaActivitySessionsRepository.deleteAllByTaskId(taskId);
     }
 }
