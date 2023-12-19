@@ -1,6 +1,7 @@
 package com.azatdev.dailytasks.data.entities;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -109,5 +110,17 @@ public class TaskData {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public void setPriority(Optional<Priority> priority) {
+        this.priority = priority.orElse(null);
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

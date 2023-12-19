@@ -25,6 +25,8 @@ import com.azatdev.dailytasks.data.dao.task.MapTaskDataToDomain;
 import com.azatdev.dailytasks.data.dao.task.MapTaskDataToDomainImpl;
 import com.azatdev.dailytasks.data.dao.task.MarkTaskAsStoppedDaoImpl;
 import com.azatdev.dailytasks.data.dao.task.TasksRepositoryImpl;
+import com.azatdev.dailytasks.data.dao.task.UpdateTaskDao;
+import com.azatdev.dailytasks.data.dao.task.UpdateTaskDaoImpl;
 import com.azatdev.dailytasks.data.dao.task.UpdateTaskStatusDaoImpl;
 import com.azatdev.dailytasks.data.dao.transaction.TransactionImplFactory;
 import com.azatdev.dailytasks.data.jpa.JpaActivitySessionsRepository;
@@ -190,5 +192,10 @@ public class DataConfig {
             jpaBacklogsRepository,
             mapBacklogDataToDomain
         );
+    }
+
+    @Bean
+    public UpdateTaskDao updateTaskDao(JpaTasksRepository jpaTasksRepository) {
+        return new UpdateTaskDaoImpl(jpaTasksRepository);
     }
 }
