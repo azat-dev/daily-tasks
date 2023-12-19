@@ -12,11 +12,11 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import com.azatdev.dailytasks.data.repositories.data.AddNewActivitySessionDaoImpl;
-import com.azatdev.dailytasks.data.repositories.data.MapActivitySessionToDomain;
-import com.azatdev.dailytasks.data.repositories.data.MapNewActivitySessionToData;
-import com.azatdev.dailytasks.data.repositories.persistence.entities.ActivitySessionData;
-import com.azatdev.dailytasks.data.repositories.persistence.jpa.JpaActivitySessionsRepository;
+import com.azatdev.dailytasks.data.dao.data.AddNewActivitySessionDaoImpl;
+import com.azatdev.dailytasks.data.dao.data.MapActivitySessionToDomain;
+import com.azatdev.dailytasks.data.dao.data.MapNewActivitySessionToData;
+import com.azatdev.dailytasks.data.dao.persistence.entities.ActivitySessionData;
+import com.azatdev.dailytasks.data.dao.persistence.jpa.JpaActivitySessionsRepository;
 import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
 import com.azatdev.dailytasks.domain.models.ActivitySession;
 import com.azatdev.dailytasks.domain.models.NewActivitySession;

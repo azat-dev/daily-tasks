@@ -9,10 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import com.azatdev.dailytasks.data.dao.data.user.UserData;
+import com.azatdev.dailytasks.data.dao.persistence.entities.BacklogData;
+import com.azatdev.dailytasks.data.dao.persistence.entities.TaskData;
+import com.azatdev.dailytasks.data.dao.persistence.jpa.JpaTasksRepository;
 import com.azatdev.dailytasks.data.repositories.TestEntityDataGenerator;
-import com.azatdev.dailytasks.data.repositories.data.user.UserData;
-import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
-import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
 
 @DataJpaTest
 @Import(TestEntityDataGenerator.class)
@@ -25,9 +26,6 @@ class JpaTasksRepositoryTests {
 
     @Autowired
     private JpaTasksRepository jpaTasksRepository;
-
-    @Autowired
-    private JpaActivitySessionsRepository jpaActivitySessionsRepository;
 
     // Methods
 

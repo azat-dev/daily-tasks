@@ -4,9 +4,9 @@ import static org.mockito.BDDMockito.*;
 
 import java.util.UUID;
 
-import com.azatdev.dailytasks.data.repositories.data.user.UserData;
-import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData;
-import com.azatdev.dailytasks.data.repositories.persistence.entities.TaskData;
+import com.azatdev.dailytasks.data.dao.data.user.UserData;
+import com.azatdev.dailytasks.data.dao.persistence.entities.BacklogData;
+import com.azatdev.dailytasks.data.dao.persistence.entities.TaskData;
 
 import lombok.NoArgsConstructor;
 
