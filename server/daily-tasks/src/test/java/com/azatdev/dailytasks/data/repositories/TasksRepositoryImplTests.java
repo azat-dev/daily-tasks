@@ -15,12 +15,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.azatdev.dailytasks.data.dao.data.MapTaskDataToDomain;
-import com.azatdev.dailytasks.data.dao.data.TasksRepositoryImpl;
-import com.azatdev.dailytasks.data.dao.persistence.entities.TaskData;
-import com.azatdev.dailytasks.data.dao.persistence.jpa.JpaGetBacklogReference;
-import com.azatdev.dailytasks.data.dao.persistence.jpa.JpaGetUserReference;
-import com.azatdev.dailytasks.data.dao.persistence.jpa.JpaTasksRepository;
+import com.azatdev.dailytasks.data.dao.task.MapTaskDataToDomain;
+import com.azatdev.dailytasks.data.dao.task.TasksRepositoryImpl;
+import com.azatdev.dailytasks.data.entities.TaskData;
+import com.azatdev.dailytasks.data.jpa.JpaGetBacklogReference;
+import com.azatdev.dailytasks.data.jpa.JpaGetUserReference;
+import com.azatdev.dailytasks.data.jpa.JpaTasksRepository;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.models.Task;
 

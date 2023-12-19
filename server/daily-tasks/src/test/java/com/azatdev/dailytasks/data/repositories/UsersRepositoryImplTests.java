@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.azatdev.dailytasks.data.dao.data.UsersRepositoryImpl;
-import com.azatdev.dailytasks.data.dao.data.user.UserData;
-import com.azatdev.dailytasks.data.dao.persistence.jpa.JpaUsersRepository;
+import com.azatdev.dailytasks.data.dao.user.UsersRepositoryImpl;
+import com.azatdev.dailytasks.data.entities.UserData;
+import com.azatdev.dailytasks.data.jpa.JpaUsersRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepository;
 import com.azatdev.dailytasks.domain.models.AppUser;
 

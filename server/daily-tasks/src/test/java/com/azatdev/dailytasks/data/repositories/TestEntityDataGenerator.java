@@ -9,10 +9,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import com.github.javafaker.Faker;
 
-import com.azatdev.dailytasks.data.dao.data.user.UserData;
-import com.azatdev.dailytasks.data.dao.persistence.entities.ActivitySessionData;
-import com.azatdev.dailytasks.data.dao.persistence.entities.BacklogData;
-import com.azatdev.dailytasks.data.dao.persistence.entities.TaskData;
+import com.azatdev.dailytasks.data.entities.ActivitySessionData;
+import com.azatdev.dailytasks.data.entities.BacklogData;
+import com.azatdev.dailytasks.data.entities.TaskData;
+import com.azatdev.dailytasks.data.entities.UserData;
 
 public class TestEntityDataGenerator {
 

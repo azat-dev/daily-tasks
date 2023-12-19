@@ -15,11 +15,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.azatdev.dailytasks.data.dao.data.user.UserData;
-import com.azatdev.dailytasks.data.dao.persistence.backlog.BacklogRepositoryImpl;
-import com.azatdev.dailytasks.data.dao.persistence.entities.BacklogData;
-import com.azatdev.dailytasks.data.dao.persistence.jpa.JpaBacklogsRepository;
-import com.azatdev.dailytasks.data.dao.persistence.jpa.JpaUsersRepository;
+import com.azatdev.dailytasks.data.dao.backlog.BacklogRepositoryImpl;
+import com.azatdev.dailytasks.data.entities.BacklogData;
+import com.azatdev.dailytasks.data.entities.UserData;
+import com.azatdev.dailytasks.data.jpa.JpaBacklogsRepository;
+import com.azatdev.dailytasks.data.jpa.JpaUsersRepository;
 import com.azatdev.dailytasks.domain.interfaces.repositories.backlog.BacklogRepositoryCreate;
 import com.azatdev.dailytasks.domain.models.Backlog;
 

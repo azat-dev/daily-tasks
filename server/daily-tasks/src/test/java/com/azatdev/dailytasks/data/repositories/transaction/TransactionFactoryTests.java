@@ -5,7 +5,7 @@ import static org.mockito.BDDMockito.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.azatdev.dailytasks.data.dao.data.transaction.TransactionImplFactory;
+import com.azatdev.dailytasks.data.dao.transaction.TransactionImplFactory;
 
 class TransactionFactoryTests {
 

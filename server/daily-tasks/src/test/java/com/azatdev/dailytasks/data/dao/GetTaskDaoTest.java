@@ -10,10 +10,10 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import com.azatdev.dailytasks.data.dao.data.GetTaskDaoImpl;
-import com.azatdev.dailytasks.data.dao.data.MapTaskDataToDomain;
-import com.azatdev.dailytasks.data.dao.persistence.entities.TaskData;
-import com.azatdev.dailytasks.data.dao.persistence.jpa.JpaTasksRepository;
+import com.azatdev.dailytasks.data.dao.task.GetTaskDaoImpl;
+import com.azatdev.dailytasks.data.dao.task.MapTaskDataToDomain;
+import com.azatdev.dailytasks.data.entities.TaskData;
+import com.azatdev.dailytasks.data.jpa.JpaTasksRepository;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetTaskDao;
 import com.azatdev.dailytasks.domain.models.Task;
 
