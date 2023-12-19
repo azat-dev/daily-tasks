@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.azatdev.dailytasks.data.dao.activitysession.AddNewActivitySessionDaoImpl;
+import com.azatdev.dailytasks.data.dao.activitysession.DeleteAllActivitySessionsOfTaskDaoImpl;
 import com.azatdev.dailytasks.data.dao.activitysession.GetRunningActivitySessionForTaskDaoImpl;
 import com.azatdev.dailytasks.data.dao.activitysession.MapActivitySessionToDomain;
 import com.azatdev.dailytasks.data.dao.activitysession.MapActivitySessionToDomainImpl;
@@ -31,6 +32,7 @@ import com.azatdev.dailytasks.data.jpa.JpaBacklogsRepository;
 import com.azatdev.dailytasks.data.jpa.JpaTasksRepository;
 import com.azatdev.dailytasks.data.jpa.JpaUsersRepository;
 import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
+import com.azatdev.dailytasks.domain.interfaces.dao.DeleteAllActivitySessionsOfTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.DeleteTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetBacklogByIdDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
@@ -165,6 +167,13 @@ public class DataConfig {
     @Bean
     public DeleteTaskDao deleteTaskDao(JpaTasksRepository jpaTasksRepository) {
         return new DeleteTaskDaoImpl(jpaTasksRepository);
+    }
+
+    @Bean
+    public DeleteAllActivitySessionsOfTaskDao deleteAllActivitySessionsOfTaskDao(
+        JpaActivitySessionsRepository jpaActivitySessionsRepository
+    ) {
+        return new DeleteAllActivitySessionsOfTaskDaoImpl(jpaActivitySessionsRepository);
     }
 
     @Bean
