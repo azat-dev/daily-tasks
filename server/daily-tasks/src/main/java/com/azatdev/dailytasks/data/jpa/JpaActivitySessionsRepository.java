@@ -20,6 +20,6 @@ public interface JpaActivitySessionsRepository extends JpaRepository<ActivitySes
     );
 
     @Modifying
-    @Query("DELETE FROM ActivitySessionData a WHERE a.taskId = :taskId")
+    @Query("DELETE FROM ActivitySessionData a WHERE a.task.id=:taskId")
     void deleteAllByTaskId(@Param("taskId") long taskId);
 }

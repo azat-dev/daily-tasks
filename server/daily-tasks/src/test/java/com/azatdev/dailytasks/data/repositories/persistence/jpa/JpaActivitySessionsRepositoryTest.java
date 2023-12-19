@@ -92,4 +92,47 @@ class JpaActivitySessionsRepositoryTest {
             wrongFinishedAtSession
         );
     }
+
+    @Test
+    void deleteAllByTaskId_givenExistingSessions_thenDeleteMatchedSessions() {
+
+        // Given
+
+        final var user = testData.givenExistingUser("user");
+
+        final var backlog = testData.givenExistingDayBacklog(user);
+
+        final var correctTask = testData.givenExistingTaskData(
+            user,
+            backlog,
+            0
+        );
+
+        final var wrongTask = testData.givenExistingTaskData(
+            user,
+            backlog,
+            1
+        );
+
+        final var correctActivitySession = testData.givenExistingActivitySession(
+            user,
+            correctTask,
+            ZonedDateTime.now(),
+            ZonedDateTime.now()
+        );
+
+        final var wrongActivitySession = testData.givenExistingActivitySession(
+            user,
+            wrongTask,
+            ZonedDateTime.now(),
+            ZonedDateTime.now()
+        );
+
+        // When
+        jpaActivitySessionRepository.deleteAllByTaskId(correctTask.getId());
+
+        // Then
+        assertThat(jpaActivitySessionRepository.findAll()).containsOnly(wrongActivitySession);
+        assertThat(jpaActivitySessionRepository.findAll()).doesNotContain(correctActivitySession);
+    }
 }
