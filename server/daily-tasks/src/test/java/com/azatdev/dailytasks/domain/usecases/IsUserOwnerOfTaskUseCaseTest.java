@@ -14,10 +14,10 @@ import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetTaskDao;
 import com.azatdev.dailytasks.domain.models.Task;
 
-class CanUserViewTaskUseCaseImplTest {
+class IsUserOwnerOfTaskUseCaseTest {
 
     private record SUT(
-        CanUserViewTaskUseCase useCase,
+        IsUserOwnerOfTaskUseCase useCase,
         GetTaskDao taskDao
     ) {
     }
@@ -25,7 +25,7 @@ class CanUserViewTaskUseCaseImplTest {
     private SUT createSUT() {
 
         final var getTaskDao = mock(GetTaskDao.class);
-        final var useCase = new CanUserViewTaskUseCaseImpl(getTaskDao);
+        final var useCase = new IsUserOwnerOfTaskUseCase(getTaskDao);
 
         return new SUT(
             useCase,

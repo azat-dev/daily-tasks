@@ -3,6 +3,7 @@ package com.azatdev.dailytasks.presentation.config.domain;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.azatdev.dailytasks.data.dao.task.UpdateTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.DeleteAllActivitySessionsOfTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.DeleteTaskDao;
@@ -20,19 +21,21 @@ import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.Transac
 import com.azatdev.dailytasks.domain.interfaces.repositories.user.UsersRepositoryCreate;
 import com.azatdev.dailytasks.domain.interfaces.utils.CurrentTimeProvider;
 import com.azatdev.dailytasks.domain.usecases.CanUserDeleteTaskUseCase;
-import com.azatdev.dailytasks.domain.usecases.CanUserDeleteTaskUseCaseImpl;
+import com.azatdev.dailytasks.domain.usecases.CanUserEditTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.CanUserViewBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.CanUserViewBacklogUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.CanUserViewTaskUseCase;
-import com.azatdev.dailytasks.domain.usecases.CanUserViewTaskUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.CreateBacklogForDateIfDoesntExistUseCase;
 import com.azatdev.dailytasks.domain.usecases.CreateBacklogForDateIfDoesntExistUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.DeleteTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.DeleteTaskUseCaseImpl;
+import com.azatdev.dailytasks.domain.usecases.EditTaskUseCase;
+import com.azatdev.dailytasks.domain.usecases.EditTaskUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.GetTaskDetailsUseCase;
 import com.azatdev.dailytasks.domain.usecases.GetTaskDetailsUseCaseImpl;
+import com.azatdev.dailytasks.domain.usecases.IsUserOwnerOfTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCaseImpl;
 import com.azatdev.dailytasks.domain.usecases.SignUpAppUserUseCase;
@@ -121,7 +124,7 @@ public class DomainConfig {
 
     @Bean
     public CanUserViewTaskUseCase canUserViewTaskUseCase(GetTaskDao getTaskDao) {
-        return new CanUserViewTaskUseCaseImpl(getTaskDao);
+        return new IsUserOwnerOfTaskUseCase(getTaskDao)::execute;
     }
 
     @Bean
@@ -171,6 +174,24 @@ public class DomainConfig {
 
     @Bean
     public CanUserDeleteTaskUseCase canUserDeleteTaskUseCase(GetTaskDao getTaskDao) {
-        return new CanUserDeleteTaskUseCaseImpl(getTaskDao);
+        return new IsUserOwnerOfTaskUseCase(getTaskDao)::execute;
+    }
+
+    @Bean
+    public CanUserEditTaskUseCase canUserEditTaskUseCase(GetTaskDao getTaskDao) {
+        return new IsUserOwnerOfTaskUseCase(getTaskDao)::execute;
+    }
+
+    @Bean
+    public EditTaskUseCase editTaskUseCase(
+        CanUserEditTaskUseCase canUserEditTaskUseCase,
+        UpdateTaskDao updateTaskDao,
+        TransactionFactory transactionFactory
+    ) {
+        return new EditTaskUseCaseImpl(
+            canUserEditTaskUseCase,
+            updateTaskDao,
+            transactionFactory
+        );
     }
 }

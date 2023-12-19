@@ -5,15 +5,14 @@ import java.util.UUID;
 import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetTaskDao;
 
-public final class CanUserViewTaskUseCaseImpl implements CanUserViewTaskUseCase {
+public final class IsUserOwnerOfTaskUseCase {
 
     private final GetTaskDao taskDao;
 
-    public CanUserViewTaskUseCaseImpl(GetTaskDao taskDao) {
+    public IsUserOwnerOfTaskUseCase(GetTaskDao taskDao) {
         this.taskDao = taskDao;
     }
 
-    @Override
     public boolean execute(
         UUID userId,
         long taskId
