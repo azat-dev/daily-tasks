@@ -94,10 +94,21 @@ final class EditTaskUseCaseImpl implements EditTaskUseCase {
             );
         }
 
-        updateTaskDao.execute(
-            taskId,
-            data
-        );
+        final var transaction = transactionFactory.make();
+
+        try {
+            transaction.begin();
+
+            updateTaskDao.execute(
+                taskId,
+                data
+            );
+
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            throw e;
+        }
     }
 }
 
