@@ -2,7 +2,12 @@ package com.azatdev.dailytasks.domain.usecases;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -10,6 +15,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import com.azatdev.dailytasks.domain.exceptions.AccessDeniedException;
+import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
 import com.azatdev.dailytasks.domain.models.Task;
 
 record EditTaskData(
@@ -26,23 +32,25 @@ interface EditTaskUseCase {
         UUID userId,
         long taskId,
         EditTaskData data
-    );
+    ) throws AccessDeniedException, TaskNotFoundException;
 }
 
 @FunctionalInterface
 interface CanUserEditTaskUseCase {
 
-    boolean execute(long taskId);
+    boolean execute(
+        UUID userId,
+        long taskId
+    ) throws TaskNotFoundException;
 }
 
 @FunctionalInterface
 interface UpdateTaskDao {
 
     void execute(
-        UUID uuid,
         long taskId,
         EditTaskData data
-    );
+    ) throws TaskNotFoundException;
 }
 
 final class EditTaskUseCaseImpl implements EditTaskUseCase {
@@ -63,10 +71,20 @@ final class EditTaskUseCaseImpl implements EditTaskUseCase {
         UUID userId,
         long taskId,
         EditTaskData data
-    ) {
-        // if (!canUserEditTaskUseCase.execute(taskId)) {
-        // throw new RuntimeException("User can't edit task");
-        // }
+    ) throws AccessDeniedException, TaskNotFoundException {
+
+        final var canUserEdit = canUserEditTaskUseCase.execute(
+            userId,
+            taskId
+        );
+
+        if (!canUserEdit) {
+            throw new AccessDeniedException(
+                userId,
+                "editTask",
+                String.valueOf(taskId)
+            );
+        }
 
         throw new RuntimeException("Not implemented");
     }
@@ -102,7 +120,7 @@ class EditTaskUseCaseImplTest {
     }
 
     @Test
-    void execute_givenUserCanNotEditTask_thenThrowException() {
+    void execute_givenUserCanNotEditTask_thenThrowException() throws Exception {
 
         // Given
         final var userId = anyUserId();
@@ -113,6 +131,13 @@ class EditTaskUseCaseImplTest {
             Optional.empty()
         );
         final var sut = createSUT();
+
+        given(
+            sut.canUserEditTaskUseCase.execute(
+                any(),
+                anyLong()
+            )
+        ).willReturn(false);
 
         // When
         final var exception = catchThrowableOfType(
@@ -125,6 +150,15 @@ class EditTaskUseCaseImplTest {
         );
 
         // Then
+
+        then(sut.canUserEditTaskUseCase).should((times(1)))
+            .execute(
+                userId,
+                taskId
+            );
+
+        then(sut.updateTaskDao).shouldHaveNoInteractions();
+
         assertThat(exception.getUserId()).isEqualTo(userId);
         assertThat(exception.getOperation()).isEqualTo("editTask");
         assertThat(exception.getResource()).isEqualTo(String.valueOf(taskId));
