@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.azatdev.dailytasks.domain.interfaces.dao.AddNewActivitySessionDao;
+import com.azatdev.dailytasks.domain.interfaces.dao.DeleteAllActivitySessionsOfTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.DeleteTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetBacklogByIdDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.GetRunningActivitySessionForTaskDao;
@@ -156,12 +157,14 @@ public class DomainConfig {
         CanUserDeleteTaskUseCase canUserDeleteTaskUseCase,
         StopTaskUseCase stopTaskUseCase,
         DeleteTaskDao deleteTaskDao,
+        DeleteAllActivitySessionsOfTaskDao deleteAllActivitySessionsOfTaskDao,
         TransactionFactory transactionFactory
     ) {
         return new DeleteTaskUseCaseImpl(
             canUserDeleteTaskUseCase,
             stopTaskUseCase,
             deleteTaskDao,
+            deleteAllActivitySessionsOfTaskDao,
             transactionFactory
         );
     }

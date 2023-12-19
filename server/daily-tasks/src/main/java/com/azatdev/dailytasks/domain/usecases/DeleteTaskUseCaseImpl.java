@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.azatdev.dailytasks.domain.exceptions.AccessDeniedException;
 import com.azatdev.dailytasks.domain.exceptions.TaskAlreadyStoppedException;
 import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
+import com.azatdev.dailytasks.domain.interfaces.dao.DeleteAllActivitySessionsOfTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.dao.DeleteTaskDao;
 import com.azatdev.dailytasks.domain.interfaces.repositories.transaction.TransactionFactory;
 
@@ -13,17 +14,20 @@ public final class DeleteTaskUseCaseImpl implements DeleteTaskUseCase {
     private final CanUserDeleteTaskUseCase canUserDeleteTaskUseCase;
     private final StopTaskUseCase stopTaskUseCase;
     private final DeleteTaskDao deleteTaskDao;
+    private final DeleteAllActivitySessionsOfTaskDao deleteAllActivitySessionsOfTaskDao;
     private final TransactionFactory transactionFactory;
 
     public DeleteTaskUseCaseImpl(
         CanUserDeleteTaskUseCase canUserDeleteTaskUseCase,
         StopTaskUseCase stopTaskUseCase,
         DeleteTaskDao deleteTaskDao,
+        DeleteAllActivitySessionsOfTaskDao deleteAllActivitySessionsOfTaskDao,
         TransactionFactory transactionFactory
     ) {
         this.canUserDeleteTaskUseCase = canUserDeleteTaskUseCase;
         this.stopTaskUseCase = stopTaskUseCase;
         this.deleteTaskDao = deleteTaskDao;
+        this.deleteAllActivitySessionsOfTaskDao = deleteAllActivitySessionsOfTaskDao;
         this.transactionFactory = transactionFactory;
     }
 
@@ -59,6 +63,7 @@ public final class DeleteTaskUseCaseImpl implements DeleteTaskUseCase {
                 // ignore
             }
 
+            deleteAllActivitySessionsOfTaskDao.execute(taskId);
             deleteTaskDao.execute(taskId);
             transaction.commit();
 

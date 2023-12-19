@@ -50,6 +50,7 @@ class DeleteTaskUseCaseImplTest {
             canUserDeleteTaskUseCase,
             stopTaskUseCase,
             deleteTaskDao,
+            deleteAllActivitySessionsOfTaskDao,
             transactionFactory
         );
 
