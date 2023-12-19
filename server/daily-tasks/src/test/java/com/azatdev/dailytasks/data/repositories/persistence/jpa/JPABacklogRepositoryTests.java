@@ -15,7 +15,7 @@ import com.azatdev.dailytasks.data.repositories.persistence.entities.BacklogData
 
 @DataJpaTest
 @Import(TestEntityDataGenerator.class)
-class JPABacklogRepositoryTests {
+class JpaBacklogRepositoryTests {
 
     @Autowired
     TestEntityDataGenerator testData;
