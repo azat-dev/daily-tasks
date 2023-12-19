@@ -25,7 +25,7 @@ const DayPageView = ({ viewModel: vm }: DayPageViewProps) => {
                 className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 mb-0"
                 style={{ alignItems: "end" }}
             >
-                <h3>Current tasks</h3>
+                <h3>Today - {new Date().toDateString()}</h3>
                 <Button variant="primary" onClick={vm.onAddTask}>
                     Add Task
                 </Button>
