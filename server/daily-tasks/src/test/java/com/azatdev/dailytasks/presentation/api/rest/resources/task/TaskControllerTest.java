@@ -47,6 +47,7 @@ import com.azatdev.dailytasks.domain.usecases.StopTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.TestDomainDataGenerator;
 import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklogRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskResponse;
+import com.azatdev.dailytasks.presentation.api.rest.entities.UpdateTaskRequest;
 import com.azatdev.dailytasks.presentation.config.presentation.PresentationConfig;
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 
@@ -253,7 +254,10 @@ class TaskControllerTest {
 
         // When
 
-        final var action = performPost(url, userPrincipal);
+        final var action = performPost(
+            url,
+            userPrincipal
+        );
 
         // Then
         action.andExpect(status().isOk());
@@ -466,6 +470,36 @@ class TaskControllerTest {
         action.andExpect(status().isNotFound());
     }
 
+    @Test
+    void updateTask_givenNotExistingTask_thenReturn404() throws Exception {
+
+        // Given
+        final var userPrincipal = anyUserPrincipal();
+        final var userId = userPrincipal.getId();
+        final var taskId = 1L;
+
+        final var updateTaskRequest = mock(UpdateTaskRequest.class);
+
+        willThrow(new TaskNotFoundException(taskId)).given(editTaskUseCase)
+            .execute(
+                eq(userId),
+                eq(taskId),
+                any()
+            );
+
+        // When
+        final var action = performUpdateTask(
+            userPrincipal,
+            taskId,
+            updateTaskRequest
+        );
+
+        // Then
+        action.andExpect(status().isNotFound());
+    }
+
+    // Helper methods
+
     private ResultActions performGetTask(
         UserPrincipal userPrincipal,
         long taskId
@@ -519,6 +553,20 @@ class TaskControllerTest {
         return performDelete(
             url,
             userPrincipal
+        );
+    }
+
+    private ResultActions performUpdateTask(
+        UserPrincipal userPrincipal,
+        long taskId,
+        Object requestBody
+    ) throws Exception {
+
+        final var url = "/api/with-auth/tasks/" + taskId;
+        return performPost(
+            url,
+            userPrincipal,
+            requestBody
         );
     }
 
