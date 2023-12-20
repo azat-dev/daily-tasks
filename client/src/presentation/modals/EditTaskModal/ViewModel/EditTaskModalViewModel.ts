@@ -7,7 +7,7 @@ export interface EditTaskModalViewModelDelegate {
     updateTask: (
         taskId: TaskId,
         data: UpdateTaskData
-    ) => Promise<Result<TaskId, undefined>>;
+    ) => Promise<Result<Task, undefined>>;
     didComplete: () => void;
     didHide: () => void;
 }

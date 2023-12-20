@@ -13,4 +13,5 @@ export * from './SignUpResponseTokens';
 export * from './StartTaskResponse';
 export * from './StopTaskResponse';
 export * from './Task';
+export * from './UpdateTaskData';
 export * from './UserInfo';

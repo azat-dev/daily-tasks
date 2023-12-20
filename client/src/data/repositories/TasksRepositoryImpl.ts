@@ -1,6 +1,7 @@
 import { Result } from "../../common/Result";
 import BacklogType from "../../domain/models/BacklogType";
 import Task, { TaskId } from "../../domain/models/Task";
+import UpdateTaskData from "../../domain/models/UpdateTaskData";
 import {
     TasksRepositoryList,
     TasksRepositoryStart,
@@ -9,6 +10,7 @@ import {
     TasksRepositoryDelete,
     TasksRepositoryAddNewTask,
     TasksRepositoryGet,
+    TasksRepositoryUpdate,
 } from "../../domain/repositories/TasksRepository";
 import { DefaultApi, NewTaskData } from "../API";
 import { TaskMapperDomain } from "./TaskMapper/TaskMapper";
@@ -20,7 +22,8 @@ export default class TasksRepositoryImpl
         TasksRepositoryStop,
         TasksRepositoryDelete,
         TasksRepositoryAddNewTask,
-        TasksRepositoryGet
+        TasksRepositoryGet,
+        TasksRepositoryUpdate
 {
     private api: DefaultApi;
     private taskMapper: TaskMapperDomain;
@@ -139,6 +142,40 @@ export default class TasksRepositoryImpl
             return Result.success(response.taskId);
         } catch (e) {
             return Result.failure(TasksRepositoryError.InternalError);
+        }
+    };
+
+    updateTask = async (
+        taskId: TaskId,
+        data: UpdateTaskData
+    ): Promise<Result<Task, TasksRepositoryError>> => {
+        try {
+            let cleanedDescription = (data.description ?? "").trim();
+
+            const updateTaskData = {
+                title: data.title,
+                description: cleanedDescription,
+                priority: data.priority as any,
+            };
+
+            if (cleanedDescription) {
+                updateTaskData.description = cleanedDescription;
+            }
+
+            const response = await this.api.apiWithAuthTasksTaskIdPost({
+                taskId,
+                updateTaskData: updateTaskData,
+            });
+
+            return Result.success(this.taskMapper.toDomain(response));
+        } catch (error: any) {
+            let err = TasksRepositoryError.InternalError;
+
+            if (error?.status === 404) {
+                err = TasksRepositoryError.TaskNotFound;
+            }
+
+            return Result.failure(err);
         }
     };
 

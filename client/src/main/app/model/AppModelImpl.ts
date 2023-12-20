@@ -42,6 +42,8 @@ import EditTaskModalViewModel from "../../../presentation/modals/EditTaskModal/V
 import EditTaskModalViewModelImpl from "../../../presentation/modals/EditTaskModal/ViewModel/EditTaskModalViewModelImpl";
 import { ILoadTaskUseCase } from "../../../domain/usecases/LoadTaskUseCase/LoadTaskUseCase";
 import LoadTaskUseCaseImpl from "../../../domain/usecases/LoadTaskUseCase/LoadTaskUseCaseImpl";
+import EditTaskUseCaseImpl from "../../../domain/usecases/EditTaskUseCase/AddNewTaskUseCaseImpl";
+import EditTaskUseCase from "../../../domain/usecases/EditTaskUseCase/EditTaskUseCase";
 
 export default class AppModelImpl implements AppModel {
     // Properties
@@ -147,6 +149,10 @@ export default class AppModelImpl implements AppModel {
         return new DeleteTaskUseCaseImpl(this.getTasksRepository());
     };
 
+    private getEditTaskUseCase = (): EditTaskUseCase => {
+        return new EditTaskUseCaseImpl(this.getTasksRepository());
+    };
+
     public getPages = (): AppModelPageFactories => {
         return {
             makeLogInPageViewModel: this.makeLogInPageViewModel,
@@ -169,38 +175,39 @@ export default class AppModelImpl implements AppModel {
     };
 
     private makeEditTaskPageViewModel = (
-        taskId: TaskId
+        taskId: TaskId,
+        didCompleteUpdate: () => void
     ): EditTaskModalViewModel => {
-        return new EditTaskModalViewModelImpl(
-            taskId,
-            async () => {
-                const useCase = this.getLoadTaskUseCase();
+        const vm = new EditTaskModalViewModelImpl(taskId, async () => {
+            const useCase = this.getLoadTaskUseCase();
+            const result = await useCase.execute(taskId);
+            return Result.mapError(result, () => undefined);
+        });
 
-                const result = await useCase.execute(taskId);
+        vm.delegate = {
+            updateTask: async (taskId, task) => {
+                const useCase = this.getEditTaskUseCase();
+                const result = await useCase.execute(taskId, task);
 
-                switch (result.type) {
-                    case ResultType.Success:
-                        return Result.success(result.value);
-                    case ResultType.Failure:
-                        return Result.failure(undefined);
-                }
+                return Result.mapError(result, () => undefined);
             },
-            {
-                updateTask: async (taskId, task) => {
-                    return null as any;
-                },
-                didComplete: () => {
-                    this.currentModal.set(null);
-                },
-                didHide: () => {
-                    this.currentModal.set(null);
-                },
-            }
-        );
+            didComplete: () => {
+                didCompleteUpdate();
+                this.currentModal.set(null);
+            },
+            didHide: () => {
+                this.currentModal.set(null);
+            },
+        };
+
+        return vm;
     };
 
-    public runEditTaskFlow = (taskId: TaskId) => {
-        const vm = this.makeEditTaskPageViewModel(taskId);
+    public runEditTaskFlow = (
+        taskId: TaskId,
+        didCompleteUpdate: () => void
+    ) => {
+        const vm = this.makeEditTaskPageViewModel(taskId, didCompleteUpdate);
 
         this.currentModal.set({
             type: "editTask",
@@ -244,7 +251,7 @@ export default class AppModelImpl implements AppModel {
                 });
             },
             openTask: (taskId) => {
-                this.runEditTaskFlow(taskId);
+                this.runEditTaskFlow(taskId, () => viewModel.reloadTasks(true));
             },
         };
 

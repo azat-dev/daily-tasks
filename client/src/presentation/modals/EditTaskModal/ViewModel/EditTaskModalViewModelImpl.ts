@@ -24,8 +24,10 @@ export default class EditTaskViewModelImpl implements EditTaskModalViewModel {
 
     public constructor(
         private taskId: TaskId,
-        private loadTask: (taskId: TaskId) => Promise<Result<Task, undefined>>,
-        private delegate: EditTaskModalViewModelDelegate
+        private loadTask: (
+            taskId: TaskId
+        ) => Promise<Result<Task | null, undefined>>,
+        public delegate: EditTaskModalViewModelDelegate | null = null
     ) {}
 
     // Methods
@@ -40,7 +42,7 @@ export default class EditTaskViewModelImpl implements EditTaskModalViewModel {
     };
 
     onUnMount = () => {
-        this.delegate.didHide();
+        this.delegate!.didHide();
     };
 
     onHide = () => {
@@ -68,7 +70,7 @@ export default class EditTaskViewModelImpl implements EditTaskModalViewModel {
             return;
         }
 
-        const result = await this.delegate.updateTask(this.taskId, {
+        const result = await this.delegate!.updateTask(this.taskId, {
             title: cleanedTitle,
             description: this.description.value,
             priority: this.priority.value as any,
@@ -81,7 +83,7 @@ export default class EditTaskViewModelImpl implements EditTaskModalViewModel {
         }
 
         this.show.set(false);
-        this.delegate.didComplete();
+        this.delegate!.didComplete();
     };
 
     onChangePriority = (e: any) => {
@@ -92,7 +94,6 @@ export default class EditTaskViewModelImpl implements EditTaskModalViewModel {
     };
 
     load = async (): Promise<void> => {
-        debugger;
         const result = await this.loadTask(this.taskId);
 
         if (result.type === ResultType.Failure) {
@@ -100,6 +101,10 @@ export default class EditTaskViewModelImpl implements EditTaskModalViewModel {
         }
 
         const task = result.value;
+
+        if (!task) {
+            return;
+        }
 
         this.title.set(task.title);
         this.description.set(task.description ?? "");

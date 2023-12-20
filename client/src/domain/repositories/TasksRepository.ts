@@ -2,6 +2,7 @@ import { Result } from "../../common/Result";
 import BacklogType from "../models/BacklogType";
 import NewTaskData from "../models/NewTaskData";
 import Task, { TaskId } from "../models/Task";
+import UpdateTaskData from "../models/UpdateTaskData";
 
 export enum TasksRepositoryError {
     InternalError = "INTERNAL_ERROR",
@@ -37,4 +38,11 @@ export interface TasksRepositoryAddNewTask {
 }
 export interface TasksRepositoryGet {
     get(taskId: TaskId): Promise<Result<Task | null, TasksRepositoryError>>;
+}
+
+export interface TasksRepositoryUpdate {
+    updateTask(
+        taskId: TaskId,
+        data: UpdateTaskData
+    ): Promise<Result<Task, TasksRepositoryError>>;
 }

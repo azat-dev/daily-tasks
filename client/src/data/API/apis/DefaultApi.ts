@@ -27,6 +27,7 @@ import type {
   StartTaskResponse,
   StopTaskResponse,
   Task,
+  UpdateTaskData,
 } from '../models/index';
 import {
     AddNewTaskToBacklogResponseFromJSON,
@@ -53,6 +54,8 @@ import {
     StopTaskResponseToJSON,
     TaskFromJSON,
     TaskToJSON,
+    UpdateTaskDataFromJSON,
+    UpdateTaskDataToJSON,
 } from '../models/index';
 
 export interface ApiPublicAuthTokenPostOperationRequest {
@@ -92,6 +95,11 @@ export interface ApiWithAuthTasksTaskIdGetRequest {
 
 export interface ApiWithAuthTasksTaskIdMoveToBacklogPostRequest {
     taskId: number;
+}
+
+export interface ApiWithAuthTasksTaskIdPostRequest {
+    taskId: number;
+    updateTaskData: UpdateTaskData;
 }
 
 export interface ApiWithAuthTasksTaskIdStartPostRequest {
@@ -469,6 +477,51 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiWithAuthTasksTaskIdMoveToBacklogPost(requestParameters: ApiWithAuthTasksTaskIdMoveToBacklogPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.apiWithAuthTasksTaskIdMoveToBacklogPostRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Update a task
+     */
+    async apiWithAuthTasksTaskIdPostRaw(requestParameters: ApiWithAuthTasksTaskIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Task>> {
+        if (requestParameters.taskId === null || requestParameters.taskId === undefined) {
+            throw new runtime.RequiredError('taskId','Required parameter requestParameters.taskId was null or undefined when calling apiWithAuthTasksTaskIdPost.');
+        }
+
+        if (requestParameters.updateTaskData === null || requestParameters.updateTaskData === undefined) {
+            throw new runtime.RequiredError('updateTaskData','Required parameter requestParameters.updateTaskData was null or undefined when calling apiWithAuthTasksTaskIdPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/with-auth/tasks/{task_id}`.replace(`{${"task_id"}}`, encodeURIComponent(String(requestParameters.taskId))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: UpdateTaskDataToJSON(requestParameters.updateTaskData),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => TaskFromJSON(jsonValue));
+    }
+
+    /**
+     * Update a task
+     */
+    async apiWithAuthTasksTaskIdPost(requestParameters: ApiWithAuthTasksTaskIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Task> {
+        const response = await this.apiWithAuthTasksTaskIdPostRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
