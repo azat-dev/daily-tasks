@@ -39,6 +39,7 @@ import com.azatdev.dailytasks.domain.models.Backlog;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.DeleteTaskUseCase;
+import com.azatdev.dailytasks.domain.usecases.EditTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.GetTaskDetailsUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.StartTaskUseCase;
@@ -76,6 +77,9 @@ class TaskControllerTest {
 
     @MockBean
     private DeleteTaskUseCase deleteTaskUseCase;
+
+    @MockBean
+    private EditTaskUseCase editTaskUseCase;
 
     @Test
     void findAllTasksInBacklog_givenExistingTasks_thenReturnAllTasksInBacklog() throws Exception {
@@ -161,8 +165,6 @@ class TaskControllerTest {
         final var userPrincipal = anyUserPrincipal();
         final var userId = userPrincipal.getId();
 
-        final var url = "/api/with-auth/tasks/backlog/WEEK/for/2023-11-11";
-
         LocalDate date = LocalDate.of(
             2023,
             11,
@@ -192,11 +194,11 @@ class TaskControllerTest {
         ).willReturn(createdTask);
 
         // When
-        final var action = mockMvc.perform(
-            post(url).contentType(MediaType.APPLICATION_JSON)
-                .with(user(userPrincipal))
-                .with(csrf())
-                .content(objectMapper.writeValueAsString(newTaskData))
+        final var action = performCreateTask(
+            userPrincipal,
+            backlogDuration.name(),
+            date.toString(),
+            newTaskData
         );
 
         // Then
@@ -250,11 +252,8 @@ class TaskControllerTest {
         ).willReturn(startedAt);
 
         // When
-        final var action = mockMvc.perform(
-            post(url).contentType(MediaType.APPLICATION_JSON)
-                .with(user(userPrincipal))
-                .with(csrf())
-        );
+
+        final var action = performPost(url, userPrincipal);
 
         // Then
         action.andExpect(status().isOk());
@@ -520,6 +519,34 @@ class TaskControllerTest {
         return performDelete(
             url,
             userPrincipal
+        );
+    }
+
+    private ResultActions performCreateTask(
+        UserPrincipal userPrincipal,
+        String backlogType,
+        String date,
+        Object requestBody
+    ) throws Exception {
+
+        final var url = "/api/with-auth/tasks/backlog/" + backlogType + "/for/" + date;
+        return performPost(
+            url,
+            userPrincipal,
+            requestBody
+        );
+    }
+
+    private ResultActions performPost(
+        String url,
+        UserPrincipal userPrincipal,
+        Object requestBody
+    ) throws Exception {
+        return mockMvc.perform(
+            post(url).contentType(MediaType.APPLICATION_JSON)
+                .with(user(userPrincipal))
+                .with(csrf())
+                .content(objectMapper.writeValueAsString(requestBody))
         );
     }
 
