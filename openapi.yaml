@@ -221,7 +221,6 @@ paths:
             responses:
                 "204":
                     description: Success
-            responses:
                 "404":
                     description: Task not found
         get:
@@ -237,6 +236,26 @@ paths:
                     description: Unathorized
                 "404":
                     description: Unathorized
+        post:
+            summary: Update a task
+            requestBody:
+                description: JSON payload
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/UpdateTaskData"
+            responses:
+                "200":
+                    description: Updated task
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Task"
+                "401":
+                    description: Unathorized
+                "404":
+                    description: Not found
 components:
     schemas:
         SignUpResponse:
@@ -351,8 +370,28 @@ components:
                 title:
                     type: string
                     minLength: 1
+                    maxLength: 1000
                 description:
                     type: string
+                    maxLength: 10000
+                priority:
+                    type: string
+                    enum:
+                        - LOW
+                        - MEDIUM
+                        - HIGH
+        UpdateTaskData:
+            type: object
+            required:
+                - title
+            properties:
+                title:
+                    type: string
+                    minLength: 1
+                    maxLength: 1000
+                description:
+                    type: string
+                    maxLength: 10000
                 priority:
                     type: string
                     enum:
