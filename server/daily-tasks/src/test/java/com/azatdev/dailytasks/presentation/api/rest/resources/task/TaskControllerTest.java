@@ -478,7 +478,11 @@ class TaskControllerTest {
         final var userId = userPrincipal.getId();
         final var taskId = 1L;
 
-        final var updateTaskRequest = mock(UpdateTaskRequest.class);
+        final var updateTaskRequest = new UpdateTaskRequest(
+            "title",
+            "description",
+            Optional.empty()
+        );
 
         willThrow(new TaskNotFoundException(taskId)).given(editTaskUseCase)
             .execute(

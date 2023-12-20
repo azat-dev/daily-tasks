@@ -19,6 +19,7 @@ import com.azatdev.dailytasks.presentation.api.rest.entities.CreateTaskInBacklog
 import com.azatdev.dailytasks.presentation.api.rest.entities.StartTaskResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.StopTaskResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskResponse;
+import com.azatdev.dailytasks.presentation.api.rest.entities.UpdateTaskRequest;
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 
 import jakarta.validation.Valid;
@@ -64,6 +65,13 @@ public interface TaskResource {
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Void> deleteTask(
         @PathVariable(required = true) Long taskId,
+        @AuthenticationPrincipal UserPrincipal userPrincipal
+    );
+
+    @PostMapping("/{taskId}")
+    public ResponseEntity<TaskResponse> updateTask(
+        @PathVariable(required = true) Long taskId,
+        @Valid @RequestBody UpdateTaskRequest request,
         @AuthenticationPrincipal UserPrincipal userPrincipal
     );
 }

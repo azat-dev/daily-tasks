@@ -13,9 +13,11 @@ import com.azatdev.dailytasks.domain.exceptions.AccessDeniedException;
 import com.azatdev.dailytasks.domain.exceptions.BacklogNotFoundException;
 import com.azatdev.dailytasks.domain.exceptions.TaskAlreadyStoppedException;
 import com.azatdev.dailytasks.domain.exceptions.TaskNotFoundException;
+import com.azatdev.dailytasks.domain.models.EditTaskData;
 import com.azatdev.dailytasks.domain.models.NewTaskData;
 import com.azatdev.dailytasks.domain.usecases.CreateTaskInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.DeleteTaskUseCase;
+import com.azatdev.dailytasks.domain.usecases.EditTaskUseCase;
 import com.azatdev.dailytasks.domain.usecases.GetTaskDetailsUseCase;
 import com.azatdev.dailytasks.domain.usecases.ListTasksInBacklogUseCase;
 import com.azatdev.dailytasks.domain.usecases.StartTaskUseCase;
@@ -26,6 +28,7 @@ import com.azatdev.dailytasks.presentation.api.rest.entities.StartTaskResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.StopTaskResponse;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskPriorityPresentation;
 import com.azatdev.dailytasks.presentation.api.rest.entities.TaskResponse;
+import com.azatdev.dailytasks.presentation.api.rest.entities.UpdateTaskRequest;
 import com.azatdev.dailytasks.presentation.api.rest.entities.utils.MapTaskToResponse;
 import com.azatdev.dailytasks.presentation.security.entities.UserPrincipal;
 
@@ -52,6 +55,9 @@ public class TaskController implements TaskResource {
 
     @Autowired
     private DeleteTaskUseCase deleteTaskUseCase;
+
+    @Autowired
+    private EditTaskUseCase editTaskUseCase;
 
     @Override
     public ResponseEntity<List<TaskResponse>> findAllTasksInBacklog(
@@ -192,6 +198,46 @@ public class TaskController implements TaskResource {
 
             return ResponseEntity.noContent()
                 .build();
+
+        } catch (TaskNotFoundException e) {
+            return ResponseEntity.notFound()
+                .build();
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<TaskResponse> updateTask(
+        Long taskId,
+        UpdateTaskRequest request,
+        UserPrincipal userPrincipal
+    ) {
+
+        final var data = new EditTaskData(
+            request.title(),
+            request.priority()
+                .map(TaskPriorityPresentation::toDomain),
+            request.description()
+        );
+
+        try {
+            this.editTaskUseCase.execute(
+                userPrincipal.getId(),
+                taskId,
+                data
+            );
+
+            final var updatedTaskResult = getTaskDetailsUseCase.execute(
+                userPrincipal.getId(),
+                taskId
+            );
+
+            final var mappedTaskData = updatedTaskResult.map(mapTaskToResponse::map)
+                .orElseThrow(() -> new TaskNotFoundException(taskId));
+
+            return ResponseEntity.ok(mappedTaskData);
 
         } catch (TaskNotFoundException e) {
             return ResponseEntity.notFound()

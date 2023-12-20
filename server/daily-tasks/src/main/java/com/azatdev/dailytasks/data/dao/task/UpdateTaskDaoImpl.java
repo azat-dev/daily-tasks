@@ -21,26 +21,16 @@ public final class UpdateTaskDaoImpl implements UpdateTaskDao {
         final var taskData = tasksRepository.findById(taskId)
             .orElseThrow(() -> new TaskNotFoundException(taskId));
 
-        taskData.setTitle(
-            data.title()
-                .orElse(taskData.getTitle())
-        );
+        taskData.setTitle(data.title());
 
-        taskData.setDescription(
-            data.description()
-                .orElse(taskData.getDescription())
-        );
+        taskData.setDescription(data.description());
 
-        if (
+        final var priorityMapper = new MapTaskPriorityToData();
+
+        taskData.setPriority(
             data.priority()
-                .isPresent()
-        ) {
-            final var newPriority = data.priority()
-                .get();
-
-            final var priorityMapper = new MapTaskPriorityToData();
-            taskData.setPriority(newPriority.map(priorityMapper::map));
-        }
+                .map(priorityMapper::map)
+        );
 
         tasksRepository.saveAndFlush(taskData);
     }
