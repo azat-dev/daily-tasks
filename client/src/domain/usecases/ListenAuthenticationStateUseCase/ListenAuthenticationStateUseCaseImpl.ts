@@ -1,13 +1,13 @@
 import AuthState from "../../models/AuthState";
-import { IAuthStateRepositoryListen } from "../../repositories/AuthStateRepository";
-import { IListenAuthenticationStateUseCaseOutput } from "./ListenAuthenticationStateUseCase";
+import { AuthStateRepositoryListen } from "../../repositories/AuthStateRepository";
+import { ListenAuthenticationStateUseCaseOutput } from "./ListenAuthenticationStateUseCase";
 
 export default class ListenAuthenticationStateUseCaseImpl
-    implements IListenAuthenticationStateUseCaseOutput
+    implements ListenAuthenticationStateUseCaseOutput
 {
-    private readonly authStateRepository: IAuthStateRepositoryListen;
+    private readonly authStateRepository: AuthStateRepositoryListen;
 
-    constructor(authStateRepository: IAuthStateRepositoryListen) {
+    constructor(authStateRepository: AuthStateRepositoryListen) {
         this.authStateRepository = authStateRepository;
     }
 

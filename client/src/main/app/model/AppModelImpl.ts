@@ -23,16 +23,16 @@ import AddNewTaskUseCaseImpl from "../../../domain/usecases/AddNewTaskUseCase/Ad
 import LogInPageViewModelImpl from "../../../presentation/pages/LogInPage/ViewModel/LogInPageViewModelImpl";
 import DayPageViewModelImpl from "../../../presentation/pages/DayPage/ViewModel/DayPageViewModelImpl";
 import AddTaskViewModelImpl from "../../../presentation/modals/AddTaskModal/ViewModel/AddTaskModalViewModelImpl";
-import ISubject from "../../../presentation/utils/ISubject";
-import { value } from "../../../presentation/utils/Subject";
+import Subject from "../../../presentation/utils/Subject";
+import value from "../../../presentation/utils/value";
 import {
-    IAuthenticationServiceByUserNameAndPassword,
-    IAuthenticationServiceCheckToken,
+    AuthenticationServiceByUserNameAndPassword,
+    AuthenticationServiceCheckToken,
 } from "../../../domain/interfaces/services/AuthenticationService";
 import StartTaskUseCase from "../../../domain/usecases/StartTaskUseCase/StartTaskUseCase";
 import StopTaskUseCase from "../../../domain/usecases/StopTaskUseCase/StopTaskUseCase";
 import DeleteTaskUseCase from "../../../domain/usecases/DeleteTaskUseCase/DeleteTaskUseCase";
-import { IListenAuthenticationStateUseCaseOutput } from "../../../domain/usecases/ListenAuthenticationStateUseCase/ListenAuthenticationStateUseCase";
+import { ListenAuthenticationStateUseCaseOutput } from "../../../domain/usecases/ListenAuthenticationStateUseCase/ListenAuthenticationStateUseCase";
 import AppModel, { AppModelPageFactories, CurrentModalState } from "./AppModel";
 import AppSettings from "../AppSettings";
 import { Result, ResultType } from "../../../common/Result";
@@ -40,7 +40,7 @@ import { TaskId } from "../../../domain/models/Task";
 import ListTasksInBacklogUseCase from "../../../domain/usecases/ListTasksInBacklogUseCase/ListTasksInBacklogUseCase";
 import EditTaskModalViewModel from "../../../presentation/modals/EditTaskModal/ViewModel/EditTaskModalViewModel";
 import EditTaskModalViewModelImpl from "../../../presentation/modals/EditTaskModal/ViewModel/EditTaskModalViewModelImpl";
-import { ILoadTaskUseCase } from "../../../domain/usecases/LoadTaskUseCase/LoadTaskUseCase";
+import { LoadTaskUseCase } from "../../../domain/usecases/LoadTaskUseCase/LoadTaskUseCase";
 import LoadTaskUseCaseImpl from "../../../domain/usecases/LoadTaskUseCase/LoadTaskUseCaseImpl";
 import EditTaskUseCaseImpl from "../../../domain/usecases/EditTaskUseCase/AddNewTaskUseCaseImpl";
 import EditTaskUseCase from "../../../domain/usecases/EditTaskUseCase/EditTaskUseCase";
@@ -48,15 +48,15 @@ import EditTaskUseCase from "../../../domain/usecases/EditTaskUseCase/EditTaskUs
 export default class AppModelImpl implements AppModel {
     // Properties
 
-    public currentModal: ISubject<CurrentModalState | null> = value(null);
-    public authState: ISubject<AuthState> = value(AuthState.PROCESSING);
+    public currentModal: Subject<CurrentModalState | null> = value(null);
+    public authState: Subject<AuthState> = value(AuthState.PROCESSING);
 
     private localTokensRepository: LocalTokensRepository;
     private apiClient: DefaultApi;
-    private authService: IAuthenticationServiceByUserNameAndPassword &
-        IAuthenticationServiceCheckToken;
+    private authService: AuthenticationServiceByUserNameAndPassword &
+        AuthenticationServiceCheckToken;
     private authStateRepository: AuthStateRepositoryImpl;
-    private listenAuthStateUseCase: IListenAuthenticationStateUseCaseOutput;
+    private listenAuthStateUseCase: ListenAuthenticationStateUseCaseOutput;
 
     // Constructor
 
@@ -170,7 +170,7 @@ export default class AppModelImpl implements AppModel {
         return new LogInPageViewModelImpl(logInUseCase);
     };
 
-    private getLoadTaskUseCase = (): ILoadTaskUseCase => {
+    private getLoadTaskUseCase = (): LoadTaskUseCase => {
         return new LoadTaskUseCaseImpl(this.getTasksRepository());
     };
 

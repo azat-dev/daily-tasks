@@ -6,6 +6,6 @@ export enum LoadTaskUseCaseError {
     InternalError = "InternalError",
 }
 
-export interface ILoadTaskUseCase {
+export interface LoadTaskUseCase {
     execute(taskId: TaskId): Promise<Result<Task | null, LoadTaskUseCaseError>>;
 }

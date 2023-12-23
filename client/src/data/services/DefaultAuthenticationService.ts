@@ -1,16 +1,16 @@
 import { Result, ResultType } from "../../common/Result";
 import {
     AuthenticationServiceError,
-    IAuthenticationServiceByUserNameAndPassword,
-    IAuthenticationServiceCheckToken,
-    IAuthenticationTokenPair,
+    AuthenticationServiceByUserNameAndPassword,
+    AuthenticationServiceCheckToken,
+    AuthenticationTokenPair,
 } from "../../domain/interfaces/services/AuthenticationService";
 import { DefaultApi } from "../API";
 
 export default class DefaultAuthenticationService
     implements
-        IAuthenticationServiceByUserNameAndPassword,
-        IAuthenticationServiceCheckToken
+        AuthenticationServiceByUserNameAndPassword,
+        AuthenticationServiceCheckToken
 {
     private api: DefaultApi;
 
@@ -21,9 +21,7 @@ export default class DefaultAuthenticationService
     authenticateByUserName = async (
         username: string,
         password: string
-    ): Promise<
-        Result<IAuthenticationTokenPair, AuthenticationServiceError>
-    > => {
+    ): Promise<Result<AuthenticationTokenPair, AuthenticationServiceError>> => {
         try {
             const response = await this.api.apiPublicAuthTokenPost({
                 apiPublicAuthTokenPostRequest: {

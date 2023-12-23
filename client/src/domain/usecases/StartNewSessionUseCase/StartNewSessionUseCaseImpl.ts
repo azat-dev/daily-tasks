@@ -1,30 +1,30 @@
-import { IAuthenticationServiceCheckToken } from "../../interfaces/services/AuthenticationService";
+import { AuthenticationServiceCheckToken } from "../../interfaces/services/AuthenticationService";
 import {
-    IAuthTokensRepositoryGet,
-    IAuthTokensRepositoryUpdate,
-    IAuthTokensRepositoryDelete,
+    AuthTokensRepositoryGet,
+    AuthTokensRepositoryUpdate,
+    AuthTokensRepositoryDelete,
 } from "../../repositories/AuthTokensRepository";
-import { IAuthStateRepositoryUpdate } from "../../repositories/AuthStateRepository";
+import { AuthStateRepositoryUpdate } from "../../repositories/AuthStateRepository";
 
 import StartNewSessionUseCase from "./StartNewSessionUseCase";
 import AuthState from "../../models/AuthState";
 import { ResultType } from "../../../common/Result";
 
-export type LocalTokensRepository = IAuthTokensRepositoryUpdate &
-    IAuthTokensRepositoryGet &
-    IAuthTokensRepositoryDelete;
+export type LocalTokensRepository = AuthTokensRepositoryUpdate &
+    AuthTokensRepositoryGet &
+    AuthTokensRepositoryDelete;
 
 export default class StartNewSessionUseCaseImpl
     implements StartNewSessionUseCase
 {
-    private readonly authService: IAuthenticationServiceCheckToken;
+    private readonly authService: AuthenticationServiceCheckToken;
     private readonly localTokensRepository: LocalTokensRepository;
-    private readonly authStateRepository: IAuthStateRepositoryUpdate;
+    private readonly authStateRepository: AuthStateRepositoryUpdate;
 
     constructor(
-        authService: IAuthenticationServiceCheckToken,
+        authService: AuthenticationServiceCheckToken,
         localTokensRepository: LocalTokensRepository,
-        authStateRepository: IAuthStateRepositoryUpdate
+        authStateRepository: AuthStateRepositoryUpdate
     ) {
         this.authService = authService;
         this.localTokensRepository = localTokensRepository;

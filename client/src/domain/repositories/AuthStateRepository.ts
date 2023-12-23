@@ -1,17 +1,17 @@
 import AuthState from "../models/AuthState";
 
-export interface IAuthStateSubscription {
+export interface AuthStateSubscription {
     cancel(): void;
 }
 
-export interface IAuthStateRepositoryListen {
-    listen(callback: (authState: AuthState) => void): IAuthStateSubscription;
+export interface AuthStateRepositoryListen {
+    listen(callback: (authState: AuthState) => void): AuthStateSubscription;
 }
 
-export interface IAuthStateRepositoryGet {
+export interface AuthStateRepositoryGet {
     getCurrentAuthState(): Promise<AuthState>;
 }
 
-export interface IAuthStateRepositoryUpdate {
+export interface AuthStateRepositoryUpdate {
     updateAuthState(authState: AuthState): Promise<void>;
 }

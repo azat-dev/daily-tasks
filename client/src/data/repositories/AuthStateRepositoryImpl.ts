@@ -1,15 +1,15 @@
 import AuthState from "../../domain/models/AuthState";
 import {
-    IAuthStateRepositoryGet,
-    IAuthStateRepositoryListen,
-    IAuthStateRepositoryUpdate,
+    AuthStateRepositoryGet,
+    AuthStateRepositoryListen,
+    AuthStateRepositoryUpdate,
 } from "../../domain/repositories/AuthStateRepository";
 
 export default class AuthStateRepositoryImpl
     implements
-        IAuthStateRepositoryListen,
-        IAuthStateRepositoryGet,
-        IAuthStateRepositoryUpdate
+        AuthStateRepositoryListen,
+        AuthStateRepositoryGet,
+        AuthStateRepositoryUpdate
 {
     private readonly subscribers: ((authState: AuthState) => void)[] = [];
     private authState: AuthState = AuthState.LOGGED_OUT;

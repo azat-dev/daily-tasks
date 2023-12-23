@@ -1,7 +1,7 @@
-import ISubject from "../../../utils/ISubject";
+import Subject from "../../../utils/Subject";
 
 export interface ActionButtonViewModelOutput {
-    isActive: ISubject<boolean>;
+    isActive: Subject<boolean>;
 }
 
 export interface ActionButtonViewModelDelegate {

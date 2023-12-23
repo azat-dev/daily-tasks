@@ -1,25 +1,25 @@
 import { useMemo } from "react";
 import LogInPageViewModel from "./LogInPageViewModel";
-import { ILogInByUserNameAndPasswordUseCase } from "../../../../domain/usecases/LogInByUserNameAndPasswordUseCase/LogInByUserNameAndPasswordUseCase";
+import { LogInByUserNameAndPasswordUseCase } from "../../../../domain/usecases/LogInByUserNameAndPasswordUseCase/LogInByUserNameAndPasswordUseCase";
 import { ResultType } from "../../../../common/Result";
 
-import ISubject from "../../../utils/ISubject";
-import { value } from "../../../utils/Subject";
+import Subject from "../../../utils/Subject";
+import value from "../../../utils/value";
 
 export default class LogInPageViewModelImpl implements LogInPageViewModel {
     // Properties
 
-    public username: ISubject<string> = value("");
-    public password: ISubject<string> = value("");
-    public isProcessing: ISubject<boolean> = value(false);
-    public showWrongCredentialsErrorText: ISubject<boolean> = value(false);
-    public highlightAsErrorUserNameInput: ISubject<boolean> = value(false);
-    public highlightAsErrorPasswordInput: ISubject<boolean> = value(false);
+    public username: Subject<string> = value("");
+    public password: Subject<string> = value("");
+    public isProcessing: Subject<boolean> = value(false);
+    public showWrongCredentialsErrorText: Subject<boolean> = value(false);
+    public highlightAsErrorUserNameInput: Subject<boolean> = value(false);
+    public highlightAsErrorPasswordInput: Subject<boolean> = value(false);
 
     // Constructors
 
     public constructor(
-        private logInUseCase: ILogInByUserNameAndPasswordUseCase
+        private logInUseCase: LogInByUserNameAndPasswordUseCase
     ) {}
 
     // Methods

@@ -2,8 +2,8 @@ import EditTaskModalViewModel, {
     EditTaskModalViewModelDelegate,
 } from "./EditTaskModalViewModel";
 import TaskPriority from "../../../../domain/models/TaskPriority";
-import ISubject from "../../../utils/ISubject";
-import { value } from "../../../utils/Subject";
+import Subject from "../../../utils/Subject";
+import value from "../../../utils/value";
 import { Result, ResultType } from "../../../../common/Result";
 import Task, { TaskId } from "../../../../domain/models/Task";
 
@@ -14,9 +14,9 @@ export default class EditTaskViewModelImpl implements EditTaskModalViewModel {
     public isProcessing = value(false);
     public show = value(true);
     public title = value("");
-    public highlightTitleAsError: ISubject<boolean> = value(false);
+    public highlightTitleAsError: Subject<boolean> = value(false);
     public description = value("");
-    public priority: ISubject<string | undefined> = value(undefined);
+    public priority: Subject<string | undefined> = value(undefined);
     public priorityOptions = [
         { value: TaskPriority.LOW, label: "Low" },
         { value: TaskPriority.MEDIUM, label: "Medium" },

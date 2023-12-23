@@ -1,9 +1,9 @@
 import { Result, ResultType } from "../../../common/Result";
 import Task from "../../models/Task";
 import { TasksRepositoryGet } from "../../repositories/TasksRepository";
-import { ILoadTaskUseCase, LoadTaskUseCaseError } from "./LoadTaskUseCase";
+import { LoadTaskUseCase, LoadTaskUseCaseError } from "./LoadTaskUseCase";
 
-export default class LoadTaskUseCaseImpl implements ILoadTaskUseCase {
+export default class LoadTaskUseCaseImpl implements LoadTaskUseCase {
     public constructor(private tasksRepository: TasksRepositoryGet) {}
 
     execute = async (

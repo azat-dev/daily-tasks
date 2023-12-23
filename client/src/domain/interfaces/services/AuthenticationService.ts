@@ -5,25 +5,25 @@ export enum AuthenticationServiceError {
     WrongCredentials = "WrongCredentials",
 }
 
-export interface IAuthenticationTokenPair {
+export interface AuthenticationTokenPair {
     accessToken: string;
     refreshToken: string;
 }
 
-export interface IAuthenticationServiceByUserNameAndPassword {
+export interface AuthenticationServiceByUserNameAndPassword {
     authenticateByUserName(
         username: string,
         password: string
-    ): Promise<Result<IAuthenticationTokenPair, AuthenticationServiceError>>;
+    ): Promise<Result<AuthenticationTokenPair, AuthenticationServiceError>>;
 }
 
-export interface IAuthenticationServiceRefreshToken {
+export interface AuthenticationServiceRefreshToken {
     refreshToken(
         refreshToken: string
-    ): Promise<Result<IAuthenticationTokenPair, AuthenticationServiceError>>;
+    ): Promise<Result<AuthenticationTokenPair, AuthenticationServiceError>>;
 }
 
-export interface IAuthenticationServiceCheckToken {
+export interface AuthenticationServiceCheckToken {
     isTokenValid(
         refreshToken: string
     ): Promise<Result<boolean, AuthenticationServiceError>>;

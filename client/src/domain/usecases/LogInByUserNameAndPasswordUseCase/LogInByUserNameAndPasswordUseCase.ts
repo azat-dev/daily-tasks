@@ -5,7 +5,7 @@ export enum LoginByUserNamedAndPasswordUseCaseError {
     InternalError = "InternalError",
 }
 
-export interface ILogInByUserNameAndPasswordUseCase {
+export interface LogInByUserNameAndPasswordUseCase {
     logInByUserName(
         username: string,
         password: string

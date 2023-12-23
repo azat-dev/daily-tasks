@@ -1,4 +1,4 @@
-export interface IAccountModel {
+export interface AccountModel {
     accessToken: string;
     refreshToken: string;
 }

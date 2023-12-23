@@ -1,23 +1,23 @@
 import { Result, ResultType } from "../../../common/Result";
 import {
     AuthenticationServiceError,
-    IAuthenticationServiceByUserNameAndPassword,
+    AuthenticationServiceByUserNameAndPassword,
 } from "../../interfaces/services/AuthenticationService";
 import AuthState from "../../models/AuthState";
-import { IAuthStateRepositoryUpdate } from "../../repositories/AuthStateRepository";
-import { IAuthTokensRepositoryUpdate } from "../../repositories/AuthTokensRepository";
+import { AuthStateRepositoryUpdate } from "../../repositories/AuthStateRepository";
+import { AuthTokensRepositoryUpdate } from "../../repositories/AuthTokensRepository";
 import {
-    ILogInByUserNameAndPasswordUseCase,
+    LogInByUserNameAndPasswordUseCase,
     LoginByUserNamedAndPasswordUseCaseError,
 } from "./LogInByUserNameAndPasswordUseCase";
 
 export default class LogInByUserNameAndPasswordUseCaseImpl
-    implements ILogInByUserNameAndPasswordUseCase
+    implements LogInByUserNameAndPasswordUseCase
 {
     constructor(
-        private readonly authService: IAuthenticationServiceByUserNameAndPassword,
-        private readonly localTokensRepository: IAuthTokensRepositoryUpdate,
-        private readonly authStateRepository: IAuthStateRepositoryUpdate
+        private readonly authService: AuthenticationServiceByUserNameAndPassword,
+        private readonly localTokensRepository: AuthTokensRepositoryUpdate,
+        private readonly authStateRepository: AuthStateRepositoryUpdate
     ) {
         this.authService = authService;
         this.localTokensRepository = localTokensRepository;

@@ -1,21 +1,21 @@
 import {
-    IAuthTokensRepositoryUpdate,
-    IAuthTokensRepositoryDelete,
-    IAuthTokensRepositoryListen,
-    ITokensInfo,
+    AuthTokensRepositoryUpdate,
+    AuthTokensRepositoryDelete,
+    AuthTokensRepositoryListen,
+    TokensInfo,
 } from "../../domain/repositories/AuthTokensRepository";
 
 export default class AuthTokensRepositoryImpl
     implements
-        IAuthTokensRepositoryListen,
-        IAuthTokensRepositoryUpdate,
-        IAuthTokensRepositoryDelete
+        AuthTokensRepositoryListen,
+        AuthTokensRepositoryUpdate,
+        AuthTokensRepositoryDelete
 {
     private tokensKey = "tokens";
 
-    private callbacks: Array<(tokens: ITokensInfo | null) => void> = [];
+    private callbacks: Array<(tokens: TokensInfo | null) => void> = [];
 
-    getTokens = async (): Promise<ITokensInfo | null> => {
+    getTokens = async (): Promise<TokensInfo | null> => {
         const tokens = localStorage.getItem(this.tokensKey);
         if (!tokens) {
             return null;
@@ -41,7 +41,7 @@ export default class AuthTokensRepositoryImpl
     };
 
     listenChanges = (
-        callback: (currentTokens: ITokensInfo | null) => void
+        callback: (currentTokens: TokensInfo | null) => void
     ): any => {
         this.callbacks.push(callback);
 
