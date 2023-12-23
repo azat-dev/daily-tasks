@@ -10,9 +10,19 @@ import ModalPresenter from "./ModalPresenter";
 import AppSettings from "./AppSettings";
 import AppModel from "./model/AppModel";
 import useAppPages from "./useAppPages";
+import AuthTokensRepositoryImpl from "../../data/repositories/AuthTokensRepositoryImpl";
+import AuthStateRepositoryImpl from "../../data/repositories/AuthStateRepositoryImpl";
 
 const AppRoot = (props: { settings: AppSettings }) => {
-    const model = new AppModelImpl(props.settings);
+    const tokensRepository = new AuthTokensRepositoryImpl();
+    const authStateRepository = new AuthStateRepositoryImpl();
+
+    const model = new AppModelImpl(
+        props.settings,
+        tokensRepository,
+        authStateRepository
+    );
+
     (window as any).appModel = model;
 
     useEffect(() => {

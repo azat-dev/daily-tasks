@@ -1,6 +1,5 @@
-import { useMemo } from "react";
 import LogInPageViewModel from "./LogInPageViewModel";
-import { LogInByUserNameAndPasswordUseCase } from "../../../../domain/usecases/LogInByUserNameAndPasswordUseCase/LogInByUserNameAndPasswordUseCase";
+import { LogInByUserNameAndPasswordUseCase } from "../../../../domain/usecases/auth/LogInByUserNameAndPasswordUseCase/LogInByUserNameAndPasswordUseCase";
 import { ResultType } from "../../../../common/Result";
 
 import Subject from "../../../utils/Subject";

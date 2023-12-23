@@ -1,4 +1,4 @@
-import AuthState from "../../models/AuthState";
+import AuthState from "../../../models/auth/AuthState";
 
 export interface AuthStateSubscription {
     cancel: () => void;

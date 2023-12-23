@@ -1,4 +1,4 @@
-import { Result, ResultType } from "../../common/Result";
+import { Result } from "../../common/Result";
 import {
     AuthenticationServiceError,
     AuthenticationServiceByUserNameAndPassword,
@@ -7,18 +7,14 @@ import {
 } from "../../domain/interfaces/services/AuthenticationService";
 import { DefaultApi } from "../API";
 
-export default class DefaultAuthenticationService
+export default class AuthenticationServiceImpl
     implements
         AuthenticationServiceByUserNameAndPassword,
         AuthenticationServiceCheckToken
 {
-    private api: DefaultApi;
+    public constructor(private api: DefaultApi) {}
 
-    constructor(api: DefaultApi) {
-        this.api = api;
-    }
-
-    authenticateByUserName = async (
+    public authenticateByUserName = async (
         username: string,
         password: string
     ): Promise<Result<AuthenticationTokenPair, AuthenticationServiceError>> => {

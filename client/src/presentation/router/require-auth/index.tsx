@@ -1,6 +1,6 @@
 import React from "react";
 import { RouteProps, Navigate } from "react-router-dom";
-import AuthState from "../../../domain/models/AuthState";
+import AuthState from "../../../domain/models/auth/AuthState";
 
 export namespace RequireAuth {
     export type Props = {

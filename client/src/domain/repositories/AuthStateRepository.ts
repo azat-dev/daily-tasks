@@ -1,4 +1,4 @@
-import AuthState from "../models/AuthState";
+import AuthState from "../models/auth/AuthState";
 
 export interface AuthStateSubscription {
     cancel(): void;
@@ -15,3 +15,8 @@ export interface AuthStateRepositoryGet {
 export interface AuthStateRepositoryUpdate {
     updateAuthState(authState: AuthState): Promise<void>;
 }
+
+export interface AuthStateRepository
+    extends AuthStateRepositoryListen,
+        AuthStateRepositoryGet,
+        AuthStateRepositoryUpdate {}

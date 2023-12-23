@@ -1,4 +1,4 @@
-import AuthState from "../../domain/models/AuthState";
+import AuthState from "../../domain/models/auth/AuthState";
 import {
     AuthStateRepositoryGet,
     AuthStateRepositoryListen,

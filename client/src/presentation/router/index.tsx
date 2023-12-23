@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import AuthProcessingPage from "../pages/AuthProcessingPage";
 import { RequireAuth } from "./require-auth";
-import AuthState from "../../domain/models/AuthState";
+import AuthState from "../../domain/models/auth/AuthState";
 import PageWithSidebarView from "../components/Sidebar/PageWithSidebar/PageWithSidebarView";
 
 export interface Pages {

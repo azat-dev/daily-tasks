@@ -1,49 +1,48 @@
-import LogInPageViewModel from "../../../presentation/pages/LogInPage/ViewModel/LogInPageViewModel";
-import LogInByUserNameAndPasswordUseCaseImpl from "../../../domain/usecases/LogInByUserNameAndPasswordUseCase/LogInByUserNameAndPasswordUseCaseImpl";
-import DefaultAuthenticationService from "../../../data/services/DefaultAuthenticationService";
+import { Result, ResultType } from "../../../common/Result";
 import { Configuration, DefaultApi } from "../../../data/API";
-import ListenAuthenticationStateUseCaseImpl from "../../../domain/usecases/ListenAuthenticationStateUseCase/ListenAuthenticationStateUseCaseImpl";
-import AuthTokensRepositoryImpl from "../../../data/repositories/AuthTokensRepositoryImpl";
-import StartNewSessionUseCaseImpl, {
-    LocalTokensRepository,
-} from "../../../domain/usecases/StartNewSessionUseCase/StartNewSessionUseCaseImpl";
 import AuthStateRepositoryImpl from "../../../data/repositories/AuthStateRepositoryImpl";
-import AuthState from "../../../domain/models/AuthState";
-import DayPageViewViewModel, {
-    DayPageViewViewModelDelegate as DayPageViewModelDelegate,
-} from "../../../presentation/pages/DayPage/ViewModel/DayPageViewModel";
-import ListTasksInBacklogUseCaseImpl from "../../../domain/usecases/ListTasksInBacklogUseCase/ListTasksInBacklogUseCaseImpl";
-import TasksRepositoryImpl from "../../../data/repositories/TasksRepositoryImpl";
 import TaskMapperImpl from "../../../data/repositories/TaskMapper/TaskMapperImpl";
-import StartTaskUseCaseImpl from "../../../domain/usecases/StartTaskUseCase/StartTaskUseCaseImpl";
-import StopTaskUseCaseImpl from "../../../domain/usecases/StopTaskUseCase/StopTaskUseCaseImpl";
-import DeleteTaskUseCaseImpl from "../../../domain/usecases/DeleteTaskUseCase/DeleteTaskUseCaseImpl";
-import BacklogType from "../../../domain/models/BacklogType";
-import AddNewTaskUseCaseImpl from "../../../domain/usecases/AddNewTaskUseCase/AddNewTaskUseCaseImpl";
-import LogInPageViewModelImpl from "../../../presentation/pages/LogInPage/ViewModel/LogInPageViewModelImpl";
-import DayPageViewModelImpl from "../../../presentation/pages/DayPage/ViewModel/DayPageViewModelImpl";
-import AddTaskViewModelImpl from "../../../presentation/modals/AddTaskModal/ViewModel/AddTaskModalViewModelImpl";
-import Subject from "../../../presentation/utils/Subject";
-import value from "../../../presentation/utils/value";
+import TasksRepositoryImpl from "../../../data/repositories/TasksRepositoryImpl";
+import AuthenticationServiceImpl from "../../../data/services/AuthenticationServiceImpl";
 import {
     AuthenticationServiceByUserNameAndPassword,
     AuthenticationServiceCheckToken,
 } from "../../../domain/interfaces/services/AuthenticationService";
-import StartTaskUseCase from "../../../domain/usecases/StartTaskUseCase/StartTaskUseCase";
-import StopTaskUseCase from "../../../domain/usecases/StopTaskUseCase/StopTaskUseCase";
-import DeleteTaskUseCase from "../../../domain/usecases/DeleteTaskUseCase/DeleteTaskUseCase";
-import { ListenAuthenticationStateUseCaseOutput } from "../../../domain/usecases/ListenAuthenticationStateUseCase/ListenAuthenticationStateUseCase";
-import AppModel, { AppModelPageFactories, CurrentModalState } from "./AppModel";
-import AppSettings from "../AppSettings";
-import { Result, ResultType } from "../../../common/Result";
+import AuthState from "../../../domain/models/auth/AuthState";
+import BacklogType from "../../../domain/models/BacklogType";
 import { TaskId } from "../../../domain/models/Task";
-import ListTasksInBacklogUseCase from "../../../domain/usecases/ListTasksInBacklogUseCase/ListTasksInBacklogUseCase";
-import EditTaskModalViewModel from "../../../presentation/modals/EditTaskModal/ViewModel/EditTaskModalViewModel";
-import EditTaskModalViewModelImpl from "../../../presentation/modals/EditTaskModal/ViewModel/EditTaskModalViewModelImpl";
-import { LoadTaskUseCase } from "../../../domain/usecases/LoadTaskUseCase/LoadTaskUseCase";
-import LoadTaskUseCaseImpl from "../../../domain/usecases/LoadTaskUseCase/LoadTaskUseCaseImpl";
+import AddNewTaskUseCaseImpl from "../../../domain/usecases/AddNewTaskUseCase/AddNewTaskUseCaseImpl";
+import { ListenAuthenticationStateUseCaseOutput } from "../../../domain/usecases/auth/ListenAuthenticationStateUseCase/ListenAuthenticationStateUseCase";
+import ListenAuthenticationStateUseCaseImpl from "../../../domain/usecases/auth/ListenAuthenticationStateUseCase/ListenAuthenticationStateUseCaseImpl";
+import LogInByUserNameAndPasswordUseCaseImpl from "../../../domain/usecases/auth/LogInByUserNameAndPasswordUseCase/LogInByUserNameAndPasswordUseCaseImpl";
+import StartNewSessionUseCaseImpl from "../../../domain/usecases/auth/StartNewSessionUseCase/StartNewSessionUseCaseImpl";
+import DeleteTaskUseCase from "../../../domain/usecases/DeleteTaskUseCase/DeleteTaskUseCase";
+import DeleteTaskUseCaseImpl from "../../../domain/usecases/DeleteTaskUseCase/DeleteTaskUseCaseImpl";
 import EditTaskUseCaseImpl from "../../../domain/usecases/EditTaskUseCase/AddNewTaskUseCaseImpl";
 import EditTaskUseCase from "../../../domain/usecases/EditTaskUseCase/EditTaskUseCase";
+import ListTasksInBacklogUseCase from "../../../domain/usecases/ListTasksInBacklogUseCase/ListTasksInBacklogUseCase";
+import ListTasksInBacklogUseCaseImpl from "../../../domain/usecases/ListTasksInBacklogUseCase/ListTasksInBacklogUseCaseImpl";
+import { LoadTaskUseCase } from "../../../domain/usecases/LoadTaskUseCase/LoadTaskUseCase";
+import LoadTaskUseCaseImpl from "../../../domain/usecases/LoadTaskUseCase/LoadTaskUseCaseImpl";
+import StartTaskUseCase from "../../../domain/usecases/StartTaskUseCase/StartTaskUseCase";
+import StartTaskUseCaseImpl from "../../../domain/usecases/StartTaskUseCase/StartTaskUseCaseImpl";
+import StopTaskUseCase from "../../../domain/usecases/StopTaskUseCase/StopTaskUseCase";
+import StopTaskUseCaseImpl from "../../../domain/usecases/StopTaskUseCase/StopTaskUseCaseImpl";
+import AddTaskViewModelImpl from "../../../presentation/modals/AddTaskModal/ViewModel/AddTaskModalViewModelImpl";
+import EditTaskModalViewModel from "../../../presentation/modals/EditTaskModal/ViewModel/EditTaskModalViewModel";
+import EditTaskModalViewModelImpl from "../../../presentation/modals/EditTaskModal/ViewModel/EditTaskModalViewModelImpl";
+import DayPageViewViewModel, {
+    DayPageViewViewModelDelegate as DayPageViewModelDelegate,
+} from "../../../presentation/pages/DayPage/ViewModel/DayPageViewModel";
+import DayPageViewModelImpl from "../../../presentation/pages/DayPage/ViewModel/DayPageViewModelImpl";
+import LogInPageViewModel from "../../../presentation/pages/LogInPage/ViewModel/LogInPageViewModel";
+import LogInPageViewModelImpl from "../../../presentation/pages/LogInPage/ViewModel/LogInPageViewModelImpl";
+import Subject from "../../../presentation/utils/Subject";
+import value from "../../../presentation/utils/value";
+import AppSettings from "../AppSettings";
+import AppModel, { AppModelPageFactories, CurrentModalState } from "./AppModel";
+import { AuthStateRepository } from "../../../domain/repositories/AuthStateRepository";
+import AuthTokensRepository from "../../../domain/repositories/AuthTokensRepository";
 
 export default class AppModelImpl implements AppModel {
     // Properties
@@ -51,18 +50,18 @@ export default class AppModelImpl implements AppModel {
     public currentModal: Subject<CurrentModalState | null> = value(null);
     public authState: Subject<AuthState> = value(AuthState.PROCESSING);
 
-    private localTokensRepository: LocalTokensRepository;
     private apiClient: DefaultApi;
     private authService: AuthenticationServiceByUserNameAndPassword &
         AuthenticationServiceCheckToken;
-    private authStateRepository: AuthStateRepositoryImpl;
     private listenAuthStateUseCase: ListenAuthenticationStateUseCaseOutput;
 
     // Constructor
 
-    public constructor(settings: AppSettings) {
-        this.localTokensRepository = new AuthTokensRepositoryImpl();
-
+    public constructor(
+        settings: AppSettings,
+        private readonly localTokensRepository: AuthTokensRepository,
+        private readonly authStateRepository: AuthStateRepository
+    ) {
         this.apiClient = new DefaultApi(
             new Configuration({
                 basePath: settings.api.basePath,
@@ -73,9 +72,7 @@ export default class AppModelImpl implements AppModel {
             })
         );
 
-        this.authService = new DefaultAuthenticationService(this.apiClient);
-
-        this.authStateRepository = new AuthStateRepositoryImpl();
+        this.authService = new AuthenticationServiceImpl(this.apiClient);
 
         this.listenAuthStateUseCase = new ListenAuthenticationStateUseCaseImpl(
             this.authStateRepository
@@ -176,7 +173,9 @@ export default class AppModelImpl implements AppModel {
 
     private makeEditTaskPageViewModel = (
         taskId: TaskId,
-        didCompleteUpdate: () => void
+        hideModal: () => void,
+        hideModalAfterCreation: () => void,
+        editTaskUseCaseFactory: () => EditTaskUseCase
     ): EditTaskModalViewModel => {
         const vm = new EditTaskModalViewModelImpl(taskId, async () => {
             const useCase = this.getLoadTaskUseCase();
@@ -186,18 +185,13 @@ export default class AppModelImpl implements AppModel {
 
         vm.delegate = {
             updateTask: async (taskId, task) => {
-                const useCase = this.getEditTaskUseCase();
+                const useCase = editTaskUseCaseFactory();
                 const result = await useCase.execute(taskId, task);
 
                 return Result.mapError(result, () => undefined);
             },
-            didComplete: () => {
-                didCompleteUpdate();
-                this.currentModal.set(null);
-            },
-            didHide: () => {
-                this.currentModal.set(null);
-            },
+            didComplete: hideModalAfterCreation,
+            didHide: hideModal,
         };
 
         return vm;
@@ -207,7 +201,15 @@ export default class AppModelImpl implements AppModel {
         taskId: TaskId,
         didCompleteUpdate: () => void
     ) => {
-        const vm = this.makeEditTaskPageViewModel(taskId, didCompleteUpdate);
+        const vm = this.makeEditTaskPageViewModel(
+            taskId,
+            () => this.currentModal.set(null),
+            () => {
+                didCompleteUpdate();
+                this.currentModal.set(null);
+            },
+            () => this.getEditTaskUseCase()
+        );
 
         this.currentModal.set({
             type: "editTask",
@@ -220,7 +222,7 @@ export default class AppModelImpl implements AppModel {
     ): DayPageViewViewModel => {
         const backlogType = BacklogType.Day;
 
-        const viewModel = new DayPageViewModelImpl();
+        const vm = new DayPageViewModelImpl();
 
         const delegate: DayPageViewModelDelegate = {
             loadTasks: async () => {
@@ -247,17 +249,17 @@ export default class AppModelImpl implements AppModel {
             },
             runAddTaskFlow: () => {
                 this.runAddTaskFlow(backlogType, backlogDay, () => {
-                    viewModel.reloadTasks(true);
+                    vm.reloadTasks(true);
                 });
             },
             openTask: (taskId) => {
-                this.runEditTaskFlow(taskId, () => viewModel.reloadTasks(true));
+                this.runEditTaskFlow(taskId, () => vm.reloadTasks(true));
             },
         };
 
-        viewModel.delegate = delegate;
+        vm.delegate = delegate;
 
-        return viewModel;
+        return vm;
     };
 
     public start = () => {

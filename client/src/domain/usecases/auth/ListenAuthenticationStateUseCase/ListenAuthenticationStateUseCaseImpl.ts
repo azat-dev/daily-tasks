@@ -1,5 +1,5 @@
-import AuthState from "../../models/AuthState";
-import { AuthStateRepositoryListen } from "../../repositories/AuthStateRepository";
+import AuthState from "../../../models/auth/AuthState";
+import { AuthStateRepositoryListen } from "../../../repositories/AuthStateRepository";
 import { ListenAuthenticationStateUseCaseOutput } from "./ListenAuthenticationStateUseCase";
 
 export default class ListenAuthenticationStateUseCaseImpl

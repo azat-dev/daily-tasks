@@ -1,9 +1,7 @@
-namespace AuthTokensRepository {
-    export enum AuthState {
-        PROCESSING = "PROCESSING",
-        LOGGED_IN = "LOGGED_IN",
-        LOGGED_OUT = "LOGGED_OUT",
-    }
+export enum AuthState {
+    PROCESSING = "PROCESSING",
+    LOGGED_IN = "LOGGED_IN",
+    LOGGED_OUT = "LOGGED_OUT",
 }
 
 export interface TokensInfo {
@@ -30,4 +28,8 @@ export interface AuthTokensRepositoryListen {
     listenChanges(callback: (currentTokens: TokensInfo | null) => void): any;
 }
 
-export default AuthTokensRepository;
+export default interface AuthTokensRepository
+    extends AuthTokensRepositoryUpdate,
+        AuthTokensRepositoryDelete,
+        AuthTokensRepositoryGet,
+        AuthTokensRepositoryListen {}

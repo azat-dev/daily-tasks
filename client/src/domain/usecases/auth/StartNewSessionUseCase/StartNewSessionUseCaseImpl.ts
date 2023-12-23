@@ -1,14 +1,14 @@
-import { AuthenticationServiceCheckToken } from "../../interfaces/services/AuthenticationService";
+import { AuthenticationServiceCheckToken } from "../../../interfaces/services/AuthenticationService";
 import {
     AuthTokensRepositoryGet,
     AuthTokensRepositoryUpdate,
     AuthTokensRepositoryDelete,
-} from "../../repositories/AuthTokensRepository";
-import { AuthStateRepositoryUpdate } from "../../repositories/AuthStateRepository";
+} from "../../../repositories/AuthTokensRepository";
+import { AuthStateRepositoryUpdate } from "../../../repositories/AuthStateRepository";
 
 import StartNewSessionUseCase from "./StartNewSessionUseCase";
-import AuthState from "../../models/AuthState";
-import { ResultType } from "../../../common/Result";
+import AuthState from "../../../models/auth/AuthState";
+import { ResultType } from "../../../../common/Result";
 
 export type LocalTokensRepository = AuthTokensRepositoryUpdate &
     AuthTokensRepositoryGet &

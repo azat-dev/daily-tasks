@@ -1,7 +1,7 @@
 import LogInPageViewModel from "../../../presentation/pages/LogInPage/ViewModel/LogInPageViewModel";
 import AddTaskViewModel from "../../../presentation/modals/AddTaskModal/ViewModel/AddTaskModalViewModel";
 import DayPageViewViewModel from "../../../presentation/pages/DayPage/ViewModel/DayPageViewModel";
-import AuthState from "../../../domain/models/AuthState";
+import AuthState from "../../../domain/models/auth/AuthState";
 import Subject from "../../../presentation/utils/Subject";
 import EditTaskModalViewModel from "../../../presentation/modals/EditTaskModal/ViewModel/EditTaskModalViewModel";
 

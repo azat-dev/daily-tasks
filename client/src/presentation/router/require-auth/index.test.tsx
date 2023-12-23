@@ -2,7 +2,7 @@ import React from "react";
 import { render, waitFor, screen } from "@testing-library/react";
 import { RouterProvider, createMemoryRouter } from "react-router-dom";
 import { RequireAuth } from "./index";
-import AuthState from "../../../domain/models/AuthState";
+import AuthState from "../../../domain/models/auth/AuthState";
 
 type SutTypes = {
     location: any;

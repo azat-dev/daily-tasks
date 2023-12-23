@@ -1,11 +1,11 @@
-import { Result, ResultType } from "../../../common/Result";
+import { Result, ResultType } from "../../../../common/Result";
 import {
     AuthenticationServiceError,
     AuthenticationServiceByUserNameAndPassword,
-} from "../../interfaces/services/AuthenticationService";
-import AuthState from "../../models/AuthState";
-import { AuthStateRepositoryUpdate } from "../../repositories/AuthStateRepository";
-import { AuthTokensRepositoryUpdate } from "../../repositories/AuthTokensRepository";
+} from "../../../interfaces/services/AuthenticationService";
+import AuthState from "../../../models/auth/AuthState";
+import { AuthStateRepositoryUpdate } from "../../../repositories/AuthStateRepository";
+import { AuthTokensRepositoryUpdate } from "../../../repositories/AuthTokensRepository";
 import {
     LogInByUserNameAndPasswordUseCase,
     LoginByUserNamedAndPasswordUseCaseError,
