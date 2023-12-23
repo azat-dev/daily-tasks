@@ -7,11 +7,7 @@ import {
 import StopTaskUseCase, { StopTaskUseCaseError } from "./StopTaskUseCase";
 
 export default class StopTaskUseCaseImpl implements StopTaskUseCase {
-    private readonly tasksRepository: TasksRepositoryStop;
-
-    constructor(tasksRepository: TasksRepositoryStop) {
-        this.tasksRepository = tasksRepository;
-    }
+    constructor(private readonly tasksRepository: TasksRepositoryStop) {}
 
     execute = async (
         taskId: TaskId

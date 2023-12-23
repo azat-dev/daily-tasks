@@ -7,11 +7,7 @@ import {
 import StartTaskUseCase, { StartTaskUseCaseError } from "./StartTaskUseCase";
 
 export default class StartTaskUseCaseImpl implements StartTaskUseCase {
-    private readonly tasksRepository: TasksRepositoryStart;
-
-    constructor(tasksRepository: TasksRepositoryStart) {
-        this.tasksRepository = tasksRepository;
-    }
+    constructor(private readonly tasksRepository: TasksRepositoryStart) {}
 
     execute = async (
         taskId: TaskId

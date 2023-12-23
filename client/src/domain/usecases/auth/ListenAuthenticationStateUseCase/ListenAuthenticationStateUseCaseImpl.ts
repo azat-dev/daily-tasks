@@ -5,13 +5,11 @@ import { ListenAuthenticationStateUseCaseOutput } from "./ListenAuthenticationSt
 export default class ListenAuthenticationStateUseCaseImpl
     implements ListenAuthenticationStateUseCaseOutput
 {
-    private readonly authStateRepository: AuthStateRepositoryListen;
+    constructor(
+        private readonly authStateRepository: AuthStateRepositoryListen
+    ) {}
 
-    constructor(authStateRepository: AuthStateRepositoryListen) {
-        this.authStateRepository = authStateRepository;
-    }
-
-    listen = (callback: (state: AuthState) => void): any => {
+    public listen = (callback: (state: AuthState) => void): any => {
         return this.authStateRepository.listen(callback);
     };
 }

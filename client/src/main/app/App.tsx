@@ -25,6 +25,22 @@ import TasksRepositoryImpl from "../../data/repositories/TasksRepositoryImpl";
 import LoadTaskUseCaseImpl from "../../domain/usecases/LoadTaskUseCase/LoadTaskUseCaseImpl";
 import { TaskId } from "../../domain/models/Task";
 import EditTaskUseCaseImpl from "../../domain/usecases/EditTaskUseCase/AddNewTaskUseCaseImpl";
+import DayPageViewViewModel, {
+    DayPageViewViewModelDelegate,
+} from "../../presentation/pages/DayPage/ViewModel/DayPageViewModel";
+import DeleteTaskUseCaseImpl from "../../domain/usecases/DeleteTaskUseCase/DeleteTaskUseCaseImpl";
+import StopTaskUseCaseImpl from "../../domain/usecases/StopTaskUseCase/StopTaskUseCaseImpl";
+import StartTaskUseCaseImpl from "../../domain/usecases/StartTaskUseCase/StartTaskUseCaseImpl";
+import TaskMapperImpl from "../../data/repositories/TaskMapper/TaskMapperImpl";
+import StartTaskUseCase from "../../domain/usecases/StartTaskUseCase/StartTaskUseCase";
+import StopTaskUseCase from "../../domain/usecases/StopTaskUseCase/StopTaskUseCase";
+import DeleteTaskUseCase from "../../domain/usecases/DeleteTaskUseCase/DeleteTaskUseCase";
+import BacklogType from "../../domain/models/BacklogType";
+import DayPageViewModelImpl from "../../presentation/pages/DayPage/ViewModel/DayPageViewModelImpl";
+import ListTasksInBacklogUseCase from "../../domain/usecases/ListTasksInBacklogUseCase/ListTasksInBacklogUseCase";
+import ListTasksInBacklogUseCaseImpl from "../../domain/usecases/ListTasksInBacklogUseCase/ListTasksInBacklogUseCaseImpl";
+import AddTaskViewModelImpl from "../../presentation/modals/AddTaskModal/ViewModel/AddTaskModalViewModelImpl";
+import AddNewTaskUseCaseImpl from "../../domain/usecases/AddNewTaskUseCase/AddNewTaskUseCaseImpl";
 
 const AppRoot = (props: { settings: AppSettings }) => {
     const { settings } = props;
@@ -71,23 +87,22 @@ const AppRoot = (props: { settings: AppSettings }) => {
                 authStateRepository
             );
 
-            const result = await logInUseCase.logInByUserName(
-                username,
-                password
-            );
+            const result = await logInUseCase.execute(username, password);
 
             return result.type === ResultType.Success;
         });
     };
 
-    const tasksRepository = new TasksRepositoryImpl(apiClient);
+    const getTasksRepository = () => {
+        return new TasksRepositoryImpl(apiClient, new TaskMapperImpl());
+    };
 
     const loadTaskUseCaseFactory = () => {
-        return new LoadTaskUseCaseImpl(tasksRepository);
+        return new LoadTaskUseCaseImpl(getTasksRepository());
     };
 
     const editTaskUseCaseFactory = () => {
-        return new EditTaskUseCaseImpl(tasksRepository);
+        return new EditTaskUseCaseImpl(getTasksRepository());
     };
 
     const makeEditTaskModalModel = (
@@ -117,12 +132,121 @@ const AppRoot = (props: { settings: AppSettings }) => {
         return vm;
     };
 
+    const getStartTaskUseCase = (): StartTaskUseCase => {
+        return new StartTaskUseCaseImpl(getTasksRepository());
+    };
+
+    const getStopTaskUseCase = (): StopTaskUseCase => {
+        return new StopTaskUseCaseImpl(getTasksRepository());
+    };
+
+    const getDeleteTaskUseCase = (): DeleteTaskUseCase => {
+        return new DeleteTaskUseCaseImpl(getTasksRepository());
+    };
+
+    const getListTasksInBacklogUseCase = (
+        backlogType: BacklogType
+    ): ListTasksInBacklogUseCase => {
+        return new ListTasksInBacklogUseCaseImpl(
+            backlogType,
+            getTasksRepository()
+        );
+    };
+
+    const makeBacklogDayPageViewModel = (
+        backlogDay: string,
+        delegate: {
+            runAddTaskFlow: (
+                backlogType: BacklogType,
+                backlogDay: string,
+                didAdd: () => void
+            ) => void;
+            runEditTaskFlow: (
+                taskId: TaskId,
+                didUpdateTask: () => void
+            ) => void;
+        }
+    ): DayPageViewViewModel => {
+        const backlogType = BacklogType.Day;
+
+        const vm = new DayPageViewModelImpl();
+
+        const vmDelegate: DayPageViewViewModelDelegate = {
+            loadTasks: async () => {
+                const useCase = getListTasksInBacklogUseCase(backlogType);
+                const result = await useCase.execute(backlogDay);
+                return Result.mapError(result, () => undefined);
+            },
+            loadStatuses: async () => {
+                return Result.success({});
+            },
+            startTask: async (taskId) => {
+                const result = await getStartTaskUseCase().execute(taskId);
+                return Result.mapError(result, () => undefined);
+            },
+            stopTask: async (taskId) => {
+                const result = await getStopTaskUseCase().execute(taskId);
+                return Result.mapError(result, () => undefined);
+            },
+            deleteTask: async (taskId) => {
+                const result = await getDeleteTaskUseCase().execute(taskId);
+                return Result.mapError(result, () => undefined);
+            },
+            runAddTaskFlow: () => {
+                delegate.runAddTaskFlow(backlogType, backlogDay, () => {
+                    vm.reloadTasks(true);
+                });
+            },
+            openTask: (taskId) => {
+                delegate.runEditTaskFlow(taskId, () => vm.reloadTasks(true));
+            },
+        };
+
+        vm.delegate = vmDelegate;
+
+        return vm;
+    };
+
+    const getAddNewTaskUseCase = () => {
+        return new AddNewTaskUseCaseImpl(getTasksRepository());
+    };
+
+    const makeAddTaskModalViewModel = (
+        backlogType: BacklogType,
+        backlogDay: string,
+        delegate: {
+            didComplete: () => void;
+            didHide: () => void;
+        }
+    ) => {
+        return new AddTaskViewModelImpl({
+            createTask: async (newTask): Promise<Result<TaskId, undefined>> => {
+                const addNewTaskUseCase = getAddNewTaskUseCase();
+
+                const result = await addNewTaskUseCase.execute(
+                    backlogType,
+                    backlogDay,
+                    newTask
+                );
+
+                if (result.type === ResultType.Success) {
+                    return Result.success(result.value);
+                }
+
+                return Result.failure(undefined);
+            },
+            didComplete: delegate.didComplete,
+            didHide: delegate.didHide,
+        });
+    };
+
     const model = new AppModelImpl(
-        apiClient,
         startNewSession,
         startListeningAuthStateChanges,
         makeLoginPageModel,
-        makeEditTaskModalModel
+        makeEditTaskModalModel,
+        makeBacklogDayPageViewModel,
+        makeAddTaskModalViewModel
     );
 
     (window as any).appModel = model;

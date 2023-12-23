@@ -9,16 +9,10 @@ import ListTasksInBacklogUseCase, {
 export default class ListCurrentTasksUseCaseImpl
     implements ListTasksInBacklogUseCase
 {
-    private backlogType: BacklogType;
-    private tasksRepository: TasksRepositoryList;
-
     constructor(
-        backlogType: BacklogType,
-        tasksRepository: TasksRepositoryList
-    ) {
-        this.backlogType = backlogType;
-        this.tasksRepository = tasksRepository;
-    }
+        private readonly backlogType: BacklogType,
+        private readonly tasksRepository: TasksRepositoryList
+    ) {}
 
     execute = async (
         backlogDay: string

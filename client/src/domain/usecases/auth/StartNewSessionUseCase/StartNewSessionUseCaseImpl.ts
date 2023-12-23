@@ -17,19 +17,11 @@ export type LocalTokensRepository = AuthTokensRepositoryUpdate &
 export default class StartNewSessionUseCaseImpl
     implements StartNewSessionUseCase
 {
-    private readonly authService: AuthenticationServiceCheckToken;
-    private readonly localTokensRepository: LocalTokensRepository;
-    private readonly authStateRepository: AuthStateRepositoryUpdate;
-
     constructor(
-        authService: AuthenticationServiceCheckToken,
-        localTokensRepository: LocalTokensRepository,
-        authStateRepository: AuthStateRepositoryUpdate
-    ) {
-        this.authService = authService;
-        this.localTokensRepository = localTokensRepository;
-        this.authStateRepository = authStateRepository;
-    }
+        private readonly authService: AuthenticationServiceCheckToken,
+        private readonly localTokensRepository: LocalTokensRepository,
+        private readonly authStateRepository: AuthStateRepositoryUpdate
+    ) {}
 
     startNewSession = async (): Promise<void> => {
         this.authStateRepository.updateAuthState(AuthState.PROCESSING);

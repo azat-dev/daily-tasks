@@ -4,7 +4,7 @@ import { TasksRepositoryGet } from "../../repositories/TasksRepository";
 import { LoadTaskUseCase, LoadTaskUseCaseError } from "./LoadTaskUseCase";
 
 export default class LoadTaskUseCaseImpl implements LoadTaskUseCase {
-    public constructor(private tasksRepository: TasksRepositoryGet) {}
+    public constructor(private readonly tasksRepository: TasksRepositoryGet) {}
 
     execute = async (
         taskId: number

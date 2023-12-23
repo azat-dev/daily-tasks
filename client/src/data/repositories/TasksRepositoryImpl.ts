@@ -25,13 +25,10 @@ export default class TasksRepositoryImpl
         TasksRepositoryGet,
         TasksRepositoryUpdate
 {
-    private api: DefaultApi;
-    private taskMapper: TaskMapperDomain;
-
-    constructor(api: DefaultApi, taskMapper: TaskMapperDomain) {
-        this.api = api;
-        this.taskMapper = taskMapper;
-    }
+    constructor(
+        private readonly api: DefaultApi,
+        private readonly taskMapper: TaskMapperDomain
+    ) {}
 
     getTasksInBacklog = async (
         backlogType: BacklogType,
@@ -50,7 +47,7 @@ export default class TasksRepositoryImpl
         }
     };
 
-    start = async (
+    public start = async (
         taskId: TaskId
     ): Promise<Result<Date, TasksRepositoryError>> => {
         try {
@@ -72,7 +69,7 @@ export default class TasksRepositoryImpl
         }
     };
 
-    stop = async (
+    public stop = async (
         taskId: TaskId
     ): Promise<Result<Date, TasksRepositoryError>> => {
         try {
@@ -94,7 +91,7 @@ export default class TasksRepositoryImpl
         }
     };
 
-    delete = async (
+    public delete = async (
         taskId: TaskId
     ): Promise<Result<undefined, TasksRepositoryError>> => {
         try {
@@ -114,7 +111,7 @@ export default class TasksRepositoryImpl
         }
     };
 
-    addNewTask = async (
+    public addNewTask = async (
         backlogType: BacklogType,
         backlogDay: string,
         data: NewTaskData
@@ -145,7 +142,7 @@ export default class TasksRepositoryImpl
         }
     };
 
-    updateTask = async (
+    public updateTask = async (
         taskId: TaskId,
         data: UpdateTaskData
     ): Promise<Result<Task, TasksRepositoryError>> => {

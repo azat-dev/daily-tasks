@@ -7,11 +7,7 @@ import {
 import DeleteTaskUseCase, { DeleteTaskUseCaseError } from "./DeleteTaskUseCase";
 
 export default class DeleteTaskUseCaseImpl implements DeleteTaskUseCase {
-    private readonly tasksRepository: TasksRepositoryDelete;
-
-    constructor(tasksRepository: TasksRepositoryDelete) {
-        this.tasksRepository = tasksRepository;
-    }
+    constructor(private readonly tasksRepository: TasksRepositoryDelete) {}
 
     execute = async (
         taskId: TaskId

@@ -14,17 +14,13 @@ import {
 export default class LogInByUserNameAndPasswordUseCaseImpl
     implements LogInByUserNameAndPasswordUseCase
 {
-    constructor(
+    public constructor(
         private readonly authService: AuthenticationServiceByUserNameAndPassword,
         private readonly localTokensRepository: AuthTokensRepositoryUpdate,
         private readonly authStateRepository: AuthStateRepositoryUpdate
-    ) {
-        this.authService = authService;
-        this.localTokensRepository = localTokensRepository;
-        this.authStateRepository = authStateRepository;
-    }
+    ) {}
 
-    logInByUserName = async (
+    public execute = async (
         username: string,
         password: string
     ): Promise<Result<undefined, LoginByUserNamedAndPasswordUseCaseError>> => {
