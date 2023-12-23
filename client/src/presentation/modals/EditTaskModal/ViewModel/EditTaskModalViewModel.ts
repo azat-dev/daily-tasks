@@ -1,7 +1,7 @@
 import { Result } from "../../../../common/Result";
 import Task, { TaskId } from "../../../../domain/models/Task";
 import UpdateTaskData from "../../../../domain/models/UpdateTaskData";
-import Value from "../../../pages/LogInPage/Value";
+import ISubject from "../../../utils/ISubject";
 
 export interface EditTaskModalViewModelDelegate {
     updateTask: (
@@ -13,12 +13,13 @@ export interface EditTaskModalViewModelDelegate {
 }
 
 export interface EditTaskModalViewModelOutput {
-    isProcessing: Value<boolean>;
-    show: Value<boolean>;
-    title: Value<string>;
-    highlightTitleAsError: Value<boolean>;
-    description: Value<string>;
-    priority: Value<string | undefined>;
+    isProcessing: ISubject<boolean>;
+    isLoading: ISubject<boolean>;
+    show: ISubject<boolean>;
+    title: ISubject<string>;
+    highlightTitleAsError: ISubject<boolean>;
+    description: ISubject<string>;
+    priority: ISubject<string | undefined>;
     priorityOptions: { value: string; label: string }[];
 }
 

@@ -1,8 +1,8 @@
 import Task, { TaskId } from "../../../../../domain/models/Task";
 import TaskPriority from "../../../../../domain/models/TaskPriority";
 import TaskStatus from "../../../../../domain/models/TaskStatus";
-import { value } from "../../../LogInPage/DefaultValue";
-import Value from "../../../LogInPage/Value";
+import { value } from "../../../../utils/Subject";
+import ISubject from "../../../../utils/ISubject";
 import ActionButtonViewModel from "../../ActionButton/ActionButtonViewModel";
 import ActionButtonViewModelImpl from "../../ActionButton/ActionButtonViewModelImpl";
 import RowViewModel, { RowViewModelDelegate } from "./RowViewModel";
@@ -46,11 +46,11 @@ const formatCreatedAt = (createdAt: Date) => {
 export default class RowViewModelImpl implements RowViewModel {
     // Methods
     public key: string;
-    public title: Value<string>;
-    public createdAt: Value<string>;
-    public status: Value<string>;
-    public priority: Value<string>;
-    public isActive: Value<boolean>;
+    public title: ISubject<string>;
+    public createdAt: ISubject<string>;
+    public status: ISubject<string>;
+    public priority: ISubject<string>;
+    public isActive: ISubject<boolean>;
     public actionButtonViewModel: ActionButtonViewModel;
 
     public delegate: RowViewModelDelegate | null = null;

@@ -23,8 +23,8 @@ import AddNewTaskUseCaseImpl from "../../../domain/usecases/AddNewTaskUseCase/Ad
 import LogInPageViewModelImpl from "../../../presentation/pages/LogInPage/ViewModel/LogInPageViewModelImpl";
 import DayPageViewModelImpl from "../../../presentation/pages/DayPage/ViewModel/DayPageViewModelImpl";
 import AddTaskViewModelImpl from "../../../presentation/modals/AddTaskModal/ViewModel/AddTaskModalViewModelImpl";
-import Value from "../../../presentation/pages/LogInPage/Value";
-import { value } from "../../../presentation/pages/LogInPage/DefaultValue";
+import ISubject from "../../../presentation/utils/ISubject";
+import { value } from "../../../presentation/utils/Subject";
 import {
     IAuthenticationServiceByUserNameAndPassword,
     IAuthenticationServiceCheckToken,
@@ -48,8 +48,8 @@ import EditTaskUseCase from "../../../domain/usecases/EditTaskUseCase/EditTaskUs
 export default class AppModelImpl implements AppModel {
     // Properties
 
-    public currentModal: Value<CurrentModalState | null> = value(null);
-    public authState: Value<AuthState> = value(AuthState.PROCESSING);
+    public currentModal: ISubject<CurrentModalState | null> = value(null);
+    public authState: ISubject<AuthState> = value(AuthState.PROCESSING);
 
     private localTokensRepository: LocalTokensRepository;
     private apiClient: DefaultApi;

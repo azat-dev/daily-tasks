@@ -1,7 +1,7 @@
-import Value from "../../LogInPage/Value";
+import ISubject from "../../../utils/ISubject";
 
 export interface ActionButtonViewModelOutput {
-    isActive: Value<boolean>;
+    isActive: ISubject<boolean>;
 }
 
 export interface ActionButtonViewModelDelegate {

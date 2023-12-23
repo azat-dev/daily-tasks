@@ -2,8 +2,8 @@ import AddTaskViewModel, {
     AddTaskViewModelDelegate,
 } from "./AddTaskModalViewModel";
 import TaskPriority from "../../../../domain/models/TaskPriority";
-import Value from "../../../pages/LogInPage/Value";
-import { value } from "../../../pages/LogInPage/DefaultValue";
+import ISubject from "../../../utils/ISubject";
+import { value } from "../../../utils/Subject";
 import { ResultType } from "../../../../common/Result";
 
 export default class AddTaskViewModelImpl implements AddTaskViewModel {
@@ -12,9 +12,9 @@ export default class AddTaskViewModelImpl implements AddTaskViewModel {
     public isProcessing = value(false);
     public show = value(true);
     public title = value("");
-    public highlightTitleAsError: Value<boolean> = value(false);
+    public highlightTitleAsError: ISubject<boolean> = value(false);
     public description = value("");
-    public priority: Value<string | undefined> = value(undefined);
+    public priority: ISubject<string | undefined> = value(undefined);
     public priorityOptions = [
         { value: TaskPriority.LOW, label: "Low" },
         { value: TaskPriority.MEDIUM, label: "Medium" },

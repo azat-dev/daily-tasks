@@ -1,7 +1,7 @@
 import React from "react";
 import EditTaskModalViewModel from "./ViewModel/EditTaskModalViewModel";
-import { Button, Form, Modal, Spinner } from "react-bootstrap";
-import useUpdatesFrom from "../../pages/LogInPage/useUpdatesFrom";
+import { Button, Form, Modal, Placeholder, Spinner } from "react-bootstrap";
+import useUpdatesFrom from "../../utils/useUpdatesFrom";
 
 export interface EditTaskModalViewProps {
     viewModel: EditTaskModalViewModel;
@@ -14,6 +14,7 @@ const EditTaskModalView = ({ viewModel: vm }: EditTaskModalViewProps) => {
         vm.priority,
         vm.description,
         vm.highlightTitleAsError,
+        vm.isLoading,
         vm.isProcessing
     );
 

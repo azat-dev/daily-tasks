@@ -2,7 +2,7 @@ import LogInPageViewModel from "../../../presentation/pages/LogInPage/ViewModel/
 import AddTaskViewModel from "../../../presentation/modals/AddTaskModal/ViewModel/AddTaskModalViewModel";
 import DayPageViewViewModel from "../../../presentation/pages/DayPage/ViewModel/DayPageViewModel";
 import AuthState from "../../../domain/models/AuthState";
-import Value from "../../../presentation/pages/LogInPage/Value";
+import ISubject from "../../../presentation/utils/ISubject";
 import EditTaskModalViewModel from "../../../presentation/modals/EditTaskModal/ViewModel/EditTaskModalViewModel";
 
 export type CurrentModalState =
@@ -21,8 +21,8 @@ export interface AppModelPageFactories {
 }
 
 export interface AppModelOutput {
-    currentModal: Value<CurrentModalState | null>;
-    authState: Value<AuthState>;
+    currentModal: ISubject<CurrentModalState | null>;
+    authState: ISubject<AuthState>;
     getPages(): AppModelPageFactories;
 }
 

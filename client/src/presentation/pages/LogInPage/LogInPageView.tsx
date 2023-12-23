@@ -4,7 +4,7 @@ import { Form, Button, FloatingLabel, Spinner } from "react-bootstrap";
 import logo from "../../../logo.svg";
 import styles from "./styles.module.scss";
 import LogInPageViewModel from "./ViewModel/LogInPageViewModel";
-import useUpdatesFrom from "./useUpdatesFrom";
+import useUpdatesFrom from "../../utils/useUpdatesFrom";
 
 export interface LogInPageViewProps {
     viewModel: LogInPageViewModel;

@@ -5,7 +5,7 @@ import "./App.css";
 
 import AppRouter from "../../presentation/router";
 import AppModelImpl from "./model/AppModelImpl";
-import useUpdatesFrom from "../../presentation/pages/LogInPage/useUpdatesFrom";
+import useUpdatesFrom from "../../presentation/utils/useUpdatesFrom";
 import ModalPresenter from "./ModalPresenter";
 import AppSettings from "./AppSettings";
 import AppModel from "./model/AppModel";

@@ -1,7 +1,7 @@
 import { Result } from "../../../../common/Result";
 import Task, { TaskId } from "../../../../domain/models/Task";
 import TaskStatus from "../../../../domain/models/TaskStatus";
-import Value from "../../LogInPage/Value";
+import ISubject from "../../../utils/ISubject";
 import RowViewModel from "../Row/ViewModel/RowViewModel";
 
 export interface DayPageViewViewModelDelegate {
@@ -19,8 +19,8 @@ export interface DayPageViewViewModelDelegate {
 export interface DayPageViewViewModelRowUpdateProperties {}
 
 export interface DayPageViewViewModelOutput {
-    isLoading: Value<boolean>;
-    rows: Value<RowViewModel[]>;
+    isLoading: ISubject<boolean>;
+    rows: ISubject<RowViewModel[]>;
 }
 
 export interface DayPageViewViewModelInput {

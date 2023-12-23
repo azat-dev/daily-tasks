@@ -3,16 +3,16 @@ import DayPageViewModel, {
     DayPageViewViewModelDelegate,
 } from "./DayPageViewModel";
 import { TaskId } from "../../../../domain/models/Task";
-import Value from "../../LogInPage/Value";
-import { value } from "../../LogInPage/DefaultValue";
+import ISubject from "../../../utils/ISubject";
+import { value } from "../../../utils/Subject";
 import RowViewModelImpl from "../Row/ViewModel/RowViewModelImpl";
 import RowViewModel from "../Row/ViewModel/RowViewModel";
 import TaskStatus from "../../../../domain/models/TaskStatus";
 
 export default class DayPageViewModelImpl implements DayPageViewModel {
     // Properties
-    public isLoading: Value<boolean> = value(true);
-    public rows: Value<RowViewModel[]> = value([]);
+    public isLoading: ISubject<boolean> = value(true);
+    public rows: ISubject<RowViewModel[]> = value([]);
 
     // Constructor
 

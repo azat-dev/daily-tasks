@@ -1,12 +1,12 @@
-import Value from "../Value";
+import ISubject from "../../../utils/ISubject";
 
 export interface LogInPageViewModelOutput {
-    isProcessing: Value<boolean>;
-    username: Value<string>;
-    password: Value<string>;
-    highlightAsErrorUserNameInput: Value<boolean>;
-    highlightAsErrorPasswordInput: Value<boolean>;
-    showWrongCredentialsErrorText: Value<boolean>;
+    isProcessing: ISubject<boolean>;
+    username: ISubject<string>;
+    password: ISubject<string>;
+    highlightAsErrorUserNameInput: ISubject<boolean>;
+    highlightAsErrorPasswordInput: ISubject<boolean>;
+    showWrongCredentialsErrorText: ISubject<boolean>;
 }
 
 export interface LogInPageViewModelInput {

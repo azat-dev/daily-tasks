@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Dropdown } from "react-bootstrap";
 import ActionButtonViewModel from "./ActionButtonViewModel";
 import React from "react";
-import useUpdatesFrom from "../../LogInPage/useUpdatesFrom";
+import useUpdatesFrom from "../../../utils/useUpdatesFrom";
 
 export interface ActionButtonViewProps {
     vm: ActionButtonViewModel;

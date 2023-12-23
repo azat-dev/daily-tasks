@@ -3,18 +3,18 @@ import LogInPageViewModel from "./LogInPageViewModel";
 import { ILogInByUserNameAndPasswordUseCase } from "../../../../domain/usecases/LogInByUserNameAndPasswordUseCase/LogInByUserNameAndPasswordUseCase";
 import { ResultType } from "../../../../common/Result";
 
-import Value from "../Value";
-import { value } from "../DefaultValue";
+import ISubject from "../../../utils/ISubject";
+import { value } from "../../../utils/Subject";
 
 export default class LogInPageViewModelImpl implements LogInPageViewModel {
     // Properties
 
-    public username: Value<string> = value("");
-    public password: Value<string> = value("");
-    public isProcessing: Value<boolean> = value(false);
-    public showWrongCredentialsErrorText: Value<boolean> = value(false);
-    public highlightAsErrorUserNameInput: Value<boolean> = value(false);
-    public highlightAsErrorPasswordInput: Value<boolean> = value(false);
+    public username: ISubject<string> = value("");
+    public password: ISubject<string> = value("");
+    public isProcessing: ISubject<boolean> = value(false);
+    public showWrongCredentialsErrorText: ISubject<boolean> = value(false);
+    public highlightAsErrorUserNameInput: ISubject<boolean> = value(false);
+    public highlightAsErrorPasswordInput: ISubject<boolean> = value(false);
 
     // Constructors
 

@@ -1,6 +1,6 @@
 import React from "react";
 import RowViewModel from "./ViewModel/RowViewModel";
-import useUpdatesFrom from "../../LogInPage/useUpdatesFrom";
+import useUpdatesFrom from "../../../utils/useUpdatesFrom";
 import ActionButtonView from "../ActionButton/ActionButtonView";
 
 import styles from "./styles.module.scss";

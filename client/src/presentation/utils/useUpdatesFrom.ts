@@ -1,7 +1,7 @@
 import { useEffect, useReducer } from "react";
-import Value from "./Value";
+import ISubject from "./ISubject";
 
-const useUpdatesFrom = (...dependencies: Value<any | null>[]) => {
+const useUpdatesFrom = (...dependencies: ISubject<any | null>[]) => {
     const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
     useEffect(() => {

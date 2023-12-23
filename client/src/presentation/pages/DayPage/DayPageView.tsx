@@ -3,7 +3,7 @@ import { Button, Table } from "react-bootstrap";
 
 import DayPageViewViewModel from "./ViewModel/DayPageViewModel";
 import ActionButtonView from "./ActionButton/ActionButtonView";
-import useUpdatesFrom from "../LogInPage/useUpdatesFrom";
+import useUpdatesFrom from "../../utils/useUpdatesFrom";
 
 import styles from "./styles.module.scss";
 import RowView from "./Row/RowView";

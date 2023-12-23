@@ -1,11 +1,11 @@
 import ActionButtonViewModel, {
     ActionButtonViewModelDelegate,
 } from "./ActionButtonViewModel";
-import Value from "../../LogInPage/Value";
-import { value } from "../../LogInPage/DefaultValue";
+import ISubject from "../../../utils/ISubject";
+import { value } from "../../../utils/Subject";
 
 class ActionButtonViewModelImpl implements ActionButtonViewModel {
-    public isActive: Value<boolean>;
+    public isActive: ISubject<boolean>;
 
     public constructor(
         public startedAt: Date | null = null,

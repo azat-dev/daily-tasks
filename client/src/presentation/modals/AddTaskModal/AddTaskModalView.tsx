@@ -1,7 +1,7 @@
 import React from "react";
 import AddTaskViewModel from "./ViewModel/AddTaskModalViewModel";
 import { Button, Form, Modal, Spinner } from "react-bootstrap";
-import useUpdatesFrom from "../../pages/LogInPage/useUpdatesFrom";
+import useUpdatesFrom from "../../utils/useUpdatesFrom";
 
 export interface AddTaskModalViewProps {
     viewModel: AddTaskViewModel;

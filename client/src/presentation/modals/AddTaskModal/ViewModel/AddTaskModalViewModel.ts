@@ -1,7 +1,7 @@
 import { Result } from "../../../../common/Result";
 import NewTaskData from "../../../../domain/models/NewTaskData";
 import { TaskId } from "../../../../domain/models/Task";
-import Value from "../../../pages/LogInPage/Value";
+import ISubject from "../../../utils/ISubject";
 
 export interface AddTaskViewModelDelegate {
     createTask: (data: NewTaskData) => Promise<Result<TaskId, undefined>>;
@@ -10,12 +10,12 @@ export interface AddTaskViewModelDelegate {
 }
 
 export interface AddTaskViewModelOutput {
-    isProcessing: Value<boolean>;
-    show: Value<boolean>;
-    title: Value<string>;
-    highlightTitleAsError: Value<boolean>;
-    description: Value<string>;
-    priority: Value<string | undefined>;
+    isProcessing: ISubject<boolean>;
+    show: ISubject<boolean>;
+    title: ISubject<string>;
+    highlightTitleAsError: ISubject<boolean>;
+    description: ISubject<string>;
+    priority: ISubject<string | undefined>;
     priorityOptions: { value: string; label: string }[];
 }
 

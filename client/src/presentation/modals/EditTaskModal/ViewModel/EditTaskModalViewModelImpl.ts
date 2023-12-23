@@ -2,20 +2,21 @@ import EditTaskModalViewModel, {
     EditTaskModalViewModelDelegate,
 } from "./EditTaskModalViewModel";
 import TaskPriority from "../../../../domain/models/TaskPriority";
-import Value from "../../../pages/LogInPage/Value";
-import { value } from "../../../pages/LogInPage/DefaultValue";
+import ISubject from "../../../utils/ISubject";
+import { value } from "../../../utils/Subject";
 import { Result, ResultType } from "../../../../common/Result";
 import Task, { TaskId } from "../../../../domain/models/Task";
 
 export default class EditTaskViewModelImpl implements EditTaskModalViewModel {
     // Properties
 
+    public isLoading = value(false);
     public isProcessing = value(false);
     public show = value(true);
     public title = value("");
-    public highlightTitleAsError: Value<boolean> = value(false);
+    public highlightTitleAsError: ISubject<boolean> = value(false);
     public description = value("");
-    public priority: Value<string | undefined> = value(undefined);
+    public priority: ISubject<string | undefined> = value(undefined);
     public priorityOptions = [
         { value: TaskPriority.LOW, label: "Low" },
         { value: TaskPriority.MEDIUM, label: "Medium" },
@@ -94,20 +95,17 @@ export default class EditTaskViewModelImpl implements EditTaskModalViewModel {
     };
 
     load = async (): Promise<void> => {
-        const result = await this.loadTask(this.taskId);
-
-        if (result.type === ResultType.Failure) {
-            return;
-        }
-
-        const task = result.value;
-
-        if (!task) {
-            return;
-        }
-
-        this.title.set(task.title);
-        this.description.set(task.description ?? "");
-        this.priority.set(task.priority);
+        this.isLoading.set(true);
+        // const result = await this.loadTask(this.taskId);
+        // if (result.type === ResultType.Failure) {
+        //     return;
+        // }
+        // const task = result.value;
+        // if (!task) {
+        //     return;
+        // }
+        // this.title.set(task.title);
+        // this.description.set(task.description ?? "");
+        // this.priority.set(task.priority);
     };
 }
