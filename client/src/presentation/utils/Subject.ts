@@ -3,7 +3,7 @@ import { ISubjectCallback } from "./ISubjectCallback";
 
 import ISubject from "./ISubject";
 
-export default class ValueImpl<Value> implements ISubject<Value> {
+export default class Subject<Value> implements ISubject<Value> {
     private currentValue: Value;
     private subscribers: Set<ISubjectCallback<Value>> = new Set();
 
@@ -42,5 +42,5 @@ export default class ValueImpl<Value> implements ISubject<Value> {
 }
 
 export const value = <T>(initialValue: T): ISubject<T> => {
-    return new ValueImpl(initialValue);
+    return new Subject(initialValue);
 };
