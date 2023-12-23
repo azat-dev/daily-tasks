@@ -6,7 +6,7 @@ export enum LoginByUserNamedAndPasswordUseCaseError {
 }
 
 export interface LogInByUserNameAndPasswordUseCase {
-    logInByUserName(
+    execute(
         username: string,
         password: string
     ): Promise<Result<undefined, LoginByUserNamedAndPasswordUseCaseError>>;

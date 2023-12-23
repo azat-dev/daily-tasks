@@ -17,6 +17,7 @@ export default class EditTaskViewModelImpl implements EditTaskModalViewModel {
     public highlightTitleAsError: Subject<boolean> = value(false);
     public description = value("");
     public priority: Subject<string | undefined> = value(undefined);
+
     public priorityOptions = [
         { value: TaskPriority.LOW, label: "Low" },
         { value: TaskPriority.MEDIUM, label: "Medium" },
@@ -96,16 +97,16 @@ export default class EditTaskViewModelImpl implements EditTaskModalViewModel {
 
     load = async (): Promise<void> => {
         this.isLoading.set(true);
-        // const result = await this.loadTask(this.taskId);
-        // if (result.type === ResultType.Failure) {
-        //     return;
-        // }
-        // const task = result.value;
-        // if (!task) {
-        //     return;
-        // }
-        // this.title.set(task.title);
-        // this.description.set(task.description ?? "");
-        // this.priority.set(task.priority);
+        const result = await this.loadTask(this.taskId);
+        if (result.type === ResultType.Failure) {
+            return;
+        }
+        const task = result.value;
+        if (!task) {
+            return;
+        }
+        this.title.set(task.title);
+        this.description.set(task.description ?? "");
+        this.priority.set(task.priority);
     };
 }

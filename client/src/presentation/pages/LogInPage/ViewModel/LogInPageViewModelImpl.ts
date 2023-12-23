@@ -18,7 +18,10 @@ export default class LogInPageViewModelImpl implements LogInPageViewModel {
     // Constructors
 
     public constructor(
-        private logInUseCase: LogInByUserNameAndPasswordUseCase
+        private logInByUserName: (
+            username: string,
+            password: string
+        ) => Promise<boolean>
     ) {}
 
     // Methods
@@ -54,12 +57,12 @@ export default class LogInPageViewModelImpl implements LogInPageViewModel {
         }
 
         try {
-            const result = await this.logInUseCase.logInByUserName(
+            const isSucceded = await this.logInByUserName(
                 cleanedUserName,
                 this.password.value
             );
 
-            if (result.type === ResultType.Failure) {
+            if (!isSucceded) {
                 this.showWrongCredentialsErrorText.set(true);
                 this.highlightAsErrorPasswordInput.set(true);
                 this.highlightAsErrorUserNameInput.set(true);
