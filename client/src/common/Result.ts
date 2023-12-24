@@ -28,4 +28,15 @@ export namespace Result {
                 return Result.failure(map(result.error));
         }
     };
+
+    export const eraseError = <Value, OriginalError>(
+        result: Result<Value, OriginalError>
+    ): Result<Value, undefined> => {
+        switch (result.type) {
+            case ResultType.Success:
+                return Result.success(result.value);
+            case ResultType.Failure:
+                return Result.failure(undefined);
+        }
+    };
 }

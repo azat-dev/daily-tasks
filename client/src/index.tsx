@@ -2,8 +2,12 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
-import AppRoot from "./main/app/App";
-import AppSettings from "./main/app/AppSettings";
+import AppSettings from "./application/AppSettings";
+import DataDIContainerImpl from "./application/model/DI/data/DataDIContainerImpl";
+import DomainDIContainer from "./application/model/DI/domain/DomainDIContainer";
+import PresentationDiContainerImpl from "./application/model/DI/presentation/PresentationDiContainerImpl";
+import AppCoordinatorImpl from "./application/model/DI/coordinator/AppCoordinatorImpl";
+import AppView from "./application/presentation/AppView/AppView";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
@@ -15,9 +19,22 @@ const settings: AppSettings = {
     },
 };
 
+const makeAppModel = (settings: AppSettings) => {
+    const data = new DataDIContainerImpl(settings.api.basePath);
+    const domain = new DomainDIContainer(data);
+    const presentationModel = new PresentationDiContainerImpl(domain);
+
+    const appModel = new AppCoordinatorImpl(presentationModel);
+    (window as any).appModel = appModel;
+
+    return appModel;
+};
+
+const appModel = makeAppModel(settings);
+
 root.render(
     <React.StrictMode>
-        <AppRoot settings={settings} />
+        <AppView model={appModel} />
     </React.StrictMode>
 );
 

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { AppModelPageFactories } from "./model/AppModel";
+import { AppModelPageFactories } from "../model/DI/coordinator/AppCoordinator";
 import LogInPageView from "../../presentation/pages/LogInPage/LogInPageView";
 import DayPageView from "../../presentation/pages/DayPage/DayPageView";
 

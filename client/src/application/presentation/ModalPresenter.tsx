@@ -1,7 +1,8 @@
 import React from "react";
+
 import AddTaskModalView from "../../presentation/modals/AddTaskModal/AddTaskModalView";
-import { CurrentModalState } from "./model/AppModel";
 import EditTaskModalView from "../../presentation/modals/EditTaskModal/EditTaskModalView";
+import { CurrentModalState } from "../model/DI/coordinator/AppCoordinator";
 
 interface ModalPresenterProps {
     currentModal: CurrentModalState | null;
